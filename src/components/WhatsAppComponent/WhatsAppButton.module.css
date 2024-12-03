@@ -1,0 +1,12 @@
+.contact {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  border: 1px solid #1c1c1b;
+  border-radius: 20rem;
+  padding: 10px;
+  background-color: #1c1c1b;
+}
+.contact img {
+  width: 3rem;
+}

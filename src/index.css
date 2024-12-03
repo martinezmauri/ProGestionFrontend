@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(
+    180deg,
+    #000000,
+    #560764,
+    #3719f0,
+    #b819f0,
+    #6849e1,
+    #7371ff
+  );
+  background-size: 400% 400%;
+}
+
+#root {
+  color: white;
+  z-index: 1;
+}
+a {
+  text-decoration: none;
+}

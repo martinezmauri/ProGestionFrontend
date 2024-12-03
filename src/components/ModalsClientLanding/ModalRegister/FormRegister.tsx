@@ -1,59 +1,47 @@
-import { useState } from "react";
+import React from "react";
 import styles from "./FormRegister.module.css";
 
 export const FormRegister = () => {
-  const [labelVisibility, setLabelVisibility] = useState({
-    email: true,
-    password: true,
-  });
-
-  const handleLabelClick = (field: string) => {
-    setLabelVisibility((prevState) => ({
-      ...prevState,
-      [field]: false,
-    }));
-  };
-
   return (
     <main className={styles.hero}>
-      <section className={styles.headerLogin}>
-        <h1>Iniciar Sesión</h1>
-        <p>Si no tienes una cuenta creada puedes </p>
-        <a href="">Registrarte aqui !</a>
+      <section className={styles.headerRegister}>
+        <h1>Registrarse</h1>
+        <p>Si ya tienes una cuenta creada inicia sesión</p>
+        <a href="">aqui !</a>
       </section>
       <form action="">
         <section className={styles.formulary}>
           <h5>Email</h5>
           <div className={styles.inputContainer}>
-            <label
-              htmlFor="email"
-              className={styles.labelForm}
-              style={{ display: labelVisibility.email ? "block" : "none" }}
-            >
+            <label htmlFor="" className={styles.labelForm}>
               <img
                 src="src/assets/logo-email.png"
                 alt=""
                 className={styles.inputIcon}
-              />{" "}
+              />
               Email
             </label>
-            <input
-              type="email"
-              name=""
-              id=""
-              className={styles.inputForm}
-              onClick={() => handleLabelClick("email")}
-            />
+            <input type="email" className={styles.inputForm} />
+          </div>
+        </section>
+        <section className={styles.formulary}>
+          <h5>Nombre de Usuario</h5>
+          <div className={styles.inputContainer}>
+            <label htmlFor="" className={styles.labelForm}>
+              <img
+                src="src/assets/user-logo.png"
+                alt=""
+                className={styles.inputIcon}
+              />
+              Nombre de usuario
+            </label>
+            <input type="text" className={styles.inputForm} />
           </div>
         </section>
         <section className={styles.formulary}>
           <h5>Contraseña</h5>
           <div className={styles.inputContainer}>
-            <label
-              htmlFor="password"
-              className={styles.labelForm}
-              style={{ display: labelVisibility.password ? "block" : "none" }}
-            >
+            <label htmlFor="" className={styles.labelForm}>
               <img
                 src="src/assets/padlock-logo.png"
                 alt=""
@@ -61,39 +49,35 @@ export const FormRegister = () => {
               />{" "}
               Contraseña
             </label>
-            <input
-              type="password"
-              className={styles.inputForm}
-              onClick={() => handleLabelClick("password")}
-            />
+            <input type="password" className={styles.inputForm} />
             <img
               src="src/assets/eye-logo.png"
               alt=""
-              className={styles.inputIcon}
+              className={styles.padlockEye}
             />
           </div>
         </section>
-        <section className={styles.secondaryActions}>
-          <input type="checkbox" />
-          <label htmlFor=""> Mantener sesión iniciada</label>
-          <a href="">¿Olvidaste tu contraseña?</a>
+        <section className={styles.formulary}>
+          <h5>Confirmar Contraseña</h5>
+          <div className={styles.inputContainer}>
+            <label htmlFor="" className={styles.labelForm}>
+              <img
+                src="src/assets/padlock-logo.png"
+                alt=""
+                className={styles.inputIcon}
+              />
+              Confirmar contraseña
+            </label>
+            <input type="password" className={styles.inputForm} />
+            <img
+              src="src/assets/eye-logo.png"
+              alt=""
+              className={styles.padlockEye}
+            />
+          </div>
         </section>
-        <button className={styles.buttonLogin}>Login</button>
+        <button className={styles.buttonRegister}>Registrarse</button>
       </form>
-      <section className={styles.buttonsLogin}>
-        <h1>O puedes iniciar con:</h1>
-        <div>
-          <a href="">
-            <img src="src/assets/facebook-logo.png" alt="" />
-          </a>
-          <a href="">
-            <img src="src/assets/apple-logo.png" alt="" />
-          </a>
-          <a href="">
-            <img src="src/assets/google-logo.png" alt="" />
-          </a>
-        </div>
-      </section>
     </main>
   );
 };

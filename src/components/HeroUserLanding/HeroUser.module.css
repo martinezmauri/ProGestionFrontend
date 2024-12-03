@@ -1,0 +1,82 @@
+.hero {
+  display: flex;
+  padding: 10rem 7rem;
+  font-family: "Poppins", sans-serif;
+  gap: 10rem;
+}
+.description {
+  width: 30%;
+}
+.description h1 {
+  font-size: 30px;
+}
+.formulary {
+  background-color: rgba(0, 0, 0, 0.322);
+  border-radius: 20px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: auto;
+  gap: 40px;
+}
+.formHeader {
+  display: flex;
+  justify-content: space-around;
+}
+.inputForm {
+  background-color: #d9d9d9;
+  border: none;
+  padding: 8px;
+  border-radius: 20px;
+  width: 250px;
+}
+.inputForm:focus {
+  outline: none;
+}
+.categoryForm {
+  background-color: #d9d9d9;
+  border: none;
+  padding: 8px;
+  border-radius: 20px;
+  width: 50%;
+}
+.categoryForm:focus {
+  outline: none;
+}
+.categoryContainer {
+  display: flex;
+  justify-content: center;
+}
+.buttonSearch {
+  border: none;
+  border-radius: 20px;
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  width: 30%;
+  font-weight: bold;
+  background-color: #fff;
+}
+.containerButton {
+  display: flex;
+  justify-content: center;
+}
+.labelForm {
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  position: absolute;
+  pointer-events: none;
+  color: #474950;
+  top: 285px;
+  gap: 20px;
+}
+.labelCategory {
+  display: flex;
+  align-items: center;
+  font-size: 0.8em;
+  position: absolute;
+  pointer-events: none;
+  color: #474950;
+  top: 358px;
+}

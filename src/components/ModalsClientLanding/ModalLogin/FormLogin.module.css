@@ -11,27 +11,27 @@
   border-radius: 30px;
   padding: 20px;
 }
-.headerRegister {
+.headerLogin {
   display: flex;
   flex-direction: column;
   width: 65%;
   padding-bottom: 5%;
 }
-.headerRegister h1 {
+.headerLogin h1 {
   font-weight: 500;
   padding-bottom: 10px;
 }
-.headerRegister p {
+.headerLogin p {
   font-weight: 200;
   font-size: 0.9em;
 }
-.headerRegister a {
+.headerLogin a {
   color: #ffffff;
   font-size: 0.9em;
   font-weight: 500;
   position: relative;
   bottom: 21px;
-  left: 90px;
+  left: 60px;
 }
 h5 {
   font-size: 0.7em;
@@ -46,6 +46,7 @@ h5 {
   pointer-events: none;
   bottom: 19px;
 }
+
 .inputContainer {
   position: relative;
   display: flex;
@@ -61,11 +62,6 @@ h5 {
   width: 20px;
   height: 20px;
   margin-right: 10px;
-}
-.padlockEye {
-  position: absolute;
-  right: 20px;
-  width: 20px;
 }
 .inputForm {
   width: 100%;
@@ -84,10 +80,26 @@ h5 {
 .inputForm:focus {
   outline: none;
 }
+.buttonsLogin img {
+  width: 35px;
+}
 .formulary {
   margin-bottom: 20px;
 }
-.buttonRegister {
+.secondaryActions {
+  display: flex;
+  align-items: center;
+}
+.secondaryActions label {
+  font-size: 0.7em;
+  padding-left: 0.5rem;
+}
+.secondaryActions a {
+  color: #ffffff;
+  font-size: 0.7em;
+  padding-left: 5rem;
+}
+.buttonLogin {
   background-color: #353535;
   margin-top: 40px;
   margin-bottom: 40px;
@@ -98,4 +110,15 @@ h5 {
   color: #ffffff;
   font-size: 1.2em;
   padding: 12px;
+}
+.buttonsLogin h1 {
+  font-size: 0.9em;
+  font-weight: 200;
+  text-align: center;
+}
+.buttonsLogin div {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding-top: 20px;
 }

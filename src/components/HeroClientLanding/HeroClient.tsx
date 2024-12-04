@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { WhatsAppButton } from "../WhatsAppComponent/WhatsAppButton";
 import styles from "./HeroClient.module.css";
 
@@ -15,12 +16,12 @@ export const HeroClient = () => {
             tus clientes la mejor experiencia del mercado con ProGestion.
           </p>
           <nav className={styles.buttonContainer}>
-            <a href="" className={styles.buttonWhite}>
+            <Link to={"/plans"} className={styles.buttonWhite}>
               Ver Planes
-            </a>
-            <a href="" className={styles.buttonContanct}>
+            </Link>
+            <Link to={"/about"} className={styles.buttonContanct}>
               Contáctanos
-            </a>
+            </Link>
           </nav>
         </section>
         <section className={styles.imageMain}>

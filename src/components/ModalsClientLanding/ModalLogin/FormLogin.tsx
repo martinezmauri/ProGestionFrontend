@@ -34,7 +34,7 @@ export const FormLogin = () => {
                 src="src/assets/logo-email.png"
                 alt=""
                 className={styles.inputIcon}
-              />{" "}
+              />
               Email
             </label>
             <input

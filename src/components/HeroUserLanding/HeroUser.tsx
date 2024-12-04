@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./HeroUser.module.css";
+import { WhatsAppButton } from "../WhatsAppComponent/WhatsAppButton";
 
 export const HeroUser = () => {
   return (
@@ -11,34 +12,51 @@ export const HeroUser = () => {
           convenga!
         </p>
       </section>
-      <form action="" className={styles.formulary}>
+      <form className={styles.formulary}>
         <div className={styles.formHeader}>
           <section>
-            <label htmlFor="" className={styles.labelForm}>
-              <img src="" alt="" />
+            <label htmlFor="establishment" className={styles.labelForm}>
+              <img
+                src="src/assets/search-logo.png"
+                alt=""
+                className={styles.inputIcon}
+              />
               Nombre del establecimiento
             </label>
-            <input type="text" className={styles.inputForm} />
+            <input
+              type="text"
+              id="establishment"
+              className={styles.inputForm}
+            />
           </section>
           <section>
-            <label htmlFor="" className={styles.labelForm}>
-              <img src="" alt="" />
+            <label htmlFor="location" className={styles.labelForm}>
+              <img
+                src="src/assets/location-logo.png"
+                alt=""
+                className={styles.inputIcon}
+              />
               Selecciona tu localidad
             </label>
-            <input type="text" className={styles.inputForm} />
+            <input type="text" id="location" className={styles.inputForm} />
           </section>
         </div>
         <section className={styles.categoryContainer}>
-          <label htmlFor="" className={styles.labelCategory}>
-            <img src="" alt="" />
+          <label htmlFor="category" className={styles.labelCategory}>
+            <img
+              src="src/assets/box-logo.png"
+              alt=""
+              className={styles.inputIcon}
+            />
             Selecciona la categoria
           </label>
-          <input type="text" className={styles.categoryForm} />
+          <input type="text" id="category" className={styles.categoryForm} />
         </section>
         <div className={styles.containerButton}>
           <button className={styles.buttonSearch}>Buscar</button>
         </div>
       </form>
+      <WhatsAppButton />
     </main>
   );
 };

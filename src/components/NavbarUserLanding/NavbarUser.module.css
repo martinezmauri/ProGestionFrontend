@@ -5,9 +5,10 @@
   width: 100%;
   padding: 1rem 1rem;
 }
-.hero h1 {
+.logo {
   color: aliceblue;
   font-size: 3em;
+  font-weight: 700;
 }
 .containerButtons {
   display: flex;

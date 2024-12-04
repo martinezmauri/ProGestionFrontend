@@ -1,22 +1,23 @@
+import { Link } from "react-router-dom";
 import "./NavbarClient.css";
 
 export const NavbarClientLanding = () => {
   return (
     <nav className="hero">
       <section className="logo">
-        <a href="">
+        <Link to={"/client"}>
           <h1 className="title">ProGestion</h1>
-        </a>
+        </Link>
       </section>
       <section className="navbar-buttons">
-        <a href="">Inicio</a>
-        <a href="">¿Qué Ofrecemos?</a>
-        <a href="">Planes</a>
+        <Link to={"/client"}>Inicio</Link>
+        <Link to={"/about"}>¿Qué Ofrecemos?</Link>
+        <Link to={"/plans"}>Planes</Link>
       </section>
       <section className="action-buttons">
-        <a href="" className="action-white">
+        <Link to={"/"} className="action-white">
           Sacar Turno
-        </a>
+        </Link>
         <a href="" className="action-black">
           Iniciar Sesión
         </a>

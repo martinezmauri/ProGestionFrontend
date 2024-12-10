@@ -10,14 +10,7 @@ body {
 }
 
 body {
-  background: linear-gradient(
-    180deg,
-    #fdf7f4,
-    #c9e6f0,
-    #c9e6f0,
-    #78b3ce,
-    #b87e66
-  );
+  background: linear-gradient(180deg, #fdf7f4, #c9e6f0, #78b3ce, #b87e66);
   background-size: 300% 300%;
 }
 

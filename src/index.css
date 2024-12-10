@@ -12,14 +12,13 @@ body {
 body {
   background: linear-gradient(
     180deg,
-    #000000,
-    #560764,
-    #3719f0,
-    #b819f0,
-    #6849e1,
-    #7371ff
+    #fdf7f4,
+    #c9e6f0,
+    #c9e6f0,
+    #78b3ce,
+    #b87e66
   );
-  background-size: 400% 400%;
+  background-size: 300% 300%;
 }
 
 #root {

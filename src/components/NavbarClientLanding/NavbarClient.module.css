@@ -4,43 +4,46 @@
   align-items: center;
   width: 100%;
   font-family: "Poppins", sans-serif;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 .title {
-  color: aliceblue;
+  color: #f96e2a;
   font-size: 3em;
 }
 .hero .logo {
   position: absolute;
-  left: 20px;
+  left: 40px;
 }
-.navbar-buttons {
+.navbarButtons {
   display: flex;
   gap: 1.5rem;
 }
-.navbar-buttons a {
-  color: aliceblue;
-  font-weight: 500;
+.navbarButtons a {
+  color: #295366;
+  font-weight: 600;
 }
-.action-buttons {
+.actionButtons {
   display: flex;
   position: absolute;
   right: 20px;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
-.action-white {
-  border: 1px solid black;
-  background-color: #8957ef;
-  padding: 10px;
+.actionWhite {
+  background-color: #295366;
+  padding: 12px;
   border-radius: 2rem;
   color: #ffffff;
   font-weight: 600;
+  font-size: 0.8em;
 }
-.action-black {
-  border: 1px solid black;
-  background-color: #ffffff;
-  padding: 10px;
+.actionBlack {
+  font-family: "Poppins", sans-serif;
+  background-color: #c9e6f0;
+  padding: 12px;
   border-radius: 2rem;
   color: #000000;
   font-weight: 600;
+  font-size: 0.8em;
+  cursor: pointer;
+  border: none;
 }

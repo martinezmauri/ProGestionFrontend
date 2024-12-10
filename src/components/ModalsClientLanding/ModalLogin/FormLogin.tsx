@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./FormLogin.module.css";
 
-export const FormLogin = () => {
+interface ModalProps {
+  onClose: () => void;
+  onOpenRegister: () => void;
+}
+export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [labelVisibility, setLabelVisibility] = useState({
     email: true,
     password: true,
   });
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({
@@ -14,12 +20,33 @@ export const FormLogin = () => {
     }));
   };
 
+  const handleBlur = (field: string) => {
+    setLabelVisibility((prevState) => ({
+      ...prevState,
+      [field]: loginData[field as keyof typeof loginData] === "",
+    }));
+  };
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    setLoginData((prevState) => ({
+      ...prevState,
+      [field]: event.target.value,
+    }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prevState) => !prevState);
+  };
+
   return (
     <main className={styles.hero}>
       <section className={styles.headerLogin}>
         <h1>Iniciar Sesión</h1>
         <p>Si no tienes una cuenta creada puedes </p>
-        <a href="">Registrarte aqui !</a>
+        <button onClick={onOpenRegister}>Registrarte aqui!</button>
       </section>
       <form action="">
         <section className={styles.formulary}>
@@ -39,10 +66,13 @@ export const FormLogin = () => {
             </label>
             <input
               type="email"
+              value={loginData.email}
+              onChange={(event) => handleChange(event, "email")}
               name=""
               id=""
               className={styles.inputForm}
               onClick={() => handleLabelClick("email")}
+              onBlur={() => handleBlur("email")}
             />
           </div>
         </section>
@@ -62,20 +92,28 @@ export const FormLogin = () => {
               Contraseña
             </label>
             <input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               className={styles.inputForm}
+              onChange={(event) => handleChange(event, "password")}
+              value={loginData.password}
               onClick={() => handleLabelClick("password")}
+              onBlur={() => handleBlur("password")}
             />
             <img
-              src="src/assets/eye-logo.png"
+              src={
+                isPasswordVisible
+                  ? "src/assets/eye-open-logo.png"
+                  : "src/assets/eye-logo.png"
+              }
               alt=""
-              className={styles.inputIcon}
+              className={styles.padlockEye}
+              onClick={togglePasswordVisibility}
             />
           </div>
         </section>
         <section className={styles.secondaryActions}>
-          <input type="checkbox" />
-          <label htmlFor=""> Mantener sesión iniciada</label>
+          <input type="checkbox" id="remember-me" />
+          <label htmlFor="remember-me"> Mantener sesión iniciada</label>
           <a href="">¿Olvidaste tu contraseña?</a>
         </section>
         <button className={styles.buttonLogin}>Login</button>

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { WhatsAppButton } from "../WhatsAppComponent/WhatsAppButton";
 import styles from "./HeroClient.module.css";
 
 export const HeroClient = () => {
@@ -17,7 +16,7 @@ export const HeroClient = () => {
           </p>
           <nav className={styles.buttonContainer}>
             <Link to={"/plans"} className={styles.buttonWhite}>
-              Ver Planes
+              Ver planes
             </Link>
             <Link to={"/about"} className={styles.buttonContanct}>
               Contáctanos
@@ -31,7 +30,6 @@ export const HeroClient = () => {
           />
         </section>
       </section>
-      <WhatsAppButton />
     </main>
   );
 };

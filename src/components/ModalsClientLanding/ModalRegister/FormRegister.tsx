@@ -1,10 +1,62 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./FormRegister.module.css";
 
-export const FormRegister = () => {
+interface ModalProps {
+  onClose: () => void;
+}
+export const FormRegister = ({ onClose }: ModalProps) => {
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    nameUser: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [labelVisibility, setLabelVisibility] = useState({
+    email: true,
+    nameUser: true,
+    password: true,
+    confirmPassword: true,
+  });
+  const [passwordVisibility, setPasswordVisibility] = useState({
+    password: false,
+    confirmPassword: false,
+  });
+
+  const handleLabelClick = (field: string) => {
+    setLabelVisibility((prevState) => ({
+      ...prevState,
+      [field]: false,
+    }));
+  };
+
+  const handleBlur = (field: string) => {
+    setLabelVisibility((prevState) => ({
+      ...prevState,
+      [field]: registerData[field as keyof typeof registerData] === "",
+    }));
+  };
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
+    setRegisterData((prevState) => ({
+      ...prevState,
+      [field]: event.target.value,
+    }));
+  };
+
+  const togglePasswordVisibility = (field: "password" | "confirmPassword") => {
+    setPasswordVisibility((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
+
   return (
     <main className={styles.hero}>
       <section className={styles.headerRegister}>
+        <button onClick={onClose}>Cerrar</button>
         <h1>Registrarse</h1>
         <p>Si ya tienes una cuenta creada inicia sesión</p>
         <a href="">aqui !</a>
@@ -13,7 +65,11 @@ export const FormRegister = () => {
         <section className={styles.formulary}>
           <h5>Email</h5>
           <div className={styles.inputContainer}>
-            <label htmlFor="" className={styles.labelForm}>
+            <label
+              htmlFor=""
+              className={styles.labelForm}
+              style={{ display: labelVisibility.email ? "block" : "none" }}
+            >
               <img
                 src="src/assets/logo-email.png"
                 alt=""
@@ -21,13 +77,24 @@ export const FormRegister = () => {
               />
               Email
             </label>
-            <input type="email" className={styles.inputForm} />
+            <input
+              type="email"
+              className={styles.inputForm}
+              value={registerData.email}
+              onChange={(event) => handleChange(event, "email")}
+              onClick={() => handleLabelClick("email")}
+              onBlur={() => handleBlur("email")}
+            />
           </div>
         </section>
         <section className={styles.formulary}>
           <h5>Nombre de Usuario</h5>
           <div className={styles.inputContainer}>
-            <label htmlFor="" className={styles.labelForm}>
+            <label
+              htmlFor=""
+              className={styles.labelForm}
+              style={{ display: labelVisibility.nameUser ? "block" : "none" }}
+            >
               <img
                 src="src/assets/user-logo.png"
                 alt=""
@@ -35,13 +102,24 @@ export const FormRegister = () => {
               />
               Nombre de usuario
             </label>
-            <input type="text" className={styles.inputForm} />
+            <input
+              type="text"
+              className={styles.inputForm}
+              value={registerData.nameUser}
+              onChange={(event) => handleChange(event, "nameUser")}
+              onClick={() => handleLabelClick("nameUser")}
+              onBlur={() => handleBlur("nameUser")}
+            />
           </div>
         </section>
         <section className={styles.formulary}>
           <h5>Contraseña</h5>
           <div className={styles.inputContainer}>
-            <label htmlFor="" className={styles.labelForm}>
+            <label
+              htmlFor=""
+              className={styles.labelForm}
+              style={{ display: labelVisibility.password ? "block" : "none" }}
+            >
               <img
                 src="src/assets/padlock-logo.png"
                 alt=""
@@ -49,18 +127,36 @@ export const FormRegister = () => {
               />{" "}
               Contraseña
             </label>
-            <input type="password" className={styles.inputForm} />
+            <input
+              type={passwordVisibility.password ? "text" : "password"}
+              className={styles.inputForm}
+              value={registerData.password}
+              onChange={(event) => handleChange(event, "password")}
+              onClick={() => handleLabelClick("password")}
+              onBlur={() => handleBlur("password")}
+            />
             <img
-              src="src/assets/eye-logo.png"
+              src={
+                passwordVisibility.password
+                  ? "src/assets/eye-open-logo.png"
+                  : "src/assets/eye-logo.png"
+              }
               alt=""
               className={styles.padlockEye}
+              onClick={() => togglePasswordVisibility("password")}
             />
           </div>
         </section>
         <section className={styles.formulary}>
           <h5>Confirmar Contraseña</h5>
           <div className={styles.inputContainer}>
-            <label htmlFor="" className={styles.labelForm}>
+            <label
+              htmlFor=""
+              className={styles.labelForm}
+              style={{
+                display: labelVisibility.confirmPassword ? "block" : "none",
+              }}
+            >
               <img
                 src="src/assets/padlock-logo.png"
                 alt=""
@@ -68,11 +164,23 @@ export const FormRegister = () => {
               />
               Confirmar contraseña
             </label>
-            <input type="password" className={styles.inputForm} />
+            <input
+              type={passwordVisibility.confirmPassword ? "text" : "password"}
+              className={styles.inputForm}
+              value={registerData.confirmPassword}
+              onChange={(event) => handleChange(event, "confirmPassword")}
+              onClick={() => handleLabelClick("confirmPassword")}
+              onBlur={() => handleBlur("confirmPassword")}
+            />
             <img
-              src="src/assets/eye-logo.png"
+              src={
+                passwordVisibility.confirmPassword
+                  ? "src/assets/eye-open-logo.png"
+                  : "src/assets/eye-logo.png"
+              }
               alt=""
               className={styles.padlockEye}
+              onClick={() => togglePasswordVisibility("confirmPassword")}
             />
           </div>
         </section>

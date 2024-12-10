@@ -47,7 +47,7 @@ export const HeroUser = () => {
       </section>
       <form className={styles.formulary}>
         <div className={styles.formHeader}>
-          <section>
+          <section className={styles.sectionForm}>
             <label
               htmlFor="establishment"
               className={styles.labelForm}
@@ -72,7 +72,7 @@ export const HeroUser = () => {
               onBlur={() => handleBlur("nameEstablishment")}
             />
           </section>
-          <section>
+          <section className={styles.sectionForm}>
             <label
               htmlFor="location"
               className={styles.labelForm}

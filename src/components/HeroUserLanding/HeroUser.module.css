@@ -31,7 +31,7 @@
   display: flex;
   justify-content: space-around;
 }
-section {
+.sectionForm {
   position: relative;
   margin-bottom: 1.5rem;
 }
@@ -62,6 +62,8 @@ section {
   outline: none;
 }
 .categoryContainer {
+  position: relative;
+  margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
 }

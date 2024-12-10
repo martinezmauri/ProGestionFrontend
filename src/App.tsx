@@ -3,9 +3,8 @@ import { ClientLanding } from "./views/ClientLanding/ClientLanding";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { UserLanding } from "./views/UserLanding/UserLanding";
 import { TurnUser } from "./components/TurnUserLanding/TurnUser";
-import { PlansClient } from "./components/PlansClientLanding/PlansClient";
-import { HeroClient } from "./components/HeroClientLanding/HeroClient";
 import { Plans } from "./views/PlansClient/Plans";
+import { About } from "./views/AboutClient/About";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +13,7 @@ function App() {
         <Route path="/" element={<UserLanding />} />
         <Route path="/search" element={<TurnUser />} />
         <Route path="/plans" element={<Plans />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   );

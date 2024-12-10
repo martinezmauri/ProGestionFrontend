@@ -2,8 +2,8 @@
   display: flex;
   justify-content: space-around;
   padding: 30px 40px;
-  background-color: #f6f5f4;
-  height: 45vw;
+
+  height: 40vw;
 }
 .card {
   display: flex;

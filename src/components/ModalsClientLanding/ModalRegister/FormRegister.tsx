@@ -3,8 +3,9 @@ import styles from "./FormRegister.module.css";
 
 interface ModalProps {
   onClose: () => void;
+  onOpenLogin: () => void;
 }
-export const FormRegister = ({ onClose }: ModalProps) => {
+export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
   const [registerData, setRegisterData] = useState({
     email: "",
     nameUser: "",
@@ -56,10 +57,15 @@ export const FormRegister = ({ onClose }: ModalProps) => {
   return (
     <main className={styles.hero}>
       <section className={styles.headerRegister}>
-        <button onClick={onClose}>Cerrar</button>
         <h1>Registrarse</h1>
         <p>Si ya tienes una cuenta creada inicia sesión</p>
-        <a href="">aqui !</a>
+        <button onClick={onOpenLogin}>aqui !</button>
+        <img
+          src="src/assets/close-logo.png"
+          alt=""
+          className={styles.buttonCloseModal}
+          onClick={onClose}
+        />
       </section>
       <form action="">
         <section className={styles.formulary}>

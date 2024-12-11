@@ -3,20 +3,10 @@ import styles from "./NavbarClient.module.css";
 import { useEffect, useRef, useState } from "react";
 import { FormLogin } from "../ModalsClientLanding/ModalLogin/FormLogin";
 import { FormRegister } from "../ModalsClientLanding/ModalRegister/FormRegister";
-
-export const NavbarClientLanding = () => {
-  const [isOpenLogin, setIsOpenLogin] = useState(false);
-  const [isOpenRegister, setIsOpenRegister] = useState(false);
-
-  const handleOpenLogin = () => setIsOpenLogin(true);
-  const handleCloseLogin = () => setIsOpenLogin(false);
-
-  const handleOpenRegister = () => {
-    setIsOpenLogin(false);
-    setIsOpenRegister(true);
-  };
-  const handleCloseRegister = () => setIsOpenRegister(false);
-
+interface props {
+  onOpenLogin: () => void;
+}
+export const NavbarClientLanding = ({ onOpenLogin }: props) => {
   return (
     <nav className={styles.hero}>
       <section className={styles.logo}>
@@ -33,17 +23,10 @@ export const NavbarClientLanding = () => {
         <Link to={"/"} className={styles.actionWhite}>
           Sacar Turno
         </Link>
-        <button className={styles.actionBlack} onClick={handleOpenLogin}>
+        <button className={styles.actionBlack} onClick={onOpenLogin}>
           Iniciar Sesión
         </button>
       </section>
-      {isOpenLogin && (
-        <FormLogin
-          onClose={handleCloseLogin}
-          onOpenRegister={handleOpenRegister}
-        />
-      )}
-      {isOpenRegister && <FormRegister onClose={handleCloseRegister} />}
     </nav>
   );
 };

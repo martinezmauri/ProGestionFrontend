@@ -44,9 +44,15 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   return (
     <main className={styles.hero}>
       <section className={styles.headerLogin}>
-        <h1>Iniciar Sesión</h1>
+        <h1>Inicia Sesión</h1>
         <p>Si no tienes una cuenta creada puedes </p>
         <button onClick={onOpenRegister}>Registrarte aqui!</button>
+        <img
+          src="src/assets/close-logo.png"
+          alt=""
+          className={styles.buttonCloseModal}
+          onClick={onClose}
+        />
       </section>
       <form action="">
         <section className={styles.formulary}>
@@ -116,7 +122,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
           <label htmlFor="remember-me"> Mantener sesión iniciada</label>
           <a href="">¿Olvidaste tu contraseña?</a>
         </section>
-        <button className={styles.buttonLogin}>Login</button>
+        <button className={styles.buttonLogin}>Iniciar Sesión</button>
       </form>
       <section className={styles.buttonsLogin}>
         <h1>O puedes iniciar con:</h1>

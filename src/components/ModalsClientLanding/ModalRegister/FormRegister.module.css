@@ -4,12 +4,12 @@
   flex-direction: column;
   background-color: rgb(0, 0, 0, 0.904);
   font-family: "Poppins", sans-serif;
-  top: 2rem;
+  top: 5rem;
   left: 32rem;
   width: 30%;
-  height: auto;
+  height: 43vw;
   border-radius: 30px;
-  padding: 15px;
+  padding: 40px 20px;
   z-index: 1000;
 }
 .headerRegister {
@@ -19,20 +19,34 @@
 }
 .headerRegister h1 {
   font-weight: 500;
-  padding-bottom: 5px;
+  padding-bottom: 25px;
 }
 .headerRegister p {
   font-weight: 200;
   font-size: 0.9em;
 }
-.headerRegister a {
+.buttonCloseModal {
+  position: absolute;
+  right: 20px;
+  width: 30px;
+}
+.headerRegister button {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  border: none;
+  background-color: #00000000;
   color: #ffffff;
   font-size: 0.9em;
   font-weight: 500;
   position: relative;
   bottom: 21px;
   left: 90px;
+  cursor: pointer;
 }
+.headerRegister button:hover {
+  text-decoration: underline;
+}
+
 h5 {
   font-size: 0.7em;
   font-weight: 200;
@@ -46,6 +60,11 @@ h5 {
   pointer-events: none;
   bottom: 19px;
 }
+.padlockEye {
+  position: absolute;
+  right: 20px;
+  width: 20px;
+}
 .inputContainer {
   position: relative;
   display: flex;
@@ -58,19 +77,16 @@ h5 {
 }
 .inputIcon {
   width: 20px;
-  height: 20px;
-  margin-right: 5px;
+  margin-right: 10px;
 }
-.padlockEye {
-  position: absolute;
-  right: 20px;
-  width: 20px;
+.formulary {
+  margin-bottom: 20px;
 }
 .inputForm {
   width: 100%;
   background-color: transparent;
   border: none;
-  padding: 10px;
+  padding: 15px;
   box-sizing: border-box;
   font-size: 16px;
   color: #ffffff;

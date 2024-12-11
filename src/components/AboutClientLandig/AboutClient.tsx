@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./About.module.css";
+import { motion } from "framer-motion";
 
 export const AboutClient = () => {
   return (
@@ -7,7 +8,12 @@ export const AboutClient = () => {
       <div className={styles.title}>
         <h1>¿Que Ofrece ProGestion?</h1>
       </div>
-      <section className={styles.heroCards}>
+      <motion.section
+        className={styles.heroCards}
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <section className={styles.sectionLeft}>
           <div className={styles.card}>
             <h1>Lorem Ipsum</h1>
@@ -85,7 +91,7 @@ export const AboutClient = () => {
             </div>
           </section>
         </section>
-      </section>
+      </motion.section>
     </main>
   );
 };

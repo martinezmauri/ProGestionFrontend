@@ -2,7 +2,6 @@ import { useState } from "react";
 import { HeroClient } from "../../components/HeroClientLanding/HeroClient";
 import { NavbarClientLanding } from "../../components/NavbarClientLanding/NavbarClient";
 import { WhatsAppButton } from "../../components/WhatsAppComponent/WhatsAppButton";
-import styles from "./ClientLanding.module.css";
 import { FormLogin } from "../../components/ModalsClientLanding/ModalLogin/FormLogin";
 import { FormRegister } from "../../components/ModalsClientLanding/ModalRegister/FormRegister";
 export const ClientLanding = () => {
@@ -21,11 +20,7 @@ export const ClientLanding = () => {
   };
   const handleCloseRegister = () => setIsOpenRegister(false);
   return (
-    <div
-      className={`${styles.landingPage} ${
-        isOpenLogin || isOpenRegister ? styles.blurBackground : ""
-      }`}
-    >
+    <div>
       <NavbarClientLanding onOpenLogin={handleOpenLogin} />
       <HeroClient />
       <WhatsAppButton />

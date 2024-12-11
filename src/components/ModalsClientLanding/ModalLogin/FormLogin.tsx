@@ -43,101 +43,104 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
 
   return (
     <main className={styles.hero}>
-      <section className={styles.headerLogin}>
-        <h1>Inicia Sesión</h1>
-        <p>Si no tienes una cuenta creada puedes </p>
-        <button onClick={onOpenRegister}>Registrarte aqui!</button>
-        <img
-          src="src/assets/close-logo.png"
-          alt=""
-          className={styles.buttonCloseModal}
-          onClick={onClose}
-        />
-      </section>
-      <form action="">
-        <section className={styles.formulary}>
-          <h5>Email</h5>
-          <div className={styles.inputContainer}>
-            <label
-              htmlFor="email"
-              className={styles.labelForm}
-              style={{ display: labelVisibility.email ? "block" : "none" }}
-            >
-              <img
-                src="src/assets/logo-email.png"
-                alt=""
-                className={styles.inputIcon}
+      <div className={styles.backgroundBlur} onClick={onClose}></div>
+      <div className={styles.modal}>
+        <section className={styles.headerLogin}>
+          <h1>Inicia Sesión</h1>
+          <p>Si no tienes una cuenta creada puedes </p>
+          <button onClick={onOpenRegister}>Registrarte aqui!</button>
+          <img
+            src="src/assets/close-logo.png"
+            alt=""
+            className={styles.buttonCloseModal}
+            onClick={onClose}
+          />
+        </section>
+        <form action="">
+          <section className={styles.formulary}>
+            <h5>Email</h5>
+            <div className={styles.inputContainer}>
+              <label
+                htmlFor="email"
+                className={styles.labelForm}
+                style={{ display: labelVisibility.email ? "block" : "none" }}
+              >
+                <img
+                  src="src/assets/logo-email.png"
+                  alt=""
+                  className={styles.inputIcon}
+                />
+                Email
+              </label>
+              <input
+                type="email"
+                value={loginData.email}
+                onChange={(event) => handleChange(event, "email")}
+                name=""
+                id=""
+                className={styles.inputForm}
+                onClick={() => handleLabelClick("email")}
+                onBlur={() => handleBlur("email")}
               />
-              Email
-            </label>
-            <input
-              type="email"
-              value={loginData.email}
-              onChange={(event) => handleChange(event, "email")}
-              name=""
-              id=""
-              className={styles.inputForm}
-              onClick={() => handleLabelClick("email")}
-              onBlur={() => handleBlur("email")}
-            />
-          </div>
-        </section>
-        <section className={styles.formulary}>
-          <h5>Contraseña</h5>
-          <div className={styles.inputContainer}>
-            <label
-              htmlFor="password"
-              className={styles.labelForm}
-              style={{ display: labelVisibility.password ? "block" : "none" }}
-            >
+            </div>
+          </section>
+          <section className={styles.formulary}>
+            <h5>Contraseña</h5>
+            <div className={styles.inputContainer}>
+              <label
+                htmlFor="password"
+                className={styles.labelForm}
+                style={{ display: labelVisibility.password ? "block" : "none" }}
+              >
+                <img
+                  src="src/assets/padlock-logo.png"
+                  alt=""
+                  className={styles.inputIcon}
+                />{" "}
+                Contraseña
+              </label>
+              <input
+                type={isPasswordVisible ? "text" : "password"}
+                className={styles.inputForm}
+                onChange={(event) => handleChange(event, "password")}
+                value={loginData.password}
+                onClick={() => handleLabelClick("password")}
+                onBlur={() => handleBlur("password")}
+              />
               <img
-                src="src/assets/padlock-logo.png"
+                src={
+                  isPasswordVisible
+                    ? "src/assets/eye-open-logo.png"
+                    : "src/assets/eye-logo.png"
+                }
                 alt=""
-                className={styles.inputIcon}
-              />{" "}
-              Contraseña
-            </label>
-            <input
-              type={isPasswordVisible ? "text" : "password"}
-              className={styles.inputForm}
-              onChange={(event) => handleChange(event, "password")}
-              value={loginData.password}
-              onClick={() => handleLabelClick("password")}
-              onBlur={() => handleBlur("password")}
-            />
-            <img
-              src={
-                isPasswordVisible
-                  ? "src/assets/eye-open-logo.png"
-                  : "src/assets/eye-logo.png"
-              }
-              alt=""
-              className={styles.padlockEye}
-              onClick={togglePasswordVisibility}
-            />
+                className={styles.padlockEye}
+                onClick={togglePasswordVisibility}
+              />
+            </div>
+          </section>
+          <section className={styles.secondaryActions}>
+            <input type="checkbox" id="remember-me" />
+            <label htmlFor="remember-me"> Mantener sesión iniciada</label>
+            <a href="">¿Olvidaste tu contraseña?</a>
+          </section>
+          <button className={styles.buttonLogin}>Iniciar Sesión</button>
+        </form>
+        <section className={styles.buttonsLogin}>
+          <h1>O puedes iniciar con:</h1>
+          <div>
+            <a href="">
+              <img src="src/assets/facebook-logo.png" alt="" />
+            </a>
+            <a href="">
+              <img src="src/assets/apple-logo.png" alt="" />
+            </a>
+            <a href="">
+              <img src="src/assets/google-logo.png" alt="" />
+            </a>
           </div>
         </section>
-        <section className={styles.secondaryActions}>
-          <input type="checkbox" id="remember-me" />
-          <label htmlFor="remember-me"> Mantener sesión iniciada</label>
-          <a href="">¿Olvidaste tu contraseña?</a>
-        </section>
-        <button className={styles.buttonLogin}>Iniciar Sesión</button>
-      </form>
-      <section className={styles.buttonsLogin}>
-        <h1>O puedes iniciar con:</h1>
-        <div>
-          <a href="">
-            <img src="src/assets/facebook-logo.png" alt="" />
-          </a>
-          <a href="">
-            <img src="src/assets/apple-logo.png" alt="" />
-          </a>
-          <a href="">
-            <img src="src/assets/google-logo.png" alt="" />
-          </a>
-        </div>
-      </section>
+      </div>
     </main>
   );
 };

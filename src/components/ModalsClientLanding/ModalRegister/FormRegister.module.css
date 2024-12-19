@@ -45,6 +45,7 @@
   font-size: 0.9em;
 }
 .buttonCloseModal {
+  cursor: pointer;
   position: absolute;
   right: 20px;
   width: 30px;

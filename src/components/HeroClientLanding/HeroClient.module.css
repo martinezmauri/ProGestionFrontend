@@ -48,5 +48,6 @@
   align-items: center;
 }
 .imageMain img {
-  width: 40rem;
+  margin-top: 3rem;
+  width: 100%;
 }

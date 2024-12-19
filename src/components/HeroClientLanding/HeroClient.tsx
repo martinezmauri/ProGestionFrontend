@@ -25,7 +25,7 @@ export const HeroClient = () => {
         </section>
         <section className={styles.imageMain}>
           <img
-            src="src/assets/ipad-phone.jpg"
+            src="src/assets/tablet-logo.png"
             alt="Vista de un iPad y un teléfono mostrando ProGestion"
           />
         </section>

@@ -6,6 +6,7 @@ import { TurnUser } from "./components/TurnUserLanding/TurnUser";
 import { Plans } from "./views/PlansClient/Plans";
 import { About } from "./views/AboutClient/About";
 import { RegistersBusiness } from "./components/RegisterBusiness/RegistersBusiness";
+import { PersonalView } from "./components/CreatePersonal/PersonalView";
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +17,7 @@ function App() {
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
         <Route path="/registerBusiness" element={<RegistersBusiness />} />
+        <Route path="/personalView" element={<PersonalView />} />
       </Routes>
     </BrowserRouter>
   );

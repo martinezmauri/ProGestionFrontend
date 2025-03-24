@@ -38,11 +38,12 @@
 }
 .headerLogin h1 {
   font-weight: 500;
+  font-size: 1.6em;
   padding-bottom: 25px;
 }
 .headerLogin p {
   font-weight: 200;
-  font-size: 0.9em;
+  font-size: 1.2em;
 }
 .buttonCloseModal {
   cursor: pointer;
@@ -54,20 +55,20 @@
   font-family: "Poppins", sans-serif;
   display: flex;
   color: #ffffff;
-  font-size: 0.9em;
+  font-size: 1.2em;
   font-weight: 500;
   border: none;
   cursor: pointer;
   background-color: #00000000;
   position: relative;
-  bottom: 21px;
-  left: 59px;
+  bottom: 28px;
+  left: 8vh;
 }
 .headerLogin button:hover {
   text-decoration: underline;
 }
 h5 {
-  font-size: 0.7em;
+  font-size: 1em;
   font-weight: 200;
 }
 .labelForm {
@@ -127,13 +128,13 @@ h5 {
   padding-bottom: 3vw;
 }
 .secondaryActions label {
-  font-size: 0.7em;
+  font-size: 1em;
   padding-left: 0.5rem;
 }
 .secondaryActions a {
   color: #ffffff;
-  font-size: 0.7em;
-  padding-left: 5rem;
+  font-size: 1em;
+  padding-left: 6rem;
 }
 .buttonLogin {
   background-color: #353535;
@@ -144,12 +145,12 @@ h5 {
   border: none;
   border-radius: 30px;
   color: #ffffff;
-  font-size: 1.2em;
-  padding: 8px;
+  font-size: 1.6em;
+  padding: 4px;
   cursor: pointer;
 }
 .buttonsLogin h1 {
-  font-size: 0.9em;
+  font-size: 1em;
   font-weight: 200;
   text-align: center;
 }

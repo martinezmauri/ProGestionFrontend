@@ -2,13 +2,12 @@
   display: flex;
   flex-direction: column;
   width: 40%;
-
   font-family: "Poppins", sans-serif;
   padding: 2rem 4rem;
 }
 .title {
   color: #f96e2a;
-  font-size: 16px;
+  font-size: 2em;
 }
 .subtitle {
   color: #295366;
@@ -17,30 +16,22 @@
 }
 .description {
   color: #295366;
-  font-size: 1em;
+  font-size: 1.5em;
   padding: 0 0 1.5rem 0;
   font-weight: 400;
 }
 .buttonContainer {
   display: flex;
-  gap: 4rem;
-  justify-content: center;
+  margin-top: 5vh;
+  justify-content: space-evenly;
 }
-.buttonWhite {
+.buttons {
   background-color: #f96e2a;
-  padding: 0.8rem;
+  padding: 1rem;
   border-radius: 40px;
   color: #fbf8ef;
-  font-weight: 700;
-  font-size: 14px;
-}
-.buttonContanct {
-  padding: 0.8rem;
-  border-radius: 40px;
-  color: #fbf8ef;
-  font-weight: 700;
-  font-size: 14px;
-  background-color: #f96e2a;
+  font-weight: 500;
+  font-size: 1.2em;
 }
 .heroPage {
   display: flex;

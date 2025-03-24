@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HeroClient } from "../../components/HeroClientLanding/HeroClient";
-import { NavbarClientLanding } from "../../components/NavbarClientLanding/NavbarClient";
+import { NavbarClient } from "../../components/NavbarClientLanding/NavbarClient";
 import { WhatsAppButton } from "../../components/WhatsAppComponent/WhatsAppButton";
 import { FormLogin } from "../../components/ModalsClientLanding/ModalLogin/FormLogin";
 import { FormRegister } from "../../components/ModalsClientLanding/ModalRegister/FormRegister";
@@ -21,7 +21,7 @@ export const ClientLanding = () => {
   const handleCloseRegister = () => setIsOpenRegister(false);
   return (
     <div>
-      <NavbarClientLanding onOpenLogin={handleOpenLogin} />
+      <NavbarClient onOpenLogin={handleOpenLogin} />
       <HeroClient />
       <WhatsAppButton />
       {isOpenLogin && (

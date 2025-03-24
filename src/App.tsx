@@ -5,6 +5,7 @@ import { UserLanding } from "./views/UserLanding/UserLanding";
 import { TurnUser } from "./components/TurnUserLanding/TurnUser";
 import { Plans } from "./views/PlansClient/Plans";
 import { About } from "./views/AboutClient/About";
+import { RegistersBusiness } from "./components/RegisterBusiness/RegistersBusiness";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ function App() {
         <Route path="/search" element={<TurnUser />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
+        <Route path="/registerBusiness" element={<RegistersBusiness />} />
       </Routes>
     </BrowserRouter>
   );

@@ -10,11 +10,11 @@
 }
 .description h1 {
   color: #f96e2a;
-  font-size: 40px;
+  font-size: 3em;
 }
 .description p {
   color: #295366;
-  font-size: 20px;
+  font-size: 1.4em;
   font-weight: 400;
 }
 .formulary {
@@ -41,6 +41,7 @@
   padding: 12px;
   border-radius: 20px;
   width: 260px;
+  flex: 1;
 }
 .inputForm:focus {
   outline: none;
@@ -48,15 +49,13 @@
 .inputIcon {
   width: 20px;
   height: 20px;
-  margin-right: 5px;
-  margin-left: 4px;
+  margin-left: 8px;
 }
 .categoryForm {
   background-color: #d9d9d9;
   border: none;
   padding: 12px;
   border-radius: 20px;
-  width: 50%;
 }
 .categoryForm:focus {
   outline: none;
@@ -86,7 +85,7 @@
 .labelForm {
   position: absolute;
   top: 50%;
-  left: 0.2rem;
+  left: 40px;
   transform: translateY(-50%);
   font-size: 0.9em;
   color: #474950;
@@ -98,7 +97,7 @@
 .labelCategory {
   position: absolute;
   top: 50%;
-  left: 10.5rem;
+  left: 45px;
   transform: translateY(-50%);
   font-size: 0.9em;
   color: #474950;
@@ -106,4 +105,11 @@
   transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
+}
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #d9d9d9;
+  border-radius: 20px;
 }

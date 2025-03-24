@@ -1,0 +1,66 @@
+.hero {
+  background-color: #474950;
+  border: none;
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+.heroUser {
+  display: flex;
+  flex-direction: column;
+}
+.listInputs {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+.listInputs label {
+  position: absolute;
+  color: black;
+}
+.listInputs input {
+  border: none;
+  width: 30vh;
+  border-radius: 12px;
+  padding: 1vh;
+}
+.listInputs li:last-child input {
+  padding: 3vh 1vh;
+}
+.sectionData {
+  display: flex;
+  gap: 20px;
+}
+.sectionContryData {
+  display: flex;
+  justify-content: center;
+}
+.sectionAddressMap {
+  border-radius: 13px;
+  color: black;
+  background-color: whitesmoke;
+  width: 62vh;
+  height: 40vh;
+}
+.hoursBusiness {
+  display: flex;
+  gap: 20px;
+}
+.hoursBusiness input {
+  width: 14vh;
+}
+.containerButtons {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  right: 20px;
+  padding-top: 3vh;
+}
+.containerButtons button {
+  font-family: "Poppins", sans-serif;
+  border-radius: 25px;
+  padding: 15px;
+  color: aliceblue;
+}

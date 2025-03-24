@@ -15,10 +15,10 @@ export const HeroClient = () => {
             tus clientes la mejor experiencia del mercado con ProGestion.
           </p>
           <nav className={styles.buttonContainer}>
-            <Link to={"/plans"} className={styles.buttonWhite}>
+            <Link to={"/plans"} className={styles.buttons}>
               Ver planes
             </Link>
-            <Link to={"/about"} className={styles.buttonContanct}>
+            <Link to={"/about"} className={styles.buttons}>
               Contáctanos
             </Link>
           </nav>

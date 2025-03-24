@@ -1,12 +1,9 @@
 import { Link } from "react-router-dom";
 import styles from "./NavbarClient.module.css";
-import { useEffect, useRef, useState } from "react";
-import { FormLogin } from "../ModalsClientLanding/ModalLogin/FormLogin";
-import { FormRegister } from "../ModalsClientLanding/ModalRegister/FormRegister";
 interface props {
   onOpenLogin: () => void;
 }
-export const NavbarClientLanding = ({ onOpenLogin }: props) => {
+export const NavbarClient = ({ onOpenLogin }: props) => {
   return (
     <nav className={styles.hero}>
       <section className={styles.logo}>

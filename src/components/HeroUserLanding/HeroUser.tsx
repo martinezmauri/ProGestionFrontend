@@ -48,80 +48,75 @@ export const HeroUser = () => {
       <form className={styles.formulary}>
         <div className={styles.formHeader}>
           <section className={styles.sectionForm}>
-            <label
-              htmlFor="establishment"
-              className={styles.labelForm}
-              style={{
-                display: labelVisibility.nameEstablishment ? "block" : "none",
-              }}
-            >
+            <div className={styles.inputWrapper}>
               <img
                 src="src/assets/search-logo.png"
                 alt=""
                 className={styles.inputIcon}
               />
-              Nombre del establecimiento
-            </label>
-            <input
-              type="text"
-              id="establishment"
-              className={styles.inputForm}
-              value={searchData.nameEstablishment}
-              onChange={(event) => handleChange(event, "nameEstablishment")}
-              onClick={() => handleLabelClick("nameEstablishment")}
-              onBlur={() => handleBlur("nameEstablishment")}
-            />
+              <input
+                type="text"
+                id="establishment"
+                className={styles.inputForm}
+                value={searchData.nameEstablishment}
+                onChange={(event) => handleChange(event, "nameEstablishment")}
+                onFocus={() => handleLabelClick("nameEstablishment")}
+                onBlur={() => handleBlur("nameEstablishment")}
+              />
+              {labelVisibility.nameEstablishment && (
+                <label htmlFor="establishment" className={styles.labelForm}>
+                  Nombre del establecimiento
+                </label>
+              )}
+            </div>
           </section>
           <section className={styles.sectionForm}>
-            <label
-              htmlFor="location"
-              className={styles.labelForm}
-              style={{
-                display: labelVisibility.location ? "block" : "none",
-              }}
-            >
+            <div className={styles.inputWrapper}>
               <img
                 src="src/assets/location-logo.png"
                 alt=""
                 className={styles.inputIcon}
               />
-              Selecciona tu localidad
-            </label>
-            <input
-              type="text"
-              id="location"
-              className={styles.inputForm}
-              value={searchData.location}
-              onChange={(event) => handleChange(event, "location")}
-              onClick={() => handleLabelClick("location")}
-              onBlur={() => handleBlur("location")}
-            />
+
+              <input
+                type="text"
+                id="location"
+                className={styles.inputForm}
+                value={searchData.location}
+                onChange={(event) => handleChange(event, "location")}
+                onFocus={() => handleLabelClick("location")}
+                onBlur={() => handleBlur("location")}
+              />
+              {labelVisibility.location && (
+                <label htmlFor="location" className={styles.labelForm}>
+                  Selecciona tu localidad
+                </label>
+              )}
+            </div>
           </section>
         </div>
         <section className={styles.categoryContainer}>
-          <label
-            htmlFor="category"
-            className={styles.labelCategory}
-            style={{
-              display: labelVisibility.category ? "block" : "none",
-            }}
-          >
+          <div className={styles.inputWrapper}>
             <img
               src="src/assets/box-logo.png"
               alt=""
               className={styles.inputIcon}
             />
-            Selecciona la categoria
-          </label>
-          <input
-            type="text"
-            id="category"
-            className={styles.categoryForm}
-            value={searchData.category}
-            onChange={(event) => handleChange(event, "category")}
-            onClick={() => handleLabelClick("category")}
-            onBlur={() => handleBlur("category")}
-          />
+            <input
+              type="text"
+              id="category"
+              className={styles.categoryForm}
+              value={searchData.category}
+              onChange={(event) => handleChange(event, "category")}
+              onFocus={() => handleLabelClick("category")}
+              onBlur={() => handleBlur("category")}
+            />
+            {labelVisibility.category && (
+              <label htmlFor="category" className={styles.labelCategory}>
+                Selecciona la categoria
+              </label>
+            )}
+          </div>
         </section>
         <div className={styles.containerButton}>
           <button className={styles.buttonSearch}>Buscar</button>

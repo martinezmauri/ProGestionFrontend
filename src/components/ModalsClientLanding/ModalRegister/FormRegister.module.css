@@ -37,12 +37,13 @@
   width: 65%;
 }
 .headerRegister h1 {
+  font-size: 1.9em;
   font-weight: 500;
   padding-bottom: 25px;
 }
 .headerRegister p {
   font-weight: 200;
-  font-size: 0.9em;
+  font-size: 1.2em;
 }
 .buttonCloseModal {
   cursor: pointer;
@@ -56,11 +57,11 @@
   border: none;
   background-color: #00000000;
   color: #ffffff;
-  font-size: 0.9em;
+  font-size: 1.2em;
   font-weight: 500;
   position: relative;
-  bottom: 21px;
-  left: 90px;
+  bottom: 28px;
+  left: 12vh;
   cursor: pointer;
 }
 .headerRegister button:hover {
@@ -68,17 +69,17 @@
 }
 
 h5 {
-  font-size: 0.7em;
-  font-weight: 200;
+  font-size: 1em;
+  font-weight: 300;
 }
 .labelForm {
   display: flex;
-  font-size: 0.8em;
+  font-size: 1em;
   align-items: center;
   position: absolute;
   left: 10px;
   pointer-events: none;
-  bottom: 19px;
+  bottom: 20px;
 }
 .padlockEye {
   position: absolute;
@@ -112,6 +113,11 @@ h5 {
   color: #ffffff;
   border-bottom: 1px solid white;
 }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 .inputForm::placeholder {
   color: #bbb;
   font-size: 16px;
@@ -129,6 +135,6 @@ h5 {
   border: none;
   border-radius: 30px;
   color: #ffffff;
-  font-size: 1.1em;
-  padding: 8px;
+  font-size: 1.4em;
+  padding: 4px;
 }

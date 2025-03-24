@@ -4,7 +4,7 @@
   align-items: center;
   width: 100%;
   font-family: "Poppins", sans-serif;
-  padding: 1.5rem 0;
+  padding: 2.5rem 0;
 }
 .title {
   color: #f96e2a;
@@ -21,29 +21,30 @@
 .navbarButtons a {
   color: #295366;
   font-weight: 600;
+  font-size: 1.2em;
 }
 .actionButtons {
   display: flex;
   position: absolute;
-  right: 20px;
-  gap: 0.5rem;
+  right: 40px;
+  gap: 2rem;
 }
 .actionWhite {
   background-color: #295366;
-  padding: 12px;
+  padding: 2vh;
   border-radius: 2rem;
   color: #fbf8ef;
   font-weight: 600;
-  font-size: 0.8em;
+  font-size: 1.1em;
 }
 .actionBlack {
   font-family: "Poppins", sans-serif;
   background-color: #c9e6f0;
-  padding: 12px;
+  padding: 2vh;
   border-radius: 2rem;
   color: #000000;
   font-weight: 600;
-  font-size: 0.8em;
+  font-size: 1.1em;
   cursor: pointer;
   border: none;
 }

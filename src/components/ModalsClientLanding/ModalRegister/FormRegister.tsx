@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./FormRegister.module.css";
+import axios from "axios";
 
 interface ModalProps {
   onClose: () => void;
@@ -9,12 +10,14 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
   const [registerData, setRegisterData] = useState({
     email: "",
     nameUser: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
   const [labelVisibility, setLabelVisibility] = useState({
     email: true,
     nameUser: true,
+    phone: true,
     password: true,
     confirmPassword: true,
   });
@@ -54,6 +57,29 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
     }));
   };
 
+  const handleOnSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v0/user/save",
+        {
+          name: registerData.nameUser,
+          password: registerData.password,
+          phoneNumber: registerData.phone,
+          email: registerData.email,
+          role: "CLIENT",
+        }
+      );
+      console.log(response);
+
+      if (response.status === 201) {
+        alert("registrado");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <main className={styles.hero}>
       <div className={styles.backgroundBlur} onClick={onClose}></div>
@@ -69,7 +95,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             onClick={onClose}
           />
         </section>
-        <form action="">
+        <form onSubmit={handleOnSubmit}>
           <section className={styles.formulary}>
             <h5>Email</h5>
             <div className={styles.inputContainer}>
@@ -90,7 +116,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 className={styles.inputForm}
                 value={registerData.email}
                 onChange={(event) => handleChange(event, "email")}
-                onClick={() => handleLabelClick("email")}
+                onFocus={() => handleLabelClick("email")}
                 onBlur={() => handleBlur("email")}
               />
             </div>
@@ -115,8 +141,33 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 className={styles.inputForm}
                 value={registerData.nameUser}
                 onChange={(event) => handleChange(event, "nameUser")}
-                onClick={() => handleLabelClick("nameUser")}
+                onFocus={() => handleLabelClick("nameUser")}
                 onBlur={() => handleBlur("nameUser")}
+              />
+            </div>
+          </section>
+          <section className={styles.formulary}>
+            <h5>Numero de telefono</h5>
+            <div className={styles.inputContainer}>
+              <label
+                htmlFor=""
+                className={styles.labelForm}
+                style={{ display: labelVisibility.phone ? "block" : "none" }}
+              >
+                <img
+                  src="src/assets/phone-call.png"
+                  alt=""
+                  className={styles.inputIcon}
+                />{" "}
+                Numero de telefono
+              </label>
+              <input
+                type="number"
+                className={styles.inputForm}
+                value={registerData.phone}
+                onChange={(event) => handleChange(event, "phone")}
+                onFocus={() => handleLabelClick("phone")}
+                onBlur={() => handleBlur("phone")}
               />
             </div>
           </section>
@@ -140,7 +191,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 className={styles.inputForm}
                 value={registerData.password}
                 onChange={(event) => handleChange(event, "password")}
-                onClick={() => handleLabelClick("password")}
+                onFocus={() => handleLabelClick("password")}
                 onBlur={() => handleBlur("password")}
               />
               <img
@@ -177,7 +228,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 className={styles.inputForm}
                 value={registerData.confirmPassword}
                 onChange={(event) => handleChange(event, "confirmPassword")}
-                onClick={() => handleLabelClick("confirmPassword")}
+                onFocus={() => handleLabelClick("confirmPassword")}
                 onBlur={() => handleBlur("confirmPassword")}
               />
               <img

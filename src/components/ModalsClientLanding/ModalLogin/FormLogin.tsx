@@ -79,7 +79,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
                 name=""
                 id=""
                 className={styles.inputForm}
-                onClick={() => handleLabelClick("email")}
+                onFocus={() => handleLabelClick("email")}
                 onBlur={() => handleBlur("email")}
               />
             </div>
@@ -104,7 +104,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
                 className={styles.inputForm}
                 onChange={(event) => handleChange(event, "password")}
                 value={loginData.password}
-                onClick={() => handleLabelClick("password")}
+                onFocus={() => handleLabelClick("password")}
                 onBlur={() => handleBlur("password")}
               />
               <img
@@ -130,13 +130,25 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
           <h1>O puedes iniciar con:</h1>
           <div>
             <a href="">
-              <img src="src/assets/facebook-logo.png" alt="" />
+              <img
+                className={styles.imgLogo}
+                src="src/assets/facebook-logo.png"
+                alt=""
+              />
             </a>
             <a href="">
-              <img src="src/assets/apple-logo.png" alt="" />
+              <img
+                className={styles.imgLogo}
+                src="src/assets/apple-logo.png"
+                alt=""
+              />
             </a>
             <a href="">
-              <img src="src/assets/google-logo.png" alt="" />
+              <img
+                className={styles.imgLogo}
+                src="src/assets/google-logo.png"
+                alt=""
+              />
             </a>
           </div>
         </section>

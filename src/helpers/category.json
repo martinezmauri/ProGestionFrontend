@@ -1,0 +1,17 @@
+[
+  { "id": 1, "name": "Peluquería" },
+  { "id": 2, "name": "Barbería" },
+  { "id": 3, "name": "Restaurante" },
+  { "id": 4, "name": "Cafetería" },
+  { "id": 5, "name": "Panadería" },
+  { "id": 6, "name": "Gimnasio" },
+  { "id": 7, "name": "Spa" },
+  { "id": 8, "name": "Tienda de Ropa" },
+  { "id": 9, "name": "Supermercado" },
+  { "id": 10, "name": "Farmacia" },
+  { "id": 11, "name": "Veterinaria" },
+  { "id": 12, "name": "Ferretería" },
+  { "id": 13, "name": "Librería" },
+  { "id": 14, "name": "Joyería" },
+  { "id": 15, "name": "Estudio Fotográfico" }
+]

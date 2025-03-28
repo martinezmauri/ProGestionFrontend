@@ -1,0 +1,56 @@
+.hero {
+  padding: 25vh;
+}
+.container {
+  background-color: #295366c5;
+  border: none;
+  border-radius: 20px;
+  font-family: "Poppins", sans-serif;
+}
+.title {
+  text-align: center;
+  font-size: 2em;
+}
+.itemList {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+.itemList img {
+  border-radius: 50%;
+  width: 5vh;
+  background-color: #d9d9d9;
+  padding: 0.5vh;
+}
+.itemList input {
+  border: none;
+  border-radius: 20px;
+}
+.itemList input::placeholder {
+  text-align: center;
+}
+.addEmployeeContainer {
+  margin: 1vh 0 0 7.5vh;
+}
+.addProfileImage {
+  border-radius: 50%;
+  width: 5vh;
+  background-color: #d9d9d9;
+  padding: 0.5vh;
+}
+.addButton {
+  background-color: #d9d9d9;
+}
+.containerButtons {
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  right: 200px;
+  padding-top: 3vh;
+}
+.containerButtons button {
+  font-family: "Poppins", sans-serif;
+  border-radius: 25px;
+  padding: 15px;
+  color: aliceblue;
+}

@@ -1,15 +1,24 @@
 .hero {
-  background-color: #474950;
+  background-color: #295366c5;
   border: none;
   display: flex;
   justify-content: space-evenly;
   border-radius: 20px;
   font-family: "Poppins", sans-serif;
 }
+.heroPather {
+  padding: 15vh;
+}
 
 .heroUser {
   display: flex;
   flex-direction: column;
+}
+.title {
+  border-radius: 20px;
+  text-align: center;
+  background-color: #ff8245;
+  margin: 20px;
 }
 .listInputs {
   display: flex;
@@ -19,15 +28,17 @@
 .listInputs label {
   position: absolute;
   color: black;
+  margin: 10px;
 }
 .listInputs input {
   border: none;
   width: 30vh;
-  border-radius: 12px;
+  border-radius: 20px;
   padding: 1vh;
 }
 .listInputs li:last-child input {
-  padding: 3vh 1vh;
+  width: 30vh;
+  height: 20vh;
 }
 .sectionData {
   display: flex;
@@ -46,7 +57,7 @@
 }
 .hoursBusiness {
   display: flex;
-  gap: 20px;
+  gap: 7px;
 }
 .hoursBusiness input {
   width: 14vh;
@@ -63,4 +74,8 @@
   border-radius: 25px;
   padding: 15px;
   color: aliceblue;
+}
+.colonSymbol {
+  font-size: 2em;
+  font-weight: 500;
 }

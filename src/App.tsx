@@ -7,6 +7,8 @@ import { Plans } from "./views/PlansClient/Plans";
 import { About } from "./views/AboutClient/About";
 import { RegistersBusiness } from "./components/RegisterBusiness/RegistersBusiness";
 import { PersonalView } from "./components/CreatePersonal/PersonalView";
+import { Dashboard } from "./components/Dashboard/Dashboard";
+import { HomeClient } from "./components/HomeClient/HomeClient";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +20,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/registerBusiness" element={<RegistersBusiness />} />
         <Route path="/personalView" element={<PersonalView />} />
+        <Route path="/dashboard" element={<Dashboard extend={true} />} />
+        <Route path="/homeClient" element={<HomeClient />} />
       </Routes>
     </BrowserRouter>
   );

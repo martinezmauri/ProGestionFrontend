@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "employee1",
+    "profile_picture": "src/assets/user-logo.png",
+    "WorkSchedule": "none",
+    "service": "Corte de pelo",
+    "rol": "Employee"
+  },
+  {
+    "id": "2",
+    "name": "employee2",
+    "profile_picture": "src/assets/user-logo.png",
+    "WorkSchedule": "none",
+    "service": "Corte de pelo",
+    "rol": "Employee"
+  },
+  {
+    "id": "3",
+    "name": "employee3",
+    "profile_picture": "src/assets/user-logo.png",
+    "WorkSchedule": "none",
+    "service": "Corte de pelo",
+    "rol": "Employee"
+  }
+]

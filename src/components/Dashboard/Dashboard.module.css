@@ -1,0 +1,48 @@
+img {
+  width: 30px;
+}
+.hero {
+  color: black;
+  border: 1px solid rgb(194, 193, 193);
+  font-family: "Poppins", sans-serif;
+  padding-left: 20px;
+  height: 100%;
+  width: 80px;
+  transition: width 0.3s ease;
+}
+.extended {
+  width: 250px;
+}
+.collapsed {
+  width: 80px;
+}
+
+.extended .buttonsNav li a {
+  opacity: 1;
+}
+
+.collapsed .buttonsNav li a {
+  opacity: 0;
+  display: none;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 40vh;
+}
+
+.title {
+  color: #f96e2a;
+  padding: 20px 0 40px 0;
+  font-size: 2em;
+}
+.buttonsNav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.buttonsNav li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

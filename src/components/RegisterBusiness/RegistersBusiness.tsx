@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./RegisterBusiness.module.css";
 import { IRegisterBusiness } from "../../interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "../../hooks/useRegistrationBusiness";
+import categories from "../../helpers/category.json"; /*  uso temporal para el desarrollo del dropdown */
 export const RegistersBusiness = () => {
   /*ORDER DE CREACION: user, category, address, business */
 
@@ -63,10 +64,10 @@ export const RegistersBusiness = () => {
   };
 
   return (
-    <div>
+    <div className={styles.heroPather}>
       <form className={styles.hero}>
         <section className={styles.heroUser}>
-          <h1>Datos principales</h1>
+          <h1 className={styles.title}>Datos principales</h1>
           <ul className={styles.listInputs}>
             <li>
               <label htmlFor="name">Nombre</label>
@@ -110,6 +111,7 @@ export const RegistersBusiness = () => {
                     }
                   />
                 </div>
+                <span className={styles.colonSymbol}>:</span>
                 <div>
                   <label htmlFor="close">Cierra</label>
                   <input
@@ -122,6 +124,10 @@ export const RegistersBusiness = () => {
                   />
                 </div>
               </div>
+            </li>
+            <li>
+              <label htmlFor="">Dias de apertura</label>
+              <input type="text" />
             </li>
             <li>
               <label htmlFor="description">Descripcion</label>
@@ -137,7 +143,7 @@ export const RegistersBusiness = () => {
           </ul>
         </section>
         <section className={styles.listInputs}>
-          <h1>Direccion/Ubicacion</h1>
+          <h1 className={styles.title}>Ubicación del negocio</h1>
           <div className={styles.sectionData}>
             <div>
               <label htmlFor="streetName">Nombre de calle</label>

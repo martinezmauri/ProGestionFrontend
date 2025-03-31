@@ -28,14 +28,22 @@ export const SearchDetail = () => {
     setBusiness(data); /* props */
   }, []);
   return (
-    <div>
+    <div className={styles.hero}>
       {business.map((item, index) => (
         <div key={index} className={styles.card}>
-          <img src={item.logo} alt="Imagen del negocio" />
-          <div>
-            <h1>{item.name}</h1>
-            <div>
-              <img src="src/assets/search-logo.png" alt="logo de busqueda" />
+          <img
+            src={item.logo}
+            alt="Imagen del negocio"
+            className={styles.imgBusiness}
+          />
+          <div className={styles.containerInfo}>
+            <h1 className={styles.title}>{item.name}</h1>
+            <div className={styles.address}>
+              <img
+                src="src/assets/location-logo.png"
+                alt="logo de busqueda"
+                className={styles.logo}
+              />
               <p>{item.address.street}</p>
             </div>
           </div>

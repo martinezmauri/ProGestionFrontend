@@ -4,7 +4,7 @@ import { IRegisterBusiness } from "../../interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "../../hooks/useRegistrationBusiness";
 import categories from "../../helpers/category.json"; /*  uso temporal para el desarrollo del dropdown */
 export const RegistersBusiness = () => {
-  /*ORDER DE CREACION: user, category, address, business */
+  /*ORDER DE CREACION: user, category, address, business, service, employee */
 
   const [registerData, setRegisterData] = useState<IRegisterBusiness>({
     business: {

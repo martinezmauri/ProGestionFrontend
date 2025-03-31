@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./HeroUser.module.css";
+import category from "../../helpers/category.json";
+import { useNavigate } from "react-router-dom";
+
+interface ICategory {
+  id: number;
+  name: string;
+}
 
 export const HeroUser = () => {
-  const [searchData, setSearchData] = useState({
+  const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",
     category: "",
@@ -12,6 +19,13 @@ export const HeroUser = () => {
     location: true,
     category: true,
   });
+  const [categories, setCategories] = useState<ICategory[]>([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setCategories(category);
+  }, []);
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({
@@ -23,18 +37,23 @@ export const HeroUser = () => {
   const handleBlur = (field: string) => {
     setLabelVisibility((prevState) => ({
       ...prevState,
-      [field]: searchData[field as keyof typeof searchData] === "",
+      [field]: searchBusiness[field as keyof typeof searchBusiness] === "",
     }));
   };
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
   ) => {
-    setSearchData((prevState) => ({
+    setSearchBusiness((prevState) => ({
       ...prevState,
       [field]: event.target.value,
     }));
+  };
+
+  const handleOnSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    navigate("/search", { state: { searchBusiness } });
   };
   return (
     <main className={styles.hero}>
@@ -58,7 +77,7 @@ export const HeroUser = () => {
                 type="text"
                 id="establishment"
                 className={styles.inputForm}
-                value={searchData.nameEstablishment}
+                value={searchBusiness.nameEstablishment}
                 onChange={(event) => handleChange(event, "nameEstablishment")}
                 onFocus={() => handleLabelClick("nameEstablishment")}
                 onBlur={() => handleBlur("nameEstablishment")}
@@ -82,7 +101,7 @@ export const HeroUser = () => {
                 type="text"
                 id="location"
                 className={styles.inputForm}
-                value={searchData.location}
+                value={searchBusiness.location}
                 onChange={(event) => handleChange(event, "location")}
                 onFocus={() => handleLabelClick("location")}
                 onBlur={() => handleBlur("location")}
@@ -97,29 +116,25 @@ export const HeroUser = () => {
         </div>
         <section className={styles.categoryContainer}>
           <div className={styles.inputWrapper}>
-            <img
-              src="src/assets/box-logo.png"
-              alt=""
-              className={styles.inputIcon}
-            />
-            <input
-              type="text"
+            <select
               id="category"
               className={styles.categoryForm}
-              value={searchData.category}
+              value={searchBusiness.category}
               onChange={(event) => handleChange(event, "category")}
-              onFocus={() => handleLabelClick("category")}
-              onBlur={() => handleBlur("category")}
-            />
-            {labelVisibility.category && (
-              <label htmlFor="category" className={styles.labelCategory}>
-                Selecciona la categoria
-              </label>
-            )}
+            >
+              <option value="">Seleccione una categoría</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
         </section>
         <div className={styles.containerButton}>
-          <button className={styles.buttonSearch}>Buscar</button>
+          <button className={styles.buttonSearch} onClick={handleOnSubmit}>
+            Buscar
+          </button>
         </div>
       </form>
     </main>

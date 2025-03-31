@@ -36,7 +36,12 @@ export const NavbarUser = () => {
           onOpenRegister={handleOpenRegister}
         />
       )}
-      {isOpenRegister && <FormRegister onClose={handleCloseRegister} />}
+      {isOpenRegister && (
+        <FormRegister
+          onClose={handleCloseRegister}
+          onOpenLogin={handleOpenLogin}
+        />
+      )}
     </nav>
   );
 };

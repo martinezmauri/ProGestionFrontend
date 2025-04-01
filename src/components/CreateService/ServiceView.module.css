@@ -1,0 +1,108 @@
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #C9E6F0, #FBF8EF);
+  }
+  
+  .container {
+    background-color: #78B3CE;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 900px;
+  }
+  
+  .title {
+    text-align: center;
+    color: #FBF8EF;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .itemList {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #C9E6F0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .itemList input {
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #FBF8EF;
+    color: #295366;
+    font-size: 14px;
+    width: 18%;
+  }
+  
+  .itemList button {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .itemList button:nth-child(5) {
+    background-color: #F96E2A; /* Edit button */
+  }
+  
+  .itemList button:nth-child(6) {
+    background-color: #295366; /* Delete button */
+  }
+  
+  .addServiceContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #C9E6F0;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .addButton {
+    background-color: #F96E2A;
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .containerButtons {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 900px;
+    margin-top: 20px;
+  }
+  
+  .containerButtons button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    border: none;
+  }
+  
+  .containerButtons button:nth-child(1) {
+    background-color: #295366; /* Volver */
+  }
+  
+  .containerButtons button:nth-child(2) {
+    background-color: #F96E2A; /* Crear y aceptar */
+  }
+  

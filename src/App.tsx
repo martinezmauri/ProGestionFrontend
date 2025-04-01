@@ -9,6 +9,7 @@ import { PersonalView } from "./components/CreatePersonal/PersonalView";
 import { Dashboard } from "./components/Dashboard/Dashboard";
 import { HomeClient } from "./components/HomeClient/HomeClient";
 import { BusinessSearch } from "./components/BusinessSearch/BusinessSearch";
+import { ServiceView } from "./components/CreateService/ServiceView";
 function App() {
   return (
     <BrowserRouter>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard extend={true} />} />
         <Route path="/homeClient" element={<HomeClient />} />
         <Route path="/search" element={<BusinessSearch />} />
+        <Route path="/services" element={<ServiceView />} />
       </Routes>
     </BrowserRouter>
   );

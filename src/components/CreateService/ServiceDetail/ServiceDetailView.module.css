@@ -23,7 +23,7 @@
   gap: 10px;
 }
 
-input,
+input,/* Agregar clase asi no sobreescribe otros inputs */
 textarea {
   width: 100%;
   padding: 8px;

@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import styles from "./NavbarClient.module.css";
+
 interface props {
   onOpenLogin: () => void;
 }
+
 export const NavbarClient = ({ onOpenLogin }: props) => {
   return (
     <nav className={styles.hero}>

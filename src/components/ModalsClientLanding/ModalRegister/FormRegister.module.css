@@ -25,25 +25,26 @@
   z-index: 2;
   background-color: rgba(0, 0, 0, 0.904);
   border-radius: 30px;
-  padding: 40px 20px;
+  padding: 20px 20px;
   width: 30%;
-  height: 43vw;
+  max-width: 500px;
+  min-width: 300px;
+  max-height: 550px;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
 .headerRegister {
   display: flex;
   flex-direction: column;
-  width: 65%;
 }
 .headerRegister h1 {
-  font-size: 1.9em;
+  font-size: 1.4em;
   font-weight: 500;
-  padding-bottom: 25px;
 }
 .headerRegister p {
   font-weight: 200;
-  font-size: 1.2em;
+  font-size: 0.9em;
 }
 .buttonCloseModal {
   cursor: pointer;
@@ -55,26 +56,29 @@
   font-family: "Poppins", sans-serif;
   display: flex;
   border: none;
-  background-color: #00000000;
+  background-color: transparent;
   color: #ffffff;
-  font-size: 1.2em;
+  font-size: 0.9em;
   font-weight: 500;
-  position: relative;
-  bottom: 28px;
-  left: 12vh;
+  position: absolute;
+  top: 75px;
+  width: 60px;
+
   cursor: pointer;
 }
 .headerRegister button:hover {
   text-decoration: underline;
 }
-
 h5 {
   font-size: 1em;
   font-weight: 300;
 }
+.heroFormulary {
+  margin-top: 25px;
+}
 .labelForm {
   display: flex;
-  font-size: 1em;
+  font-size: 0.8em;
   align-items: center;
   position: absolute;
   left: 10px;
@@ -100,14 +104,11 @@ h5 {
   width: 20px;
   margin-right: 10px;
 }
-.formulary {
-  margin-bottom: 20px;
-}
 .inputForm {
   width: 100%;
   background-color: transparent;
   border: none;
-  padding: 15px;
+
   box-sizing: border-box;
   font-size: 16px;
   color: #ffffff;
@@ -135,6 +136,5 @@ input[type="number"]::-webkit-outer-spin-button {
   border: none;
   border-radius: 30px;
   color: #ffffff;
-  font-size: 1.4em;
-  padding: 4px;
+  font-size: 1.5em;
 }

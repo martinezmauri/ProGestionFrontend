@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styles from "./FormRegister.module.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface ModalProps {
   onClose: () => void;
   onOpenLogin: () => void;
 }
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
+  const navigate = useNavigate();
   const [registerData, setRegisterData] = useState({
     email: "",
     nameUser: "",
@@ -70,10 +72,9 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
           role: "CLIENT",
         }
       );
-      console.log(response);
 
       if (response.status === 201) {
-        alert("registrado");
+        navigate("/registerBusiness");
       }
     } catch (error) {
       console.error(error);
@@ -95,14 +96,14 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             onClick={onClose}
           />
         </section>
-        <form onSubmit={handleOnSubmit}>
+        <form onSubmit={handleOnSubmit} className={styles.heroFormulary}>
           <section className={styles.formulary}>
             <h5>Email</h5>
             <div className={styles.inputContainer}>
               <label
                 htmlFor=""
                 className={styles.labelForm}
-                style={{ display: labelVisibility.email ? "block" : "none" }}
+                style={{ display: labelVisibility.email ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/logo-email.png"
@@ -127,7 +128,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
               <label
                 htmlFor=""
                 className={styles.labelForm}
-                style={{ display: labelVisibility.nameUser ? "block" : "none" }}
+                style={{ display: labelVisibility.nameUser ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/user-logo.png"
@@ -152,7 +153,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
               <label
                 htmlFor=""
                 className={styles.labelForm}
-                style={{ display: labelVisibility.phone ? "block" : "none" }}
+                style={{ display: labelVisibility.phone ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/phone-call.png"
@@ -177,7 +178,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
               <label
                 htmlFor=""
                 className={styles.labelForm}
-                style={{ display: labelVisibility.password ? "block" : "none" }}
+                style={{ display: labelVisibility.password ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/padlock-logo.png"
@@ -213,7 +214,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 htmlFor=""
                 className={styles.labelForm}
                 style={{
-                  display: labelVisibility.confirmPassword ? "block" : "none",
+                  display: labelVisibility.confirmPassword ? "flex" : "none",
                 }}
               >
                 <img

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./HeroUser.module.css";
 import category from "../../helpers/category.json";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface ICategory {
   id: number;
@@ -20,6 +21,7 @@ export const HeroUser = () => {
     category: true,
   });
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [resultSearch, setResultSearch] = useState();
 
   const navigate = useNavigate();
 
@@ -45,16 +47,33 @@ export const HeroUser = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
   ) => {
+    console.log(event.target.value);
+
     setSearchBusiness((prevState) => ({
       ...prevState,
       [field]: event.target.value,
     }));
   };
 
-  const handleOnSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    navigate("/search", { state: { searchBusiness } });
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v0/business/search?name=&${searchBusiness.nameEstablishment}&category=${searchBusiness.category}&city=${searchBusiness.location}`
+      );
+      if (response.status !== 200) {
+        throw new Error("Error en la busqueda.");
+      }
+
+      setResultSearch(response.data);
+
+      navigate("/search", { state: { searchBusiness, resultSearch } });
+    } catch (error) {
+      console.error("Error al realizar la busqueda.", error);
+    }
   };
+
   return (
     <main className={styles.hero}>
       <section className={styles.description}>
@@ -124,7 +143,7 @@ export const HeroUser = () => {
             >
               <option value="">Seleccione una categoría</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <option key={cat.id} value={cat.name}>
                   {cat.name}
                 </option>
               ))}

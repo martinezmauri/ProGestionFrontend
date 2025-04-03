@@ -63,7 +63,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
               <label
                 htmlFor="email"
                 className={styles.labelForm}
-                style={{ display: labelVisibility.email ? "block" : "none" }}
+                style={{ display: labelVisibility.email ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/logo-email.png"
@@ -90,7 +90,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
               <label
                 htmlFor="password"
                 className={styles.labelForm}
-                style={{ display: labelVisibility.password ? "block" : "none" }}
+                style={{ display: labelVisibility.password ? "flex" : "none" }}
               >
                 <img
                   src="src/assets/padlock-logo.png"
@@ -120,9 +120,14 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
             </div>
           </section>
           <section className={styles.secondaryActions}>
-            <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me"> Mantener sesión iniciada</label>
-            <a href="">¿Olvidaste tu contraseña?</a>
+            <div>
+              <input type="checkbox" id="remember-me" />
+              <label htmlFor="remember-me"> Mantener sesión iniciada</label>
+            </div>
+
+            <div>
+              <a href="">¿Olvidaste tu contraseña?</a>
+            </div>
           </section>
           <button className={styles.buttonLogin}>Iniciar Sesión</button>
         </form>

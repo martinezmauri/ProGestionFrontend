@@ -17,10 +17,21 @@ export const useRegistrationBusiness = () => {
       if (addressResponse.status !== 201) {
         throw new Error("Error al registrar la direccion");
       }
+      console.log({
+        ...data.business,
+        user: { id: 1 },
+        category: { id: 1 },
+        address: { id: 1 },
+      });
 
       const businessResponse = await axios.post(
         "http://localhost:8080/api/v0/business/save",
-        data.business
+        {
+          ...data.business,
+          user: { id: 1 },
+          category: { id: 1 },
+          address: { id: 1 },
+        }
       );
       if (businessResponse.status !== 201) {
         throw new Error("Error al registrar el negocio");

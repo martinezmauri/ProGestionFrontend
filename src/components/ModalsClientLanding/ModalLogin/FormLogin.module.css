@@ -25,9 +25,10 @@
   z-index: 2;
   background-color: rgba(0, 0, 0, 0.904);
   border-radius: 30px;
-  padding: 40px 20px;
-  width: 30%;
-  height: 43vw;
+  padding: 20px 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 550px;
   display: flex;
   flex-direction: column;
 }
@@ -38,12 +39,11 @@
 }
 .headerLogin h1 {
   font-weight: 500;
-  font-size: 1.6em;
-  padding-bottom: 25px;
+  font-size: 1.4em;
 }
 .headerLogin p {
   font-weight: 200;
-  font-size: 1.2em;
+  font-size: 0.9em;
 }
 .buttonCloseModal {
   cursor: pointer;
@@ -53,23 +53,17 @@
 }
 .headerLogin button {
   font-family: "Poppins", sans-serif;
-  display: flex;
+  display: block;
+  width: 123px;
   color: #ffffff;
-  font-size: 1.2em;
+  font-size: 0.9em;
   font-weight: 500;
   border: none;
   cursor: pointer;
-  background-color: #00000000;
-  position: relative;
-  bottom: 28px;
-  left: 8vh;
+  background-color: transparent;
 }
 .headerLogin button:hover {
   text-decoration: underline;
-}
-h5 {
-  font-size: 1em;
-  font-weight: 200;
 }
 .labelForm {
   display: flex;
@@ -120,12 +114,14 @@ h5 {
   width: 35px;
 }
 .formulary {
-  margin-bottom: 20px;
+  margin: 10px 0;
 }
 .secondaryActions {
   display: flex;
-  align-items: center;
-  padding-bottom: 3vw;
+  flex-direction: column;
+}
+.secondaryActions input {
+  width: 15px;
 }
 .secondaryActions label {
   font-size: 1em;
@@ -134,7 +130,7 @@ h5 {
 .secondaryActions a {
   color: #ffffff;
   font-size: 1em;
-  padding-left: 6rem;
+  padding-left: 15rem;
 }
 .buttonLogin {
   background-color: #353535;
@@ -145,8 +141,7 @@ h5 {
   border: none;
   border-radius: 30px;
   color: #ffffff;
-  font-size: 1.6em;
-  padding: 4px;
+  font-size: 1.5em;
   cursor: pointer;
 }
 .buttonsLogin h1 {

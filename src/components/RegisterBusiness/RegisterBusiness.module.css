@@ -1,81 +1,96 @@
+.logo {
+  color: #ff8245;
+  font-family: "Poppins", sans-serif;
+  padding: 0 20px;
+}
 .hero {
-  background-color: #295366c5;
-  border: none;
   display: flex;
-  justify-content: space-evenly;
-  border-radius: 20px;
+  justify-content: center;
+  gap: 20%;
   font-family: "Poppins", sans-serif;
 }
-.heroPather {
-  padding: 15vh;
-}
-
 .heroUser {
-  display: flex;
-  flex-direction: column;
-}
-.title {
-  border-radius: 20px;
-  text-align: center;
-  background-color: #ff8245;
-  margin: 20px;
-}
-.listInputs {
+  margin-top: 40px;
   display: flex;
   gap: 20px;
   flex-direction: column;
 }
-.listInputs label {
+.title {
+  width: 60vh;
+  text-align: center;
+  background-color: #ff8245;
+}
+.containerInputs {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+.listLabel {
   position: absolute;
   color: black;
   margin: 10px;
 }
-.listInputs input {
+.listInput {
   border: none;
-  width: 30vh;
-  border-radius: 20px;
+  width: 100%;
   padding: 1vh;
 }
-.listInputs li:last-child input {
-  width: 30vh;
+.containerInputs li:last-child input {
+  height: 20vh;
+}
+.hoursBusiness {
+  display: flex;
+  gap: 7px;
+}
+.colonSymbol {
+  font-size: 2em;
+  font-weight: 500;
+  color: black;
+}
+/* derecho */
+.locationSection {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+.locationSection label {
+  position: absolute;
+  color: black;
+  margin: 10px;
+}
+.locationSection input {
+  border: none;
+  width: 100%;
+  padding: 1vh;
+}
+.locationSection li:last-child input {
   height: 20vh;
 }
 .sectionData {
   display: flex;
   gap: 20px;
+  width: 100%;
 }
 .sectionContryData {
   display: flex;
   justify-content: center;
 }
 .sectionAddressMap {
-  border-radius: 13px;
   color: black;
   background-color: whitesmoke;
-  width: 62vh;
-  height: 40vh;
+  height: 30vh;
 }
-.hoursBusiness {
-  display: flex;
-  gap: 7px;
-}
-.hoursBusiness input {
-  width: 14vh;
-}
+
 .containerButtons {
   display: flex;
   gap: 20px;
   position: absolute;
-  right: 20px;
-  padding-top: 3vh;
+  right: 200px;
 }
 .containerButtons button {
   font-family: "Poppins", sans-serif;
   border-radius: 25px;
   padding: 15px;
   color: aliceblue;
-}
-.colonSymbol {
-  font-size: 2em;
-  font-weight: 500;
 }

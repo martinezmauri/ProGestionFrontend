@@ -7,12 +7,17 @@ import { FormRegister } from "../ModalsClientLanding/ModalRegister/FormRegister"
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
+  console.log(isOpenLogin);
+  console.log(isOpenRegister);
 
-  const handleOpenLogin = () => setIsOpenLogin(true);
+  const handleOpenLogin = () => {
+    setIsOpenRegister(false);
+    setIsOpenLogin(true);
+  };
   const handleCloseLogin = () => setIsOpenLogin(false);
 
   const handleOpenRegister = () => {
-    setIsOpenLogin(false); // Cierra el modal de Login si está abierto
+    setIsOpenLogin(false);
     setIsOpenRegister(true);
   };
   const handleCloseRegister = () => setIsOpenRegister(false);

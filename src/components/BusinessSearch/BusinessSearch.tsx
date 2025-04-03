@@ -13,6 +13,8 @@ export const BusinessSearch = () => {
     location: "",
     category: "",
   };
+  const result = location.state?.resultSearch;
+  console.log(result);
 
   const [searchBusiness, setSearchBusiness] = useState(stateSearchBusiness);
   const [labelVisibility, setLabelVisibility] = useState({
@@ -20,6 +22,7 @@ export const BusinessSearch = () => {
     location: !stateSearchBusiness.location,
     category: !stateSearchBusiness.category,
   });
+  const [resultSearch, setResultSearch] = useState(result);
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({

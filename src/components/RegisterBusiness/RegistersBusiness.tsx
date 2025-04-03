@@ -3,8 +3,14 @@ import styles from "./RegisterBusiness.module.css";
 import { IRegisterBusiness } from "../../interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "../../hooks/useRegistrationBusiness";
 import categories from "../../helpers/category.json"; /*  uso temporal para el desarrollo del dropdown */
+import { DropdownCheckbox } from "./DropDownDays/DropdownCheckbox";
+import { WeekDays } from "../../enum/WeekDays";
+import { useNavigate } from "react-router-dom";
+
 export const RegistersBusiness = () => {
-  /*ORDER DE CREACION: user, category, address, business, service, employee */
+  /*ORDER DE CREACION: user, category(insomnia), address, business, service, employee */
+
+  const navigate = useNavigate();
 
   const [registerData, setRegisterData] = useState<IRegisterBusiness>({
     business: {
@@ -26,6 +32,7 @@ export const RegistersBusiness = () => {
       name: "",
     },
   });
+
   const { registerBusiness, loading, error, success } =
     useRegistrationBusiness();
 
@@ -42,6 +49,7 @@ export const RegistersBusiness = () => {
       },
     }));
   };
+
   const handleOpeningHoursChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     field: "open" | "close"
@@ -61,17 +69,34 @@ export const RegistersBusiness = () => {
   const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     registerBusiness(registerData);
+    if (success) {
+      navigate("/personalView");
+    }
+  };
+
+  const handleSelectedDaysChange = (days: WeekDays[]) => {
+    setRegisterData((prevState) => ({
+      ...prevState,
+      business: {
+        ...prevState.business,
+        work_days: days,
+      },
+    }));
   };
 
   return (
     <div className={styles.heroPather}>
+      <h1 className={styles.logo}>ProGestion</h1>
       <form className={styles.hero}>
         <section className={styles.heroUser}>
           <h1 className={styles.title}>Datos principales</h1>
-          <ul className={styles.listInputs}>
+          <ul className={styles.containerInputs}>
             <li>
-              <label htmlFor="name">Nombre</label>
+              <label htmlFor="name" className={styles.listLabel}>
+                Nombre
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="name"
                 value={registerData.business.name}
@@ -79,8 +104,11 @@ export const RegistersBusiness = () => {
               />
             </li>
             <li>
-              <label htmlFor="phone">Numero telefonico de empresa</label>
+              <label className={styles.listLabel} htmlFor="phone">
+                Numero telefonico de empresa
+              </label>
               <input
+                className={styles.listInput}
                 type="number"
                 id="phone"
                 value={registerData.business.phone_number}
@@ -90,8 +118,11 @@ export const RegistersBusiness = () => {
               />
             </li>
             <li>
-              <label htmlFor="category">Categoria</label>
+              <label className={styles.listLabel} htmlFor="category">
+                Categoria
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="category"
                 value={registerData.category.name}
@@ -101,8 +132,11 @@ export const RegistersBusiness = () => {
             <li>
               <div className={styles.hoursBusiness}>
                 <div>
-                  <label htmlFor="open">Abre</label>
+                  <label className={styles.listLabel} htmlFor="open">
+                    Abre
+                  </label>
                   <input
+                    className={styles.listInput}
                     type="number"
                     id="open"
                     value={registerData.business.opening_hours.open}
@@ -113,8 +147,11 @@ export const RegistersBusiness = () => {
                 </div>
                 <span className={styles.colonSymbol}>:</span>
                 <div>
-                  <label htmlFor="close">Cierra</label>
+                  <label className={styles.listLabel} htmlFor="close">
+                    Cierra
+                  </label>
                   <input
+                    className={styles.listInput}
                     type="number"
                     id="close"
                     value={registerData.business.opening_hours.close}
@@ -126,12 +163,14 @@ export const RegistersBusiness = () => {
               </div>
             </li>
             <li>
-              <label htmlFor="">Dias de apertura</label>
-              <input type="text" />
+              <DropdownCheckbox onDaysChange={handleSelectedDaysChange} />
             </li>
             <li>
-              <label htmlFor="description">Descripcion</label>
+              <label className={styles.listLabel} htmlFor="description">
+                Descripcion
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="description"
                 value={registerData.business.description}
@@ -142,12 +181,15 @@ export const RegistersBusiness = () => {
             </li>
           </ul>
         </section>
-        <section className={styles.listInputs}>
+        <section className={styles.locationSection}>
           <h1 className={styles.title}>Ubicación del negocio</h1>
           <div className={styles.sectionData}>
             <div>
-              <label htmlFor="streetName">Nombre de calle</label>
+              <label className={styles.listLabel} htmlFor="streetName">
+                Nombre de calle
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="streetName"
                 value={registerData.address.street}
@@ -155,8 +197,11 @@ export const RegistersBusiness = () => {
               />
             </div>
             <div>
-              <label htmlFor="streetHeight">Altura</label>
+              <label className={styles.listLabel} htmlFor="streetHeight">
+                Altura
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="streetHeight"
                 value={registerData.address.street_number}
@@ -168,8 +213,11 @@ export const RegistersBusiness = () => {
           </div>
           <div className={styles.sectionData}>
             <div>
-              <label htmlFor="city">Ciudad</label>
+              <label className={styles.listLabel} htmlFor="city">
+                Ciudad
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="city"
                 value={registerData.address.city}
@@ -177,8 +225,11 @@ export const RegistersBusiness = () => {
               />
             </div>
             <div>
-              <label htmlFor="province">Provincia</label>
+              <label className={styles.listLabel} htmlFor="province">
+                Provincia
+              </label>
               <input
+                className={styles.listInput}
                 type="text"
                 id="province"
                 value={registerData.address.province}
@@ -187,8 +238,11 @@ export const RegistersBusiness = () => {
             </div>
           </div>
           <section className={styles.sectionContryData}>
-            <label htmlFor="country">Pais</label>
+            <label className={styles.listLabel} htmlFor="country">
+              Pais
+            </label>
             <input
+              className={styles.listInput}
               type="text"
               id="country"
               value={registerData.address.country}
@@ -204,7 +258,6 @@ export const RegistersBusiness = () => {
           Continuar
         </button>
       </div>
-      {success && <p>Creado Correctamente</p>}
     </div>
   );
 };

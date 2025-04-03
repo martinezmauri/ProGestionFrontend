@@ -10,6 +10,7 @@ import { Dashboard } from "./components/Dashboard/Dashboard";
 import { HomeClient } from "./components/HomeClient/HomeClient";
 import { BusinessSearch } from "./components/BusinessSearch/BusinessSearch";
 import { ServiceView } from "./components/CreateService/ServiceView";
+import { ServiceDetailView } from "./components/CreateService/ServiceDetail/ServiceDetailView";
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +25,8 @@ function App() {
         <Route path="/homeClient" element={<HomeClient />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route path="/services" element={<ServiceView />} />
+        <Route path="/services/new" element={<ServiceDetailView />} />
+        <Route path="/services/edit/" element={<ServiceDetailView />} />
       </Routes>
     </BrowserRouter>
   );

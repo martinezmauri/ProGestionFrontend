@@ -7,8 +7,6 @@ import { FormRegister } from "../ModalsClientLanding/ModalRegister/FormRegister"
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
-  console.log(isOpenLogin);
-  console.log(isOpenRegister);
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);

@@ -1,8 +1,17 @@
 .hero {
-  padding: 25vh;
+  display: flex;
+}
+.containerMain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  flex-direction: column;
 }
 .container {
-  background-color: #295366c5;
+  display: flex;
+  flex-direction: column;
+  background-color: #35637ac0;
   border: none;
   border-radius: 20px;
   font-family: "Poppins", sans-serif;
@@ -14,23 +23,56 @@
 .itemList {
   display: flex;
   justify-content: center;
+  gap: 30px;
   padding: 10px;
 }
 .itemList img {
   border-radius: 50%;
   width: 5vh;
+
   background-color: #d9d9d9;
   padding: 0.5vh;
 }
-.itemList input {
-  border: none;
+.infoUser {
+  background-color: #fbf8ef;
+  color: #000000;
   border-radius: 20px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
-.itemList input::placeholder {
+.spanName {
+  width: 150px;
+  max-width: 150px;
+}
+.itemList span::placeholder {
+  text-align: center;
+}
+.containerSchedule {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.spanSchedule {
+  width: 50px;
+}
+.spanService {
+  width: 150px;
+  max-width: 150px;
+}
+.rol {
+  min-width: 120px;
+  background-color: #fbf8ef;
+  color: #000000;
+  border-radius: 20px;
   text-align: center;
 }
 .addEmployeeContainer {
-  margin: 1vh 0 0 7.5vh;
+  display: flex;
+  padding: 10px;
+
+  gap: 30px;
 }
 .addProfileImage {
   border-radius: 50%;
@@ -38,15 +80,23 @@
   background-color: #d9d9d9;
   padding: 0.5vh;
 }
-.addButton {
-  background-color: #d9d9d9;
-}
 .containerButtons {
   display: flex;
+  margin-left: 92vh;
   gap: 20px;
-  position: absolute;
-  right: 200px;
   padding-top: 3vh;
+}
+.addButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fbf8ef;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .containerButtons button {
   font-family: "Poppins", sans-serif;

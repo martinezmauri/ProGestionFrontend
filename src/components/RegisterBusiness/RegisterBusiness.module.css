@@ -6,7 +6,7 @@
 .hero {
   display: flex;
   justify-content: center;
-  gap: 20%;
+  gap: 10%;
   font-family: "Poppins", sans-serif;
 }
 .heroUser {

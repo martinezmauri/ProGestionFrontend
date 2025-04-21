@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.buttonToggle {
+  background-color: #fbf8ef;
+  border: none;
+  color: rgb(29, 28, 28);
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.gridWrapper {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.dayButton {
+  background-color: #f8f8f8;
+  border-radius: 20px;
+  padding: 4px;
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid #f8f8f8;
+}
+
+.selected {
+  border-color: #3595fc;
+}

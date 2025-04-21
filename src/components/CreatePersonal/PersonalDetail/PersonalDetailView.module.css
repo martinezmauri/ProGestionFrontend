@@ -1,0 +1,120 @@
+.container {
+  display: flex;
+}
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+}
+.box {
+  background-color: #47495085;
+  border-radius: 20px;
+  margin-top: 10vh;
+  padding: 4vh;
+}
+.title {
+  color: #fbf8ef;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 20px;
+}
+.firtSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3vh;
+}
+.inputGroup {
+  border: none;
+  border-radius: 20px;
+  height: 2rem;
+  padding-left: 10px;
+}
+.image {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #fbf8ef;
+}
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.imageOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 900;
+}
+.workDays {
+  padding: 20px 0;
+}
+.dropdownWrapper {
+  position: relative;
+  display: inline-block;
+}
+.dropdownButton {
+  background-color: #fbf8ef;
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.dropdownContent {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 10;
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+}
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: black;
+}
+.lastSection {
+  display: flex;
+  gap: 20px;
+}
+.buttonGroup {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  margin-left: 30vh;
+}
+.buttonGroup button {
+  padding: 12px;
+  border-radius: 40px;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9em;
+}

@@ -2,122 +2,78 @@ import React, { useEffect, useState } from "react";
 import styles from "./PersonalView.module.css";
 import employee from "../../helpers/Employee.json";
 import { IEmployee } from "../../interfaces/IEmployee";
+import { Rol } from "../../enum/UserRol";
+import { useNavigate } from "react-router-dom";
 import { Dashboard } from "../Dashboard/Dashboard";
 
 export const PersonalView = () => {
   /* debemos tener en cuenta el plan seleccionado aqui para restringir la cantidad de empleados*/
   const [employees, setEmployees] = useState<IEmployee[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [newEmployee, setNewEmployee] = useState<IEmployee>({
-    id: "",
-    name: "",
-    profile_picture: "src/assets/user-logo.png",
-    WorkSchedule: "",
-    service: "",
-    rol: "",
-  });
+  const navigate = useNavigate();
+  const roles = Object.values(Rol);
 
   useEffect(() => {
     setEmployees(employee);
   }, []);
 
-  const handleOpenForm = () => {
-    setShowForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setNewEmployee({
-      id: "",
-      name: "",
-      profile_picture: "src/assets/user-logo.png",
-      WorkSchedule: "",
-      service: "",
-      rol: "",
-    });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEmployee({ ...newEmployee, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = () => {
-    if (!newEmployee.name || !newEmployee.WorkSchedule || !newEmployee.rol)
-      return;
-
-    setEmployees([
-      ...employees,
-      { ...newEmployee, id: (employees.length + 1).toString() },
-    ]);
-    handleCloseForm();
+  const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    navigate("/personal/edit");
   };
 
   return (
     <section className={styles.hero}>
-      <div className={styles.container}>
-        <h1 className={styles.title}>PERSONAL</h1>
-        {employees.map((employee, index) => (
-          <div key={employee.id} className={styles.itemList}>
-            <img src={employee.profile_picture} alt="Imagen de usuario" />
-            <input type="text" placeholder={employee.name} />
-            <input type="text" placeholder={employee.WorkSchedule} />
-            <input type="text" placeholder={employee.service} />
-            <input type="text" placeholder={employee.rol} />
-            <button>Editar</button> {/* Abre el viewDetail (modal) */}
-            <button>Eliminar</button>
-          </div>
-        ))}
-        {!showForm && (
-          <div className={styles.addEmployeeContainer} onClick={handleOpenForm}>
+      <Dashboard extend={false} />
+      <div className={styles.containerMain}>
+        <div className={styles.container}>
+          <h1 className={styles.title}>PERSONAL</h1>
+          {employees.map((employee, index) => (
+            <div key={employee.id} className={styles.itemList}>
+              <img src={employee.profilePicture} alt="Imagen de usuario" />
+              <span className={`${styles.infoUser} ${styles.spanName}`}>
+                {employee.name}
+              </span>
+              <div className={styles.containerSchedule}>
+                <h5>De:</h5>
+                <span className={`${styles.infoUser} ${styles.spanSchedule}`}>
+                  {employee.WorkSchedule}
+                </span>
+                <h5>Hasta:</h5>
+                <span className={`${styles.infoUser} ${styles.spanSchedule}`}>
+                  {employee.WorkSchedule}
+                </span>
+              </div>
+              <span className={`${styles.infoUser} ${styles.spanService}`}>
+                {employee.service}
+              </span>
+              <select className={styles.rol}>
+                {roles.map((role) => (
+                  <option value={role} key={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+              <button>Editar</button> {/* Abre el viewDetail (modal) */}
+              <button>Eliminar</button>
+            </div>
+          ))}
+          <div className={styles.addEmployeeContainer}>
             <img
               src="src/assets/user-logo.png"
               alt="Agregar empleado"
               className={styles.addProfileImage}
             />
-            <button className={styles.addButton}>+</button>
+            <button className={styles.addButton} onClick={handleOnClick}>
+              +
+            </button>
           </div>
-        )}
-        {showForm && (
-          <div className={styles.itemList}>
-            <img src="src/assets/user-logo.png" alt="" />
-            <input
-              type="text"
-              name="name"
-              placeholder="Nombre"
-              value={newEmployee.name}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="WorkSchedule"
-              placeholder="Work Schedule"
-              value={newEmployee.WorkSchedule}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="service"
-              placeholder="Servicio"
-              value={newEmployee.service}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="rol"
-              placeholder="Rol"
-              value={newEmployee.rol}
-              onChange={handleChange}
-            />
-            <div className={styles.formButtons}>
-              <button onClick={handleSave}>Guardar</button>
-              <button onClick={handleCloseForm}>Cancelar</button>
-            </div>
-          </div>
-        )}
-      </div>
-      <div className={styles.containerButtons}>
-        <button style={{ backgroundColor: "#295366" }}>Volver</button>
-        <button style={{ backgroundColor: "#F96E2A" }}>Crear y aceptar</button>
+        </div>
+        <div className={styles.containerButtons}>
+          <button style={{ backgroundColor: "#295366" }}>Volver</button>
+          <button style={{ backgroundColor: "#F96E2A" }}>
+            Crear y aceptar
+          </button>
+        </div>
       </div>
     </section>
   );

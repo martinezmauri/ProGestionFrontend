@@ -11,7 +11,6 @@ export const RegistersBusiness = () => {
   /*ORDER DE CREACION: user, category(insomnia), address, business, service, employee */
 
   const navigate = useNavigate();
-
   const [registerData, setRegisterData] = useState<IRegisterBusiness>({
     business: {
       name: "",

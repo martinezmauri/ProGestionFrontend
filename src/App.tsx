@@ -11,6 +11,7 @@ import { HomeClient } from "./components/HomeClient/HomeClient";
 import { BusinessSearch } from "./components/BusinessSearch/BusinessSearch";
 import { ServiceView } from "./components/CreateService/ServiceView";
 import { ServiceDetailView } from "./components/CreateService/ServiceDetail/ServiceDetailView";
+import { PersonalDetailView } from "./components/CreatePersonal/PersonalDetail/PersonalDetailView";
 function App() {
   return (
     <BrowserRouter>
@@ -20,7 +21,8 @@ function App() {
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
         <Route path="/registerBusiness" element={<RegistersBusiness />} />
-        <Route path="/personalView" element={<PersonalView />} />
+        <Route path="/personal" element={<PersonalView />} />
+        <Route path="/personal/edit" element={<PersonalDetailView />} />
         <Route path="/dashboard" element={<Dashboard extend={true} />} />
         <Route path="/homeClient" element={<HomeClient />} />
         <Route path="/search" element={<BusinessSearch />} />

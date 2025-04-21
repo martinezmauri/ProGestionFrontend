@@ -8,6 +8,8 @@ export const useRegistrationBusiness = () => {
   const [success, setSuccess] = useState(false);
 
   const registerBusiness = async (data: IRegisterBusiness) => {
+    console.log(data.business);
+
     setLoading(true);
     try {
       const addressResponse = await axios.post(
@@ -17,12 +19,6 @@ export const useRegistrationBusiness = () => {
       if (addressResponse.status !== 201) {
         throw new Error("Error al registrar la direccion");
       }
-      console.log({
-        ...data.business,
-        user: { id: 1 },
-        category: { id: 1 },
-        address: { id: 1 },
-      });
 
       const businessResponse = await axios.post(
         "http://localhost:8080/api/v0/business/save",

@@ -1,8 +1,9 @@
+import { Rol } from "../enum/UserRol";
+
 export interface IEmployee {
   id: string;
   name: string;
   profilePicture: string;
-  WorkSchedule: string;
   service: string;
-  rol: string;
+  rol: Rol;
 }

@@ -7,6 +7,7 @@
   align-items: center;
   flex-direction: column;
   margin: auto;
+  gap: 20px;
 }
 .box {
   background-color: #47495085;
@@ -109,7 +110,7 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-  margin-left: 30vh;
+  margin: auto;
 }
 .buttonGroup button {
   padding: 12px;
@@ -117,4 +118,49 @@
   color: white;
   font-family: "Poppins", sans-serif;
   font-size: 0.9em;
+}
+
+.containerHours {
+  background-color: #47495085;
+  border-radius: 20px;
+  padding: 20px;
+  min-width: 150vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.titleHours {
+  color: #fbf8ef;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+  text-align: center;
+}
+.heroShifts {
+  display: flex;
+  justify-content: space-evenly;
+  border: 1px solid rgb(85, 82, 82);
+  border-radius: 5px;
+  padding: 0 10px 10px 10px;
+  background-color: #b3b2b1;
+}
+.day {
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500;
+}
+.titleShift {
+  font-size: 1.2em;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.opening {
+  display: flex;
+}
+.closing {
+  display: flex;
+}
+.opening h2 {
+  font-size: 1.1em;
+}
+.closing h2 {
+  font-size: 1.1em;
 }

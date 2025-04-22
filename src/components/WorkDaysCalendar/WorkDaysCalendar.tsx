@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import styles from "./WorkDaysCalendar.module.css";
 
-export const WorkDaysCalendar: React.FC = () => {
+interface Props {
+  selectedDays: string[];
+  setSelectedDays: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export const WorkDaysCalendar: React.FC<Props> = ({
+  selectedDays,
+  setSelectedDays,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const weekDays = [
     "Lunes",

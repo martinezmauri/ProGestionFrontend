@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./HeroUser.module.css";
 import category from "../../helpers/category.json";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
+import Swal from "sweetalert2";
 
 interface ICategory {
   id: number;
@@ -10,6 +12,7 @@ interface ICategory {
 }
 
 export const HeroUser = () => {
+  const { isAuthenticated } = useAuth0();
   const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",
@@ -22,12 +25,23 @@ export const HeroUser = () => {
   });
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [resultSearch, setResultSearch] = useState();
+  const showWelcome = useRef(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     setCategories(category);
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && !showWelcome.current) {
+      Swal.fire({
+        title: "Bienvenido!",
+        icon: "success",
+      });
+      showWelcome.current = true;
+    }
+  }, [isAuthenticated]);
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({
@@ -47,8 +61,6 @@ export const HeroUser = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
   ) => {
-    console.log(event.target.value);
-
     setSearchBusiness((prevState) => ({
       ...prevState,
       [field]: event.target.value,
@@ -60,17 +72,23 @@ export const HeroUser = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v0/business/search?name=&${searchBusiness.nameEstablishment}&category=${searchBusiness.category}&city=${searchBusiness.location}`
+        "http://localhost:8080/api/v0/business/search",
+        {
+          params: {
+            name: searchBusiness.nameEstablishment,
+            category: searchBusiness.category,
+            city: searchBusiness.location,
+          },
+        }
       );
-      if (response.status !== 200) {
-        throw new Error("Error en la busqueda.");
-      }
 
       setResultSearch(response.data);
-
-      navigate("/search", { state: { searchBusiness, resultSearch } });
     } catch (error) {
       console.error("Error al realizar la busqueda.", error);
+    } finally {
+      navigate("/search", {
+        state: { searchBusiness, resultSearch },
+      });
     }
   };
 
@@ -88,7 +106,7 @@ export const HeroUser = () => {
           <section className={styles.sectionForm}>
             <div className={styles.inputWrapper}>
               <img
-                src="src/assets/search-logo.png"
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445939/d471lx491bxsfuugmohs.png"
                 alt=""
                 className={styles.inputIcon}
               />
@@ -111,7 +129,7 @@ export const HeroUser = () => {
           <section className={styles.sectionForm}>
             <div className={styles.inputWrapper}>
               <img
-                src="src/assets/location-logo.png"
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445922/fux2jiezuqbgxf3dr3r8.png"
                 alt=""
                 className={styles.inputIcon}
               />
@@ -151,7 +169,11 @@ export const HeroUser = () => {
           </div>
         </section>
         <div className={styles.containerButton}>
-          <button className={styles.buttonSearch} onClick={handleOnSubmit}>
+          <button
+            type="button"
+            className={styles.buttonSearch}
+            onClick={handleOnSubmit}
+          >
             Buscar
           </button>
         </div>

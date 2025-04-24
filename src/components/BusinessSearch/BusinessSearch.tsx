@@ -4,7 +4,7 @@ import { NavbarUser } from "../NavbarUserLanding/NavbarUser";
 import categories from "../../helpers/category.json";
 import { useLocation } from "react-router-dom";
 import { SearchDetail } from "./SearchDetail/SearchDetail";
-import data from "../../helpers/business.json";
+import axios from "axios";
 
 export const BusinessSearch = () => {
   const location = useLocation();
@@ -13,8 +13,6 @@ export const BusinessSearch = () => {
     location: "",
     category: "",
   };
-  const result = location.state?.resultSearch;
-  console.log(result);
 
   const [searchBusiness, setSearchBusiness] = useState(stateSearchBusiness);
   const [labelVisibility, setLabelVisibility] = useState({
@@ -22,7 +20,6 @@ export const BusinessSearch = () => {
     location: !stateSearchBusiness.location,
     category: !stateSearchBusiness.category,
   });
-  const [resultSearch, setResultSearch] = useState(result);
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({
@@ -47,6 +44,28 @@ export const BusinessSearch = () => {
       [field]: event.target.value,
     }));
   };
+
+  const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/api/v0/business/search",
+        {
+          params: {
+            name: searchBusiness.nameEstablishment,
+            category: searchBusiness.category,
+            city: searchBusiness.location,
+          },
+        }
+      );
+      console.log(response.data);
+
+      setSearchBusiness(response.data);
+    } catch (error) {
+      console.error("Error al realizar la busqueda.", error);
+    }
+  };
+
   return (
     <div>
       <NavbarUser />
@@ -55,7 +74,7 @@ export const BusinessSearch = () => {
           <section className={styles.sectionForm}>
             <div className={styles.inputWrapper}>
               <img
-                src="src/assets/location-logo.png"
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445922/fux2jiezuqbgxf3dr3r8.png"
                 alt=""
                 className={styles.inputIcon}
               />
@@ -78,7 +97,7 @@ export const BusinessSearch = () => {
           <section className={styles.sectionForm}>
             <div className={styles.inputWrapper}>
               <img
-                src="src/assets/search-logo.png"
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445939/d471lx491bxsfuugmohs.png"
                 alt=""
                 className={styles.inputIcon}
               />
@@ -110,20 +129,23 @@ export const BusinessSearch = () => {
               >
                 <option value="">Seleccione una categoría</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
+                  <option key={cat.id} value={cat.name}>
                     {cat.name}
                   </option>
                 ))}
               </select>
             </div>
           </section>
-          <button className={styles.buttonSearch}>
-            <img src="src/assets/search-logo.png" alt="" />
+          <button className={styles.buttonSearch} onClick={handleOnClick}>
+            <img
+              src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445939/d471lx491bxsfuugmohs.png"
+              alt=""
+            />
             Buscar
           </button>
         </div>
       </form>
-      <SearchDetail />
+      <SearchDetail business={searchBusiness} />
     </div>
   );
 };

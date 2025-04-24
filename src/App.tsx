@@ -24,11 +24,12 @@ function App() {
         <Route path="/personal" element={<PersonalView />} />
         <Route path="/personal/edit" element={<PersonalDetailView />} />
         <Route path="/dashboard" element={<Dashboard extend={true} />} />
-        <Route path="/homeClient" element={<HomeClient />} />
+        <Route path="/homeclient" element={<HomeClient />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route path="/services" element={<ServiceView />} />
         <Route path="/services/new" element={<ServiceDetailView />} />
-        <Route path="/services/edit/" element={<ServiceDetailView />} />
+        <Route path="/services/edit" element={<ServiceDetailView />} />
+        {/* service/edit/id seria lo ideal */}
       </Routes>
     </BrowserRouter>
   );

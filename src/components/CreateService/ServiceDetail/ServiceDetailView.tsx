@@ -4,7 +4,7 @@ import axios from "axios";
 import styles from "./ServiceDetailView.module.css";
 import { IService } from "../../../interfaces/IService";
 import { Dashboard } from "../../Dashboard/Dashboard";
-
+/* Esta vista crea uno nuevo, no actualiza el anterior y tambien hay q revisar el useParams */
 export const ServiceDetailView = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -33,9 +33,14 @@ export const ServiceDetailView = () => {
   };
 
   const handleSave = () => {
+    console.log("Service to save:", service);
+
     const request = id
       ? axios.put(`http://localhost:8080/api/v0/service/update/${id}`, service)
-      : axios.post("http://localhost:8080/api/v0/service/save", service);
+      : axios.post("http://localhost:8080/api/v0/service/save", {
+          ...service,
+          businessId: "1",
+        });
 
     request
       .then(() => navigate("/services"))

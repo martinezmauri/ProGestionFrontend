@@ -2,24 +2,21 @@
   {
     "id": "1",
     "name": "employee1",
-    "profilePicture": "src/assets/user-logo.png",
-    "WorkSchedule": "17",
+    "profilePicture": "src/assets/employee-logo.png",
     "service": "Corte de pelo",
     "rol": "Employee"
   },
   {
     "id": "2",
     "name": "employee2",
-    "profilePicture": "src/assets/user-logo.png",
-    "WorkSchedule": "12",
+    "profilePicture": "src/assets/employee-logo.png",
     "service": "Corte de pelo",
     "rol": "Employee"
   },
   {
     "id": "3",
     "name": "employee3",
-    "profilePicture": "src/assets/user-logo.png",
-    "WorkSchedule": "13",
+    "profilePicture": "src/assets/employee-logo.png",
     "service": "Corte de pelo",
     "rol": "Employee"
   }

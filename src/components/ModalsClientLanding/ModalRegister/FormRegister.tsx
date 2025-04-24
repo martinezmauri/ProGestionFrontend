@@ -90,7 +90,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
           <p>Si ya tienes una cuenta creada inicia sesión</p>
           <button onClick={onOpenLogin}>Aqui !</button>
           <img
-            src="src/assets/close-logo.png"
+            src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445796/qyqq8qqknyeh5oi7qmk2.png"
             alt=""
             className={styles.buttonCloseModal}
             onClick={onClose}
@@ -106,7 +106,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 style={{ display: labelVisibility.email ? "flex" : "none" }}
               >
                 <img
-                  src="src/assets/logo-email.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445776/inpsavtrwce47hoss1nh.png"
                   alt=""
                   className={styles.inputIcon}
                 />
@@ -156,7 +156,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 style={{ display: labelVisibility.phone ? "flex" : "none" }}
               >
                 <img
-                  src="src/assets/phone-call.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446372/su8u5pysrplg6vz46aix.png"
                   alt=""
                   className={styles.inputIcon}
                 />{" "}
@@ -181,7 +181,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 style={{ display: labelVisibility.password ? "flex" : "none" }}
               >
                 <img
-                  src="src/assets/padlock-logo.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445747/le1ny4mfqgttp9y5zkxf.png"
                   alt=""
                   className={styles.inputIcon}
                 />{" "}
@@ -198,8 +198,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
               <img
                 src={
                   passwordVisibility.password
-                    ? "src/assets/eye-open-logo.png"
-                    : "src/assets/eye-logo.png"
+                    ? "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445720/qeindsrsuign5kte2kf4.png"
+                    : "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445702/gkjcwknwwud06w8fbtf0.png"
                 }
                 alt=""
                 className={styles.padlockEye}
@@ -218,7 +218,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 }}
               >
                 <img
-                  src="src/assets/padlock-logo.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445747/le1ny4mfqgttp9y5zkxf.png"
                   alt=""
                   className={styles.inputIcon}
                 />
@@ -235,8 +235,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
               <img
                 src={
                   passwordVisibility.confirmPassword
-                    ? "src/assets/eye-open-logo.png"
-                    : "src/assets/eye-logo.png"
+                    ? "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445720/qeindsrsuign5kte2kf4.png"
+                    : "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445702/gkjcwknwwud06w8fbtf0.png"
                 }
                 alt=""
                 className={styles.padlockEye}

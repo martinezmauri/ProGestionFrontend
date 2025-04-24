@@ -1,54 +1,45 @@
 import React, { useEffect, useState } from "react";
 import styles from "./SearchDetail.module.css";
-import data from "../../../helpers/business.json";
+import { IAddress } from "../../../interfaces/IAddress";
 
-interface IAddress {
-  id: number;
-  street: string;
-  streetNumber: string;
-  city: string;
-  province: string;
-  country: string;
-}
+/* La busqueda devuelve aunque los campos esten vacios */
 
-interface IBusiness {
-  id: number;
-  name: string;
-  description: string;
-  phoneNumber: string;
+interface PropsBusiness {
   logo: string;
-  openingHours: string;
-  workDays: string;
+  name: string;
   address: IAddress;
 }
-
-export const SearchDetail = () => {
-  const [business, setBusiness] = useState<IBusiness[]>([]);
-  useEffect(() => {
-    setBusiness(data); /* props */
-  }, []);
+export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
   return (
-    <div className={styles.hero}>
-      {business.map((item, index) => (
-        <div key={index} className={styles.card}>
-          <img
-            src={item.logo}
-            alt="Imagen del negocio"
-            className={styles.imgBusiness}
-          />
-          <div className={styles.containerInfo}>
-            <h1 className={styles.title}>{item.name}</h1>
-            <div className={styles.address}>
+    <div>
+      {business.length > 0 ? (
+        business.map((item, index) => (
+          <div className={styles.hero}>
+            <div key={index} className={styles.card}>
               <img
-                src="src/assets/location-logo.png"
-                alt="logo de busqueda"
-                className={styles.logo}
+                src={item.logo}
+                alt="Imagen del negocio"
+                className={styles.imgBusiness}
               />
-              <p>{item.address.street}</p>
+              <div className={styles.containerInfo}>
+                <h1 className={styles.title}>{item.name}</h1>
+                <div className={styles.address}>
+                  <img
+                    src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445922/fux2jiezuqbgxf3dr3r8.png"
+                    alt="logo de busqueda"
+                    className={styles.logo}
+                  />
+                  <p>{item.address.street}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p className={styles.errorMessage}>
+          No se han encontrado establecimientos.
+        </p>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./FormLogin.module.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ModalProps {
   onClose: () => void;
@@ -12,6 +13,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
     password: true,
   });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { loginWithRedirect } = useAuth0();
 
   const handleLabelClick = (field: string) => {
     setLabelVisibility((prevState) => ({
@@ -41,6 +43,12 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
     setIsPasswordVisible((prevState) => !prevState);
   };
 
+  const handleRedirectLogin = (redirect: string) => {
+    loginWithRedirect({
+      authorizationParams: { connection: redirect },
+    });
+  };
+
   return (
     <main className={styles.hero}>
       <div className={styles.backgroundBlur} onClick={onClose}></div>
@@ -50,13 +58,13 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
           <p>Si no tienes una cuenta creada puedes </p>
           <button onClick={onOpenRegister}>Registrarte aqui!</button>
           <img
-            src="src/assets/close-logo.png"
-            alt=""
+            src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445796/qyqq8qqknyeh5oi7qmk2.png"
+            alt="Cruz para cerrar el modal"
             className={styles.buttonCloseModal}
             onClick={onClose}
           />
         </section>
-        <form action="">
+        <form>
           <section className={styles.formulary}>
             <h5>Email</h5>
             <div className={styles.inputContainer}>
@@ -66,7 +74,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
                 style={{ display: labelVisibility.email ? "flex" : "none" }}
               >
                 <img
-                  src="src/assets/logo-email.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445776/inpsavtrwce47hoss1nh.png"
                   alt=""
                   className={styles.inputIcon}
                 />
@@ -93,7 +101,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
                 style={{ display: labelVisibility.password ? "flex" : "none" }}
               >
                 <img
-                  src="src/assets/padlock-logo.png"
+                  src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445747/le1ny4mfqgttp9y5zkxf.png"
                   alt=""
                   className={styles.inputIcon}
                 />{" "}
@@ -110,8 +118,8 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
               <img
                 src={
                   isPasswordVisible
-                    ? "src/assets/eye-open-logo.png"
-                    : "src/assets/eye-logo.png"
+                    ? "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445720/qeindsrsuign5kte2kf4.png"
+                    : "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445702/gkjcwknwwud06w8fbtf0.png"
                 }
                 alt=""
                 className={styles.padlockEye}
@@ -126,7 +134,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
             </div>
 
             <div>
-              <a href="">¿Olvidaste tu contraseña?</a>
+              <a>¿Olvidaste tu contraseña?</a>
             </div>
           </section>
           <button className={styles.buttonLogin}>Iniciar Sesión</button>
@@ -134,27 +142,27 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
         <section className={styles.buttonsLogin}>
           <h1>O puedes iniciar con:</h1>
           <div>
-            <a href="">
+            <button onClick={() => handleRedirectLogin("facebook")}>
               <img
                 className={styles.imgLogo}
-                src="src/assets/facebook-logo.png"
-                alt=""
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445649/qrubt0avnlt3w3gz48kn.png"
+                alt="Logo de facebook"
               />
-            </a>
-            <a href="">
+            </button>
+            <button onClick={() => handleRedirectLogin("apple")}>
               <img
                 className={styles.imgLogo}
-                src="src/assets/apple-logo.png"
-                alt=""
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445629/oanftqh36xcvujdeoodr.png"
+                alt="Logo de apple"
               />
-            </a>
-            <a href="">
+            </button>
+            <button onClick={() => handleRedirectLogin("google-oauth2")}>
               <img
                 className={styles.imgLogo}
-                src="src/assets/google-logo.png"
-                alt=""
+                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445666/r8xibykn0lqfspnslacj.png"
+                alt="Logo de google"
               />
-            </a>
+            </button>
           </div>
         </section>
       </div>

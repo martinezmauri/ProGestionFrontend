@@ -24,23 +24,26 @@
   display: flex;
   justify-content: center;
   gap: 30px;
-  padding: 10px;
+  padding: 20px;
+  max-height: 80px;
 }
-.itemList img {
+.profileImage {
   border-radius: 50%;
-  width: 5vh;
-
+  width: 40px;
   background-color: #d9d9d9;
   padding: 0.5vh;
+  min-width: 40px;
+  min-height: 40px;
 }
 .infoUser {
   background-color: #fbf8ef;
   color: #000000;
   border-radius: 20px;
-  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .spanName {
   width: 150px;
@@ -67,16 +70,18 @@
   color: #000000;
   border-radius: 20px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .addEmployeeContainer {
   display: flex;
-  padding: 10px;
-
+  padding: 20px;
   gap: 30px;
 }
 .addProfileImage {
   border-radius: 50%;
-  width: 5vh;
+  width: 40px;
   background-color: #d9d9d9;
   padding: 0.5vh;
 }
@@ -103,4 +108,20 @@
   border-radius: 25px;
   padding: 15px;
   color: aliceblue;
+}
+.buttonsActions {
+  border: none;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+}
+.actionsLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+  padding: 0.5vh;
+  min-width: 40px;
+  min-height: 40px;
+  object-fit: cover;
 }

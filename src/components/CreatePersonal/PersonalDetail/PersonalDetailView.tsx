@@ -8,7 +8,7 @@ import { Rol } from "../../../enum/UserRol";
 import { IEmployee } from "../../../interfaces/IEmployee";
 import getEmployee from "../../../api/getEmployee";
 import { Dashboard } from "../../Dashboard/Dashboard";
-import { EmployeeWorkSchedule } from "../../../interfaces/EmployeeWorkSchedule";
+import { IWorkSchedule } from "../../../interfaces/IWorkSchedule";
 import { WeekDays } from "../../../enum/WeekDays";
 
 const dayMap: Record<string, WeekDays> = {
@@ -41,7 +41,7 @@ export const PersonalDetailView = () => {
   });
   const [workDays, setWorkDays] = useState<string[]>([]);
   const [employeeWorkSchedule, setEmployeeWorkSchedule] = useState<
-    EmployeeWorkSchedule[]
+    IWorkSchedule[]
   >([]);
 
   useEffect(() => {

@@ -2,25 +2,39 @@ import React, { useState } from "react";
 import styles from "./RegisterBusiness.module.css";
 import { IRegisterBusiness } from "../../interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "../../hooks/useRegistrationBusiness";
-import categories from "../../helpers/category.json"; /*  uso temporal para el desarrollo del dropdown */
 import { DropdownCheckbox } from "./DropDownDays/DropdownCheckbox";
 import { WeekDays } from "../../enum/WeekDays";
 import { useNavigate } from "react-router-dom";
+import { IWorkSchedule } from "../../interfaces/IWorkSchedule";
+import Swal from "sweetalert2";
+
+const dayMap: Record<string, WeekDays> = {
+  Lunes: WeekDays.Monday,
+  Martes: WeekDays.Tuesday,
+  Miércoles: WeekDays.Wednesday,
+  Jueves: WeekDays.Thursday,
+  Viernes: WeekDays.Friday,
+  Sábado: WeekDays.Saturday,
+  Domingo: WeekDays.Sunday,
+};
 
 export const RegistersBusiness = () => {
   /*ORDER DE CREACION: user, category(insomnia), address, business, service, employee */
 
   const navigate = useNavigate();
+  const [businessWorkSchedule, setbusinessWorkSchedule] = useState<
+    IWorkSchedule[]
+  >([]);
   const [registerData, setRegisterData] = useState<IRegisterBusiness>({
     business: {
       name: "",
       description: "",
       phone_number: "",
-      opening_hours: { open: "", close: "" },
       work_days: [],
       logo: "",
     },
     address: {
+      id: 0,
       street_number: 0,
       province: "",
       country: "",
@@ -49,28 +63,47 @@ export const RegistersBusiness = () => {
     }));
   };
 
-  const handleOpeningHoursChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    field: "open" | "close"
-  ) => {
-    setRegisterData((prevState) => ({
-      ...prevState,
-      business: {
-        ...prevState.business,
-        opening_hours: {
-          ...prevState.business.opening_hours,
-          [field]: event.target.value,
-        },
-      },
-    }));
-  };
-
   const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    registerBusiness(registerData);
+    registerBusiness(registerData, businessWorkSchedule);
     if (success) {
+      Swal.fire({
+        title: "Registro exitoso",
+        text: "El negocio ha sido registrado correctamente.",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+      });
       navigate("/personalView");
     }
+  };
+
+  const handleHoursChange = (
+    dayEnum: WeekDays,
+    shift: "morning" | "evening",
+    type: "opening" | "closing",
+    value: string
+  ) => {
+    setbusinessWorkSchedule((prev) => {
+      const updated = prev.map((entry) => {
+        if (entry.dayOfWeek !== dayEnum) return entry;
+
+        const updatedEntry = { ...entry };
+
+        if (shift === "morning") {
+          if (type === "opening") updatedEntry.openingMorningTime = value;
+          else updatedEntry.closingMorningTime = value;
+        } else {
+          if (type === "opening") updatedEntry.openingEveningTime = value;
+          else updatedEntry.closingEveningTime = value;
+        }
+
+        return updatedEntry;
+      });
+
+      return updated;
+    });
   };
 
   const handleSelectedDaysChange = (days: WeekDays[]) => {
@@ -129,55 +162,99 @@ export const RegistersBusiness = () => {
               />
             </li>
             <li>
-              <div className={styles.hoursBusiness}>
-                <div>
-                  <label className={styles.listLabel} htmlFor="open">
-                    Abre
-                  </label>
-                  <input
-                    className={styles.listInput}
-                    type="number"
-                    id="open"
-                    value={registerData.business.opening_hours.open}
-                    onChange={(event) =>
-                      handleOpeningHoursChange(event, "open")
-                    }
-                  />
-                </div>
-                <span className={styles.colonSymbol}>:</span>
-                <div>
-                  <label className={styles.listLabel} htmlFor="close">
-                    Cierra
-                  </label>
-                  <input
-                    className={styles.listInput}
-                    type="number"
-                    id="close"
-                    value={registerData.business.opening_hours.close}
-                    onChange={(event) =>
-                      handleOpeningHoursChange(event, "close")
-                    }
-                  />
-                </div>
-              </div>
-            </li>
-            <li>
               <DropdownCheckbox onDaysChange={handleSelectedDaysChange} />
             </li>
-            <li>
-              <label className={styles.listLabel} htmlFor="description">
-                Descripcion
-              </label>
-              <input
-                className={styles.listInput}
-                type="text"
-                id="description"
-                value={registerData.business.description}
-                onChange={(event) =>
-                  handleChange(event, "business", "description")
-                }
-              />
-            </li>
+            {registerData.business.work_days.length > 0 && (
+              <div className={styles.containerHours}>
+                <h1 className={styles.titleHours}>Horarios de atencion</h1>
+                {registerData.business.work_days.map((dayEs) => {
+                  const dayEnum = dayMap[dayEs];
+                  const schedule = businessWorkSchedule.find(
+                    (s) => s.dayOfWeek === dayEnum
+                  );
+
+                  return (
+                    <section key={dayEnum} className={styles.heroShifts}>
+                      <h2 className={styles.day}>{dayEs}</h2>
+
+                      {/* mañana */}
+                      <div className={styles.morning}>
+                        <h2 className={styles.titleShift}>Turno mañana</h2>
+
+                        <div className={styles.opening}>
+                          <h2>Desde:</h2>
+                          <input
+                            type="time"
+                            value={schedule?.openingMorningTime || ""}
+                            onChange={(e) =>
+                              handleHoursChange(
+                                dayEnum,
+                                "morning",
+                                "opening",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+
+                        <div className={styles.closing}>
+                          <h2>Hasta:</h2>
+                          <input
+                            type="time"
+                            value={schedule?.closingMorningTime || ""}
+                            onChange={(e) =>
+                              handleHoursChange(
+                                dayEnum,
+                                "morning",
+                                "closing",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      {/* tarde */}
+                      <div className={styles.afternoon}>
+                        <h2 className={styles.titleShift}>Turno Tarde</h2>
+
+                        <div className={styles.opening}>
+                          <h2>Desde:</h2>
+                          <input
+                            type="time"
+                            value={schedule?.openingEveningTime || ""}
+                            onChange={(e) =>
+                              handleHoursChange(
+                                dayEnum,
+                                "evening",
+                                "opening",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+
+                        <div className={styles.closing}>
+                          <h2>Hasta:</h2>
+                          <input
+                            type="time"
+                            value={schedule?.closingEveningTime || ""}
+                            onChange={(e) =>
+                              handleHoursChange(
+                                dayEnum,
+                                "evening",
+                                "closing",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            )}
           </ul>
         </section>
         <section className={styles.locationSection}>

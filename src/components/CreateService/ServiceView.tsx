@@ -41,9 +41,7 @@ export const ServiceView = () => {
                 readOnly
               />
               <input type="text" placeholder={`$${service.price}`} readOnly />
-              <button onClick={() => navigate(`/services/edit/${service.id}`)}>
-                Editar
-              </button>
+              <button onClick={() => navigate(`/services/edit`)}>Editar</button>
               <button onClick={() => handleDelete(service.id)}>Eliminar</button>
             </div>
           ))}

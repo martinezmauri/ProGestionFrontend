@@ -35,9 +35,7 @@
   width: 100%;
   padding: 1vh;
 }
-.containerInputs li:last-child input {
-  height: 20vh;
-}
+
 .hoursBusiness {
   display: flex;
   gap: 7px;
@@ -81,7 +79,6 @@
   background-color: whitesmoke;
   height: 30vh;
 }
-
 .containerButtons {
   display: flex;
   gap: 20px;
@@ -93,4 +90,14 @@
   border-radius: 25px;
   padding: 15px;
   color: aliceblue;
+}
+.titleHours {
+  background-color: whitesmoke;
+  width: 100%;
+  padding: 1vh;
+  color: black;
+
+  font-family: "Poppins", sans-serif;
+  font-size: 1em;
+  font-weight: normal;
 }

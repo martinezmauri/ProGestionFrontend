@@ -1,6 +1,6 @@
 import { WeekDays } from "../enum/WeekDays";
 
-export interface EmployeeWorkSchedule {
+export interface IWorkSchedule {
   dayOfWeek: WeekDays;
   openingMorningTime: string;
   closingMorningTime: string;

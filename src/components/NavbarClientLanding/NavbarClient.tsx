@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import styles from "./NavbarClient.module.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface props {
   onOpenLogin: () => void;
 }
 
 export const NavbarClient = ({ onOpenLogin }: props) => {
+  const { user, isAuthenticated, logout } = useAuth0();
   return (
     <nav className={styles.hero}>
       <section className={styles.logo}>
@@ -22,9 +24,23 @@ export const NavbarClient = ({ onOpenLogin }: props) => {
         <Link to={"/"} className={styles.actionWhite}>
           Sacar Turno
         </Link>
-        <button className={styles.actionBlack} onClick={onOpenLogin}>
-          Iniciar Sesión
-        </button>
+        {isAuthenticated ? (
+          <div>
+            <img
+              src={user?.picture}
+              alt={user?.name}
+              className={styles.userImage}
+            />
+
+            <label style={{ color: "black" }} onClick={() => logout()}>
+              Salir
+            </label>
+          </div>
+        ) : (
+          <button className={styles.actionBlack} onClick={onOpenLogin}>
+            Iniciar Sesión
+          </button>
+        )}
       </section>
     </nav>
   );

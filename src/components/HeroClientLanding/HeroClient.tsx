@@ -25,7 +25,7 @@ export const HeroClient = () => {
         </section>
         <section className={styles.imageMain}>
           <img
-            src="src/assets/tablet-logo.png"
+            src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446087/lnh40csjj725fa1m3aec.png"
             alt="Vista de un iPad y un teléfono mostrando ProGestion"
           />
         </section>

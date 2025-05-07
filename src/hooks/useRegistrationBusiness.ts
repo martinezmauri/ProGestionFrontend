@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IRegisterBusiness } from "../interfaces/IRegisterBusiness";
 import axios from "axios";
 import { IWorkSchedule } from "../interfaces/IWorkSchedule";
+import { IAddress } from "../interfaces/IAddress";
 
 export const useRegistrationBusiness = () => {
   const [loading, setLoading] = useState(false);
@@ -9,29 +10,28 @@ export const useRegistrationBusiness = () => {
   const [success, setSuccess] = useState(false);
 
   const registerBusiness = async (
-    data: IRegisterBusiness,
-    businessHours: IWorkSchedule[]
+    businessHours: IWorkSchedule[],
+    businessData: IRegisterBusiness,
+    addressData: IAddress
   ) => {
-    console.log(data.business);
-
     setLoading(true);
+    console.log(businessHours);
     try {
-      const addressResponse = await axios.post(
+      await axios.post(
         "http://localhost:8080/api/v0/address/save",
-        data.address
+        addressData
       );
 
-      const businessResponse = await axios.post(
-        "http://localhost:8080/api/v0/business/save",
-        {
-          ...data.business,
-          user: { id: 1 },
-          category: { id: 1 },
-          address: { id: 1 },
-        }
-      );
-      const businessHoursResponse = await axios.post(
-        "http://localhost:8080/api/v0/business/1/hours",
+      await axios.post("http://localhost:8080/api/v0/business/save", {
+        businessData,
+        user: { id: 1 },
+        category: { id: 1 } /* businessData.category */,
+        address: { id: 1 },
+      });
+
+      await axios.post(
+        /* Falla. 400 BadRequest */
+        "http://localhost:8080/api/v0/business/1/hours" /* el 1 debe ser el id del business */,
         businessHours
       );
 

@@ -1,17 +1,21 @@
 import "./App.css";
-import { ClientLanding } from "./views/ClientLanding/ClientLanding";
+import { ClientLanding } from "@views/Client/Landing";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { UserLanding } from "./views/UserLanding/UserLanding";
-import { Plans } from "./views/PlansClient/Plans";
-import { About } from "./views/AboutClient/About";
-import { RegistersBusiness } from "./components/RegisterBusiness/RegistersBusiness";
-import { PersonalView } from "./components/CreatePersonal/PersonalView";
-import { Dashboard } from "./components/Dashboard/Dashboard";
-import { HomeClient } from "./components/HomeClient/HomeClient";
-import { BusinessSearch } from "./components/BusinessSearch/BusinessSearch";
-import { ServiceView } from "./components/CreateService/ServiceView";
-import { ServiceDetailView } from "./components/CreateService/ServiceDetail/ServiceDetailView";
-import { PersonalDetailView } from "./components/CreatePersonal/PersonalDetail/PersonalDetailView";
+import { UserLanding } from "@views/User/UserLanding";
+import { Plans } from "@views/Client/Plans";
+import { About } from "@views/Client/About";
+import { RegistersBusiness } from "@views/Client/RegisterBusiness";
+import { PersonalView } from "@views/Client/PersonalView";
+import { Dashboard } from "@components/Sidebar/Dashboard";
+import { HomeClient } from "@views/Client/Home";
+import { BusinessSearch } from "@views/User/BusinessSearch";
+import { ServiceView } from "@views/Client/ServiceView";
+import { ServiceDetailView } from "@components/Forms/ServiceForm";
+import { SidebarLayout } from "@layout/SidebarLayout";
+import { PersonalDetailView } from "@views/Client/PersonalDetailView";
+import { Support } from "@views/Client/Support";
+import AppointmentGrid from "@views/User/AppointmentGrid";
+
 function App() {
   return (
     <BrowserRouter>
@@ -20,16 +24,19 @@ function App() {
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
-        <Route path="/registerBusiness" element={<RegistersBusiness />} />
-        <Route path="/personal" element={<PersonalView />} />
-        <Route path="/personal/edit" element={<PersonalDetailView />} />
-        <Route path="/dashboard" element={<Dashboard extend={true} />} />
-        <Route path="/homeclient" element={<HomeClient />} />
+        <Route path="/register-business" element={<RegistersBusiness />} />
+        <Route path="/appointment/:id" element={<AppointmentGrid />} />
         <Route path="/search" element={<BusinessSearch />} />
-        <Route path="/services" element={<ServiceView />} />
-        <Route path="/services/new" element={<ServiceDetailView />} />
-        <Route path="/services/edit" element={<ServiceDetailView />} />
-        {/* service/edit/id seria lo ideal */}
+        <Route element={<SidebarLayout />}>
+          <Route path="/support" element={<Support />} />
+          <Route path="/business" element={<HomeClient />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/personal" element={<PersonalView />} />
+          <Route path="/personal/edit" element={<PersonalDetailView />} />
+          <Route path="/services" element={<ServiceView />} />
+          <Route path="/services/new" element={<ServiceDetailView />} />
+          <Route path="/services/edit/:id" element={<ServiceDetailView />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

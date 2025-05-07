@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import days from "../../helpers/workDays.json";
-
 import { WeekDays } from "../../enum/WeekDays";
 import { Button } from "../../ui/button";
-import { ChevronDown } from "lucide-react";
 
 interface Props {
   onDaysChange: (selectedDays: WeekDays[]) => void;

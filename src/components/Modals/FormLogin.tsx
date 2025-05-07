@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import styles from "./FormLogin.module.css";
+import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Eye, EyeOff, LockKeyhole, Mail, X } from "lucide-react";
 import { Input } from "@ui/input";
@@ -11,26 +10,8 @@ interface ModalProps {
 }
 export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [labelVisibility, setLabelVisibility] = useState({
-    email: true,
-    password: true,
-  });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loginWithRedirect } = useAuth0();
-
-  const handleLabelClick = (field: string) => {
-    setLabelVisibility((prevState) => ({
-      ...prevState,
-      [field]: false,
-    }));
-  };
-
-  const handleBlur = (field: string) => {
-    setLabelVisibility((prevState) => ({
-      ...prevState,
-      [field]: loginData[field as keyof typeof loginData] === "",
-    }));
-  };
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,

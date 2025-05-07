@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import styles from "./NavbarClient.module.css";
 import { useAuth0 } from "@auth0/auth0-react";
 
 interface props {

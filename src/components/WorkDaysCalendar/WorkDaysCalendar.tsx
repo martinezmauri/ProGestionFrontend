@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styles from "./WorkDaysCalendar.module.css";
 
 interface Props {
   selectedDays: string[];
@@ -31,23 +30,25 @@ export const WorkDaysCalendar: React.FC<Props> = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col items-start">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={styles.buttonToggle}
+        className="bg-[#fbf8ef] border-none text-black py-[4px] px-[12px] rounded-lg cursor-pointer"
       >
         Seleccionar días laborales
       </button>
 
       {isOpen && (
-        <div className={styles.gridWrapper}>
+        <div className="mt-[0.5] grid grid-cols-4 gap-[12px]">
           {weekDays.map((day) => (
             <button
               key={day}
               type="button"
-              className={`${styles.dayButton} ${
-                selectedDays.includes(day) ? styles.selected : ""
+              className={`bg-[#f8f8f8] rounded-[20px] p-1 cursor-pointer text-center border-2 ${
+                selectedDays.includes(day)
+                  ? "border-[#3595fc]"
+                  : "border-[#f8f8f8]"
               }`}
               onClick={() => toggleDay(day)}
             >

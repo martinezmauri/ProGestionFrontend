@@ -4,7 +4,6 @@ import category from "../../helpers/category.json";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import Swal from "sweetalert2";
 import { Input } from "../../ui/input";
 import {
   Select,

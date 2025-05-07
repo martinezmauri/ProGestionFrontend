@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styles from "./FormRegister.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -27,31 +26,10 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
     password: "",
     confirmPassword: "",
   });
-  const [labelVisibility, setLabelVisibility] = useState({
-    email: true,
-    nameUser: true,
-    phone: true,
-    password: true,
-    confirmPassword: true,
-  });
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
     confirmPassword: false,
   });
-
-  const handleLabelClick = (field: string) => {
-    setLabelVisibility((prevState) => ({
-      ...prevState,
-      [field]: false,
-    }));
-  };
-
-  const handleBlur = (field: string) => {
-    setLabelVisibility((prevState) => ({
-      ...prevState,
-      [field]: registerData[field as keyof typeof registerData] === "",
-    }));
-  };
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,

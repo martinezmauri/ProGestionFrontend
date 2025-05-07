@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { IService } from "../../interfaces/IService";
 import { Dashboard } from "../Sidebar/Dashboard";
-/* Esta vista crea uno nuevo, no actualiza el anterior y tambien hay q revisar el useParams */
+/* Esta vista crea uno nuevo, no actualiza el anterior */
 export const ServiceDetailView = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();

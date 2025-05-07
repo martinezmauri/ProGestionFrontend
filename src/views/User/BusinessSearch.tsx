@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import categories from "@helpers/category.json";
 import { useLocation } from "react-router-dom";
@@ -38,7 +38,6 @@ export const BusinessSearch = () => {
     event.preventDefault();
     try {
       const response = await axios.get(
-        /* Que llegue el negocio con la address */
         "http://localhost:8080/api/v0/business/search",
         {
           params: {

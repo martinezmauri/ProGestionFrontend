@@ -3,8 +3,7 @@ import { GridFooter } from "@components/Footer/GridFooter";
 import Grid from "@components/Grid/Grid";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import useLoadDataGrid from "@hooks/useLoadDataGrid";
-import { Card } from "@ui/card";
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
 const AppointmentGrid = () => {

@@ -11,6 +11,7 @@ import { BusinessSchedule } from "@components/Schedules/BusinessSchedule";
 import { BusinessForm } from "@components/Forms/BusinessForm";
 import { Card } from "@ui/card";
 import { IAddress } from "@interfaces/IAddress";
+import { toast } from "sonner";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
@@ -40,13 +41,8 @@ export const RegistersBusiness = () => {
 
     registerBusiness(businessSchedule, businessData, addressData);
     if (success) {
-      Swal.fire({
-        title: "Registro exitoso",
-        text: "El negocio ha sido registrado correctamente.",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1500,
-        timerProgressBar: true,
+      toast.success("Negocio creado!", {
+        description: `Se ha creado correctamente el negocio ${businessData.business.name}`,
       });
       navigate("/personalView");
     }

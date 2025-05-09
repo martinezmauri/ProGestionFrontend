@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,11 +12,14 @@ import {
 } from "lucide-react";
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
+import { Rol } from "@enum/UserRol";
+import { toast } from "sonner";
 
 interface ModalProps {
   onClose: () => void;
   onOpenLogin: () => void;
 }
+
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
   const navigate = useNavigate();
   const [registerData, setRegisterData] = useState({
@@ -58,12 +61,15 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
           password: registerData.password,
           phoneNumber: registerData.phone,
           email: registerData.email,
-          role: "CLIENT",
+          role: Rol.Client,
         }
       );
 
       if (response.status === 201) {
-        navigate("/registerBusiness");
+        toast.success("Usuario registrado!");
+        setTimeout(() => {
+          navigate("/register-business");
+        }, 700);
       }
     } catch (error) {
       console.error(error);
@@ -163,7 +169,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 <Eye
                   color="#ffffff"
                   onClick={() => togglePasswordVisibility("password")}
-                  className="absolute right-[20px] w-[20px]"
+                  className="absolute right-[20px] w-[20px] cursor-pointer"
                 />
               ) : (
                 <EyeOff
@@ -193,7 +199,7 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
                 <Eye
                   color="#ffffff"
                   onClick={() => togglePasswordVisibility("confirmPassword")}
-                  className="absolute right-[20px] w-[20px]"
+                  className="absolute right-[20px] w-[20px] cursor-pointer"
                 />
               ) : (
                 <EyeOff

@@ -1,0 +1,23 @@
+[
+  {
+    "street": "Armando",
+    "streetNumber": "1232",
+    "city": "Mendoza",
+    "province": "Mendoza",
+    "country": "Argentina"
+  },
+  {
+    "street": "San Martín",
+    "streetNumber": "845",
+    "city": "Godoy Cruz",
+    "province": "Mendoza",
+    "country": "Argentina"
+  },
+  {
+    "street": "Belgrano",
+    "streetNumber": "2100",
+    "city": "Luján de Cuyo",
+    "province": "Mendoza",
+    "country": "Argentina"
+  }
+]

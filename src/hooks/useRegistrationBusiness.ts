@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IRegisterBusiness } from "../interfaces/IRegisterBusiness";
 import axios from "axios";
 import { IWorkSchedule } from "../interfaces/IWorkSchedule";
@@ -15,22 +15,26 @@ export const useRegistrationBusiness = () => {
     addressData: IAddress
   ) => {
     setLoading(true);
-    console.log(businessHours);
+
     try {
       await axios.post(
         "http://localhost:8080/api/v0/address/save",
         addressData
       );
 
-      await axios.post("http://localhost:8080/api/v0/business/save", {
-        businessData,
+      const payload = {
+        name: businessData.business.name,
+        description: businessData.business.description,
+        phoneNumber: businessData.business.phone_number,
+        logo: businessData.business.logo || "",
         user: { id: 1 },
-        category: { id: 1 } /* businessData.category */,
+        category: { id: 1 },
         address: { id: 1 },
-      });
+      };
+
+      await axios.post("http://localhost:8080/api/v0/business/save", payload);
 
       await axios.post(
-        /* Falla. 400 BadRequest */
         "http://localhost:8080/api/v0/business/1/hours" /* el 1 debe ser el id del business */,
         businessHours
       );

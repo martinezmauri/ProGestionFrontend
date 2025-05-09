@@ -5,3 +5,9 @@ export interface IService {
   description: string;
   price: number;
 }
+
+export interface IServiceResponse {
+  id: string;
+  name: string;
+  employee: { id: string; name: string };
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "dayOfWeek": "MONDAY",
+    "openingMorningTime": "07:00",
+    "closingMorningTime": "12:00",
+    "openingEveningTime": "16:00",
+    "closingEveningTime": "20:00"
+  },
+  {
+    "dayOfWeek": "TUESDAY",
+    "openingMorningTime": "07:00",
+    "closingMorningTime": "12:00",
+    "openingEveningTime": "16:00",
+    "closingEveningTime": "20:00"
+  },
+  {
+    "dayOfWeek": "WEDNESDAY",
+    "openingMorningTime": "07:00",
+    "closingMorningTime": "12:00",
+    "openingEveningTime": "16:00",
+    "closingEveningTime": "20:00"
+  },
+  {
+    "dayOfWeek": "THURSDAY",
+    "openingMorningTime": "07:00",
+    "closingMorningTime": "12:00",
+    "openingEveningTime": "16:00",
+    "closingEveningTime": "20:00"
+  },
+  {
+    "dayOfWeek": "FRIDAY",
+    "openingMorningTime": "07:00",
+    "closingMorningTime": "12:00",
+    "openingEveningTime": "16:00",
+    "closingEveningTime": "20:00"
+  }
+]

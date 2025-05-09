@@ -44,7 +44,7 @@ const exampleService: IService[] = [
   },
 ];
 
-export const PersonalForm = () => {
+export const PersonalEditForm = () => {
   const { services } = useHandlePersonalView();
   const roles = Object.values(Rol);
   const [isOpen, setIsOpen] = useState(false);

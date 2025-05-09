@@ -1,0 +1,23 @@
+[
+  {
+    "name": "mauri",
+    "password": "password",
+    "phoneNumber": "22232434",
+    "email": "nacho@gmail.com",
+    "role": "Client"
+  },
+  {
+    "name": "luisa",
+    "password": "securepass123",
+    "phoneNumber": "11335577",
+    "email": "luisa@example.com",
+    "role": "Admin"
+  },
+  {
+    "name": "tomi",
+    "password": "mipass456",
+    "phoneNumber": "44556677",
+    "email": "tomi@gmail.com",
+    "role": "Employee"
+  }
+]

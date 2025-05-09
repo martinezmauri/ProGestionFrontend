@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Venta de frutas",
+    "duration": 30,
+    "description": "Frutas frescas por kilo.",
+    "price": 1500.0,
+    "businessId": 1
+  },
+  {
+    "name": "Jugo natural",
+    "duration": 60,
+    "description": "Jugo exprimido de naranja recién hecho.",
+    "price": 600.0,
+    "businessId": 1
+  },
+  {
+    "name": "Instalación de aire acondicionado",
+    "duration": 120,
+    "description": "Servicio completo de instalación.",
+    "price": 20000.0,
+    "businessId": 2
+  },
+  {
+    "name": "Reparación de TV",
+    "duration": 90,
+    "description": "Diagnóstico y reparación de televisores LED o LCD.",
+    "price": 12000.0,
+    "businessId": 2
+  },
+  {
+    "name": "Encuadernación",
+    "duration": 45,
+    "description": "Encuadernación de trabajos prácticos y tesis.",
+    "price": 2500.0,
+    "businessId": 3
+  }
+]

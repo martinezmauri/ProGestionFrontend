@@ -4,11 +4,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Avatar, AvatarImage } from "../../ui/avatar";
 import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
+import { Button } from "@ui/button";
+import { useSeedData } from "@hooks/database/useSeed";
 
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
   const { user, isAuthenticated, logout } = useAuth0();
+  const { seedData, isLoading } = useSeedData();
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);
@@ -27,6 +30,7 @@ export const NavbarUser = () => {
       <Link to={"/"} className="text-[#f96e2a] text-[3em] font-bold">
         ProGestion
       </Link>
+      <Button onClick={() => seedData()}>Cargar datos</Button>
       <div className="flex absolute right-[40px] gap-[1.2rem]">
         <Link
           className="bg-[#295366] rounded-3xl text-[#fff] font-semibold p-[1.3vh]"

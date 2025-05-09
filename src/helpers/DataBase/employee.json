@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Juan",
+    "profilePicture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYAhBdjd5Dc183RfLQZmtTfkKt34zxUU5iEw&s",
+    "businessId": 1,
+    "serviceIds": [1, 2]
+  },
+  {
+    "name": "Mauri",
+    "profilePicture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYAhBdjd5Dc183RfLQZmtTfkKt34zxUU5iEw&s",
+    "businessId": 1,
+    "serviceIds": [1, 4]
+  },
+  {
+    "name": "María",
+    "profilePicture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYAhBdjd5Dc183RfLQZmtTfkKt34zxUU5iEw&s",
+    "businessId": 2,
+    "serviceIds": [3, 4]
+  },
+  {
+    "name": "Carlos",
+    "profilePicture": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYAhBdjd5Dc183RfLQZmtTfkKt34zxUU5iEw&s",
+    "businessId": 3,
+    "serviceIds": [5]
+  }
+]

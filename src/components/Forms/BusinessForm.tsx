@@ -33,7 +33,10 @@ export const BusinessForm = ({ registerData, setRegisterData }: Props) => {
           onChange={(e) =>
             setRegisterData((prev) => ({
               ...prev,
-              business: { ...prev.business, name: e.target.value },
+              business: {
+                ...prev.business,
+                name: e.target.value,
+              },
             }))
           }
         />

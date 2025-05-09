@@ -39,7 +39,8 @@ export const DaysWithCheckbox: React.FC<Props> = ({ onDaysChange }) => {
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onDaysChange(selectedDays);
+    const uppercasedDays = selectedDays.map((day) => day.toUpperCase());
+    onDaysChange(uppercasedDays as WeekDays[]);
     setIsOpen(false);
   };
 

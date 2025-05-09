@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "@hooks/useRegistrationBusiness";
 import { WeekDays } from "@enum/WeekDays";
 import { useNavigate } from "react-router-dom";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
-import Swal from "sweetalert2";
 import { AddressForm } from "@components/Forms/AddressForm";
 import { DaysWithCheckbox } from "@components/Dropdowns/DaysWithCheckbox";
 import { BusinessSchedule } from "@components/Schedules/BusinessSchedule";
@@ -36,15 +35,16 @@ export const RegistersBusiness = () => {
     setbusinessSchedule(newSchedule);
   };
 
-  const handleOnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    registerBusiness(businessSchedule, businessData, addressData);
+    await registerBusiness(businessSchedule, businessData, addressData);
+
     if (success) {
       toast.success("Negocio creado!", {
         description: `Se ha creado correctamente el negocio ${businessData.business.name}`,
       });
-      navigate("/personalView");
+      navigate("/personal");
     }
   };
 

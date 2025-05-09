@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Supermercado el Mauri",
+    "description": "El mejor supermercado de barrio con productos frescos todos los días.",
+    "phoneNumber": "123456789",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyqdQEHJ0H8KlAjoFJePJXJsF5btgpEkbniw&s",
+    "user": {
+      "id": 1
+    },
+    "category": {
+      "id": 1
+    },
+    "address": {
+      "id": 1
+    }
+  },
+  {
+    "name": "Electro Mauri",
+    "description": "Todo en tecnología y electrodomésticos a precios increíbles.",
+    "phoneNumber": "987654321",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyqdQEHJ0H8KlAjoFJePJXJsF5btgpEkbniw&s",
+    "user": {
+      "id": 2
+    },
+    "category": {
+      "id": 2
+    },
+    "address": {
+      "id": 2
+    }
+  },
+  {
+    "name": "Librería Mauri",
+    "description": "Libros, útiles escolares y artículos de oficina. Todo en un solo lugar.",
+    "phoneNumber": "1122334455",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyqdQEHJ0H8KlAjoFJePJXJsF5btgpEkbniw&s",
+    "user": {
+      "id": 3
+    },
+    "category": {
+      "id": 3
+    },
+    "address": {
+      "id": 3
+    }
+  }
+]

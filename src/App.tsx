@@ -5,7 +5,6 @@ import { UserLanding } from "@views/User/UserLanding";
 import { Plans } from "@views/Client/Plans";
 import { About } from "@views/Client/About";
 import { RegistersBusiness } from "@views/Client/RegisterBusiness";
-import { PersonalView } from "@views/Client/PersonalView";
 import { Dashboard } from "@components/Sidebar/Dashboard";
 import { HomeClient } from "@views/Client/Home";
 import { BusinessSearch } from "@views/User/BusinessSearch";
@@ -15,6 +14,7 @@ import { SidebarLayout } from "@layout/SidebarLayout";
 import { PersonalDetailView } from "@views/Client/PersonalDetailView";
 import { Support } from "@views/Client/Support";
 import AppointmentGrid from "@views/User/AppointmentGrid";
+import { Personal } from "@views/Client/Personal";
 
 function App() {
   return (
@@ -31,7 +31,7 @@ function App() {
           <Route path="/support" element={<Support />} />
           <Route path="/business" element={<HomeClient />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/personal" element={<PersonalView />} />
+          <Route path="/personal" element={<Personal />} />
           <Route path="/personal/edit" element={<PersonalDetailView />} />
           <Route path="/services" element={<ServiceView />} />
           <Route path="/services/new" element={<ServiceDetailView />} />

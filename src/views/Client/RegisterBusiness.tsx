@@ -28,8 +28,7 @@ export const RegistersBusiness = () => {
     city: "",
   });
 
-  const { registerBusiness, loading, error, success } =
-    useRegistrationBusiness();
+  const { registerBusiness, loading, error } = useRegistrationBusiness();
 
   const handleScheduleChange = (newSchedule: IWorkSchedule[]) => {
     setbusinessSchedule(newSchedule);
@@ -38,7 +37,11 @@ export const RegistersBusiness = () => {
   const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    await registerBusiness(businessSchedule, businessData, addressData);
+    const success = await registerBusiness(
+      businessSchedule,
+      businessData,
+      addressData
+    );
 
     if (success) {
       toast.success("Negocio creado!", {

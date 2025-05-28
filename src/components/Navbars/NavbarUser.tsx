@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Avatar, AvatarImage } from "../../ui/avatar";
 import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
 import { Button } from "@ui/button";
 import { useSeedData } from "@hooks/database/useSeed";
+import { useAuthContext } from "@context/AuthContext";
 
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuthContext();
   const { seedData, isLoading } = useSeedData();
 
   const handleOpenLogin = () => {

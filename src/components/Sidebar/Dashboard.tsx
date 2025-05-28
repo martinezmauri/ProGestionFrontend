@@ -20,8 +20,7 @@ export const Dashboard = () => {
   };
   return (
     <>
-      <SidebarTrigger className="bg-white absolute top-4 right-[70rem] z-10" />
-      <Sidebar className="bg-white min-h-screen w-64 border-r border-gray-200">
+      <Sidebar className="bg-sky-600 min-h-screen border-r border-gray-200">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel className="text-orange-500 font-extrabold text-2xl mb-6 text-center">

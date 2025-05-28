@@ -18,7 +18,8 @@
       "@layout/*": ["./src/layout/*"],
       "@lib/*": ["./src/lib/*"],
       "@ui/*": ["./src/ui/*"],
-      "@views/*": ["./src/views/*"]
+      "@views/*": ["./src/views/*"],
+      "@context/*": ["./src/context/*"]
     }
   }
 }

@@ -64,14 +64,12 @@ export const HeroUser = () => {
           },
         }
       );
+      const result = response.data;
+      setResultSearch(result);
 
-      setResultSearch(response.data);
+      navigate("/search", { state: { searchBusiness, resultSearch: result } });
     } catch (error) {
       console.error("Error al realizar la busqueda.", error);
-    } finally {
-      navigate("/search", {
-        state: { searchBusiness, resultSearch },
-      });
     }
   };
 

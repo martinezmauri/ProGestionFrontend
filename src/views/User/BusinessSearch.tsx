@@ -21,7 +21,8 @@ export const BusinessSearch = () => {
     location: "",
     category: "",
   };
-
+  const resultSearch = location.state?.resultSearch || [];
+  const [result, setResult] = useState(resultSearch);
   const [searchBusiness, setSearchBusiness] = useState(stateSearchBusiness);
 
   const handleChange = (
@@ -47,7 +48,6 @@ export const BusinessSearch = () => {
           },
         }
       );
-      console.log(response.data);
 
       setSearchBusiness(response.data);
     } catch (error) {
@@ -121,7 +121,7 @@ export const BusinessSearch = () => {
           </button>
         </div>
       </form>
-      <SearchDetail business={searchBusiness} />
+      <SearchDetail business={result} />
     </div>
   );
 };

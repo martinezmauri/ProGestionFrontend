@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { Toaster } from "sonner";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,8 +15,10 @@ createRoot(document.getElementById("root")!).render(
         redirect_uri: window.location.origin,
       }}
     >
-      <App />
-      <Toaster richColors position="top-right" />
+      <AuthProvider>
+        <App />
+        <Toaster richColors position="top-right" />
+      </AuthProvider>
     </Auth0Provider>
   </StrictMode>
 );

@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react";
 import { ICategory } from "@interfaces/ICategory";
-import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
-import category from "@helpers/category.json";
+import getCategories from "@api/getCategories";
 
-const useHandleBusinessForm = (): { categories: ICategory[] } => {
+const useHandleBusinessForm = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
 
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data ?? []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   useEffect(() => {
-    setCategories(category);
+    fetchCategories();
   }, []);
 
   return { categories };

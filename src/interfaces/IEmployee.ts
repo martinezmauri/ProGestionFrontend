@@ -16,7 +16,7 @@ export interface IEmployeeTableResponse {
   service: {
     id: string;
     name: string;
-  } /* agregar [] */;
+  };
   rol: Rol;
 }
 

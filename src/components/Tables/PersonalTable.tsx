@@ -20,6 +20,8 @@ interface Props {
 
 export const PersonalTable = ({ employees, loading }: Props) => {
   const navigate = useNavigate();
+  console.log(employees);
+
   if (loading) {
     return (
       <div className="space-y-2">
@@ -39,8 +41,7 @@ export const PersonalTable = ({ employees, loading }: Props) => {
     <Table className="w-full text-sm border border-border rounded-md overflow-hidden ">
       <TableHeader>
         <TableRow className="bg-muted/50 text-muted-foreground">
-          <TableHead>Imagen</TableHead>
-          <TableHead>Nombre</TableHead>
+          <TableHead>Empleado</TableHead>
           <TableHead>Rol</TableHead>
           <TableHead>Servicios</TableHead>
           <TableHead>Acciones</TableHead>
@@ -54,17 +55,18 @@ export const PersonalTable = ({ employees, loading }: Props) => {
               key={index}
               className="odd:bg-muted/40 hover:bg-muted transition-colors"
             >
-              <TableCell className="font-medium">
+              <TableCell className="font-medium flex items-center gap-2">
                 <img
                   src={t.profilePicture}
                   alt="Imagen de perfil del usuario"
                   className="w-10 h-10 rounded-full object-cover"
                 />
+
+                {t.name}
               </TableCell>
-              <TableCell>{t.name}</TableCell>
               <TableCell>{t.rol ?? "No tiene rol"}</TableCell>
               <TableCell>
-                {t.service.name ? t.service.name : "Sin servicios asignados"}
+                {t.service?.name ? t.service.name : "Sin servicios asignados"}
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -87,7 +89,7 @@ export const PersonalTable = ({ employees, loading }: Props) => {
 
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={4}>Total de empleados</TableCell>
+          <TableCell colSpan={3}>Total de empleados</TableCell>
           <TableCell className="text-right">{employees.length}</TableCell>
         </TableRow>
       </TableFooter>

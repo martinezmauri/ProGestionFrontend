@@ -11,6 +11,9 @@ import { BusinessForm } from "@components/Forms/BusinessForm";
 import { Card } from "@ui/card";
 import { IAddress } from "@interfaces/IAddress";
 import { toast } from "sonner";
+import { Dashboard } from "@components/Sidebar/Dashboard";
+import { AppHeader } from "@components/Header/AppHeader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/tabs";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
@@ -52,45 +55,39 @@ export const RegistersBusiness = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-[#ff8245] px-[20px] font-bold text-[3em]">
-        ProGestion
-      </h1>
+    <div className="flex flex-col min-h-screen w-full bg-[#F4FBFF]">
+      <div className="flex flex-1">
+        <Dashboard />
+        <div className="flex-1 p-6 space-y-3 overflow-x-auto max-w-full">
+          <AppHeader title="Información de la Empresa" />
+          <p className="text-muted-foreground">
+            Gestiona los datos de tu negocio
+          </p>
 
-      <form className="flex flex-col justify-center items-center mt-5">
-        <Card className="flex flex-row justify-evenly bg-[#78b3ce] w-[80%]">
-          <BusinessForm
-            registerData={businessData}
-            setRegisterData={setBusinessData}
-          />
-          <AddressForm
-            addressData={addressData}
-            setAddressData={setAddressData}
-          />
-        </Card>
-        <Card className="w-[70%] flex justify-center m-auto mt-10 p-5 ">
-          <div className="flex gap-10 items-center">
-            <p>Seleccione sus dias laborales:</p>
-            <DaysWithCheckbox onDaysChange={setWorkDays} />
-          </div>
+          <Tabs defaultValue="datos" className="space-y-6">
+            <TabsList className="bg-white border max-w-md grid grid-cols-2">
+              <TabsTrigger value="datos" className="text-sm">
+                Datos Principales
+              </TabsTrigger>
+              <TabsTrigger value="ubicacion" className="text-sm">
+                Ubicación del Negocio
+              </TabsTrigger>
+            </TabsList>
 
-          <BusinessSchedule
-            work_days={workDays}
-            onScheduleChange={handleScheduleChange}
-          />
-        </Card>
-      </form>
-
-      <div className="flex gap-[20px] absolute right-[200px] mt-10">
-        <button className="bg-[#295366] rounded-xl p-[15px] text-white">
-          Cancelar
-        </button>
-        <button
-          className="bg-[#F96E2A] rounded-xl p-[15px] text-white"
-          onClick={handleOnClick}
-        >
-          Continuar
-        </button>
+            <TabsContent value="datos" className="space-y-6">
+              <BusinessForm
+                registerData={businessData}
+                setRegisterData={setBusinessData}
+              />
+            </TabsContent>
+            <TabsContent value="ubicacion" className="space-y-6">
+              <AddressForm
+                addressData={addressData}
+                setAddressData={setAddressData}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

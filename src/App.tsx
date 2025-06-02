@@ -24,10 +24,10 @@ function App() {
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
-        <Route path="/register-business" element={<RegistersBusiness />} />
         <Route path="/appointment/:id" element={<AppointmentGrid />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route element={<SidebarLayout />}>
+          <Route path="/register-business" element={<RegistersBusiness />} />
           <Route path="/support" element={<Support />} />
           <Route path="/business" element={<HomeClient />} />
           <Route path="/dashboard" element={<Dashboard />} />

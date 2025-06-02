@@ -2,7 +2,7 @@ const itemSidebar = [
   {
     logo: "https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745243813/xqrduclpqyjdyqq3orxo.png",
     alt: "Logo de Home",
-    to: "/",
+    to: "/business",
     title: "Inicio",
   },
   {

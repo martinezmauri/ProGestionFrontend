@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-export const AboutClient = () => {
+export const About = () => {
   return (
     <main>
       <motion.section

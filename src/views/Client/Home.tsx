@@ -40,7 +40,7 @@ export const HomeClient = () => {
             </Link>
           </div>
           <div className="bg-[#fbf8ef] rounded-xl p-[20px]">
-            <Link to={"/"} className="text-center">
+            <Link to={"/register-business"} className="text-center">
               <img
                 className="p-[20px] w-[150px]"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446236/rwpjzqtno1fjvmjfvlb8.png"

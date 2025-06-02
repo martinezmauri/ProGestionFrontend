@@ -26,45 +26,51 @@ export const NavbarUser = () => {
   const handleCloseRegister = () => setIsOpenRegister(false);
 
   return (
-    <nav className="flex items-center ml-10">
-      <Link to={"/"} className="text-[#f96e2a] text-[3em] font-bold">
-        ProGestion
-      </Link>
-      <Button onClick={() => seedData()}>Cargar datos</Button>
-      <div className="flex absolute right-[40px] gap-[1.2rem]">
+    <nav className="flex items-center justify-between px-10 py-4 bg-[#F2FAFF]">
+      {/* Lado izquierdo */}
+      <div className="flex items-center gap-6">
+        <Link to={"/"} className="text-[#f96e2a] text-[2.3em] font-bold">
+          ProGestion
+        </Link>
+        <Button onClick={() => seedData()}>Cargar datos</Button>
+      </div>
+
+      {/* Lado derecho */}
+      <div className="flex items-center gap-5">
         <Link
-          className="bg-[#295366] rounded-3xl text-[#fff] font-semibold p-[1.3vh]"
+          className="bg-white border border-[#0284C7] text-[#0284C7] font-medium px-6 py-2 rounded-md hover:bg-[#E0F2FE] transition-colors"
           to={"/client"}
         >
           Contratá ProGestion
         </Link>
+
         {isAuthenticated ? (
-          <div>
-            <Avatar className="mr-[2rem]">
+          <div className="flex items-center gap-4 relative">
+            <Avatar>
               <AvatarImage
                 className="rounded-full object-cover"
                 src={user?.picture}
                 alt={user?.name}
               />
             </Avatar>
-
-            <label /* reemplazar por componente */
+            <button
               onClick={() => logout()}
-              style={{ color: "black" }}
-              className="absolute"
+              className="text-black font-medium hover:underline"
             >
               Salir
-            </label>
+            </button>
           </div>
         ) : (
           <button
-            className="bg-[#c9e6f0] p-[1.3vh] rounded-3xl font-semibold cursor-pointer"
+            className="bg-[#0284C7] hover:bg-[#0369A1] text-white font-medium px-6 py-2 rounded-md transition-colors"
             onClick={handleOpenLogin}
           >
             Iniciar Sesión
           </button>
         )}
       </div>
+
+      {/* Formularios modales */}
       {isOpenLogin && (
         <FormLogin
           onClose={handleCloseLogin}

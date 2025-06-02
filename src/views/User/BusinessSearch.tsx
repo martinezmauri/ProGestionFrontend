@@ -12,7 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
-import { MapPin, Search } from "lucide-react";
+import { ArrowLeft, Building, Calendar, MapPin, Search } from "lucide-react";
+import { Button } from "@ui/button";
+import { FooterUser } from "@components/Footer/FooterUser";
 
 export const BusinessSearch = () => {
   const location = useLocation();
@@ -56,72 +58,79 @@ export const BusinessSearch = () => {
   };
 
   return (
-    <div>
+    <div className="bg-[#F2FAFF] h-full w-full">
+      {/* <ArrowLeft className="w-4 h-4 mr-1" />  agregar para volver al landing*/}
       <NavbarUser />
-      <form className="flex justify-center p-[20px]">
-        <div className="flex flex-row bg-[#295366] rounded-4xl p-[10px] gap-[20px]">
-          <section className="relative">
-            <div className="relative flex items-center bg-[#d9d9d9] rounded-4xl">
-              <MapPin color="#ffffff" className="w-[20px] h-[20px] ml-[8px]" />
+      <section className="bg-white border-b">
+        <div className="container mx-auto px-4 py-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-y-5 gap-x-3">
+              <div className="relative">
+                <MapPin
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
 
-              <Input
-                type="text"
-                id="location"
-                value={searchBusiness.location}
-                onChange={(event) => handleChange(event, "location")}
-                className="bg-[#d9d9d9] rounded-4xl p-[6px] border-none shadow-none focus:ring-0 focus:outline-none"
-                placeholder="Ubicación"
-              />
+                <Input
+                  type="text"
+                  id="location"
+                  value={searchBusiness.location}
+                  onChange={(event) => handleChange(event, "location")}
+                  className="pl-10 bg-white border-gray-200 focus:border-sky-500 "
+                  placeholder="Ubicación"
+                />
+              </div>
+              <div className="relative">
+                <Building
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <Input
+                  type="text"
+                  id="establishment"
+                  value={searchBusiness.nameEstablishment}
+                  onChange={(event) => handleChange(event, "nameEstablishment")}
+                  className="pl-10 bg-white border-gray-200 focus:border-sky-500"
+                  placeholder="Nombre del establecimiento"
+                />
+              </div>
+              <div className="relative">
+                <Calendar
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <Select
+                  onValueChange={(value) =>
+                    handleChange(
+                      {
+                        target: { value },
+                      } as React.ChangeEvent<HTMLInputElement>,
+                      "category"
+                    )
+                  }
+                >
+                  <SelectTrigger className=" w-full pl-10 bg-white border-0 border-b border-gray-200 focus:border-sky-500 focus:ring-0 rounded-none h-10">
+                    <SelectValue placeholder="Categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button className="bg-sky-600 hover:bg-sky-700 ml-10">
+                <Search className="w-4 h-4 mr-2" />
+                Buscar
+              </Button>
             </div>
-          </section>
-          <section className="relative">
-            <div className="relative flex items-center bg-[#d9d9d9] rounded-4xl">
-              <Search color="#ffffff" className="w-[20px] h-[20px] ml-[8px]" />
-              <Input
-                type="text"
-                id="establishment"
-                value={searchBusiness.nameEstablishment}
-                onChange={(event) => handleChange(event, "nameEstablishment")}
-                className="bg-[#d9d9d9] rounded-4xl p-[6px] w-[250px]"
-                placeholder="Nombre del establecimiento"
-              />
-            </div>
-          </section>
-          <section className="relative">
-            <div className="relative flex items-center bg-[#d9d9d9] rounded-4xl">
-              <Select
-                onValueChange={(value) =>
-                  handleChange(
-                    {
-                      target: { value },
-                    } as React.ChangeEvent<HTMLInputElement>,
-                    "category"
-                  )
-                }
-              >
-                <SelectTrigger className="w-[260px] rounded-3xl bg-[#d9d9d9] text-[#474950]">
-                  <SelectValue placeholder="Selecciona una categoría" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-          <button
-            className="flex items-center gap-[8px] py-[8px] px-[16px] rounded-4xl bg-[#f96e2a] text-white cursor-pointer"
-            onClick={handleOnClick}
-          >
-            <Search color="#ffffff" className="w-[20px] h-[20px]" />
-            Buscar
-          </button>
+          </div>
         </div>
-      </form>
+      </section>
       <SearchDetail business={result} />
+      <FooterUser />
     </div>
   );
 };

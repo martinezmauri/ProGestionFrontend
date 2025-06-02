@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "@ui/button";
 
 interface props {
   onOpenLogin: () => void;
@@ -7,14 +8,18 @@ interface props {
 
 export const NavbarClient = ({ onOpenLogin }: props) => {
   const { user, isAuthenticated, logout } = useAuth0();
+  const navigate = useNavigate();
   return (
-    <nav className="flex justify-center items-center w-[100%] mt-6">
-      <section className="absolute left-[40px]">
-        <Link to={"/client"}>
-          <h1 className="text-[#f96e2a] text-[3em] font-bold">ProGestion</h1>
+    <header className="container mx-auto px-4 py-4 flex items-center justify-between">
+      {/* Título izquierda */}
+      <div className="flex-1">
+        <Link to={"/client"} className="text-[#f96e2a] text-[2.3em] font-bold">
+          ProGestion
         </Link>
-      </section>
-      <section className="flex gap-[1.5rem]">
+      </div>
+
+      {/* Centro: navegación */}
+      <nav className="hidden md:flex justify-center flex-1 space-x-6">
         <Link
           className="text-[#295366] font-semibold text-[1em]"
           to={"/client"}
@@ -25,37 +30,26 @@ export const NavbarClient = ({ onOpenLogin }: props) => {
           ¿Qué Ofrecemos?
         </Link>
         <Link className="text-[#295366] font-semibold text-[1em]" to={"/plans"}>
-          Planes
+          Precios
         </Link>
-      </section>
-      <section className="flex absolute right-[40px] gap-[1.5rem]">
-        <Link
-          className="bg-[#295366] p-[1.3vh] rounded-3xl font-semibold text-[#fbf8ef]"
-          to={"/"}
+      </nav>
+
+      {/* Derecha: botones */}
+      <div className="flex-1 flex justify-end items-center gap-4">
+        <Button
+          variant="outline"
+          className="border-sky-600 text-sky-600 hover:bg-sky-50"
+          onClick={onOpenLogin}
+        >
+          Iniciar Sesión
+        </Button>
+        <Button
+          className="bg-sky-600 hover:bg-sky-700"
+          onClick={() => navigate("/")}
         >
           Sacar Turno
-        </Link>
-        {isAuthenticated ? (
-          <div>
-            <img
-              src={user?.picture}
-              alt={user?.name}
-              className="w-[50px] h-[50px] rounded-3xl object-cover mr-[1rem]"
-            />
-
-            <label style={{ color: "black" }} onClick={() => logout()}>
-              Salir
-            </label>
-          </div>
-        ) : (
-          <button
-            className="bg-[#c9e6f0] p-[1.3vh] rounded-3xl font-semibold text-black cursor-pointer"
-            onClick={onOpenLogin}
-          >
-            Iniciar Sesión
-          </button>
-        )}
-      </section>
-    </nav>
+        </Button>
+      </div>
+    </header>
   );
 };

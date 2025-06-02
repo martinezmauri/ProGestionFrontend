@@ -47,7 +47,7 @@ export const Personal = () => {
               />
             </CardHeader>
             <CardContent className="overflow-x-auto">
-              <PersonalTable employees={empleados} loading={false} />
+              <PersonalTable employees={empleados} loading={loading} />
             </CardContent>
           </Card>
         </div>

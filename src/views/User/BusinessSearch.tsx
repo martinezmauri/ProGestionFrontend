@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import categories from "@helpers/category.json";
 import { useLocation } from "react-router-dom";
@@ -15,6 +15,7 @@ import {
 import { ArrowLeft, Building, Calendar, MapPin, Search } from "lucide-react";
 import { Button } from "@ui/button";
 import { FooterUser } from "@components/Footer/FooterUser";
+import getBusiness from "@api/getBusiness";
 
 export const BusinessSearch = () => {
   const location = useLocation();
@@ -36,6 +37,14 @@ export const BusinessSearch = () => {
       [field]: event.target.value,
     }));
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = getBusiness();
+      setResult(data ?? []);
+    };
+    fetchData();
+  }, []);
 
   const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -121,7 +130,10 @@ export const BusinessSearch = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Button className="bg-sky-600 hover:bg-sky-700 ml-10">
+              <Button
+                className="bg-sky-600 hover:bg-sky-700 ml-10"
+                onClick={handleOnClick}
+              >
                 <Search className="w-4 h-4 mr-2" />
                 Buscar
               </Button>

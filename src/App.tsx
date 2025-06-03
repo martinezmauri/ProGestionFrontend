@@ -13,7 +13,7 @@ import { ServiceDetailView } from "@components/Forms/ServiceForm";
 import { SidebarLayout } from "@layout/SidebarLayout";
 import { PersonalDetailView } from "@views/Client/PersonalDetailView";
 import { Support } from "@views/Client/Support";
-import AppointmentGrid from "@views/User/AppointmentGrid";
+import BusinessDetail from "@views/User/BusinessDetail";
 import { Personal } from "@views/Client/Personal";
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
-        <Route path="/appointment/:id" element={<AppointmentGrid />} />
+        <Route path="/business/:id" element={<BusinessDetail />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route element={<SidebarLayout />}>
           <Route path="/register-business" element={<RegistersBusiness />} />

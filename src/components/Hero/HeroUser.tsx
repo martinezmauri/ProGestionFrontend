@@ -76,7 +76,7 @@ export const HeroUser = () => {
 
   return (
     <motion.main
-      className="grid grid-cols-1 md:grid-cols-2 gap-y-10 md:gap-x-30 px-6 md:px-10 py-16 md:py-20 bg-[#F2FAFF]"
+      className="grid  md:grid-cols-2 gap-y-10 md:gap-x-30 px-6 md:px-10 py-16 md:py-20 bg-[#F2FAFF]"
       initial={{ scale: 0.5, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}

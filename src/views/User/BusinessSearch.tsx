@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
-import categories from "@helpers/category.json";
 import { useLocation } from "react-router-dom";
 import { SearchDetail } from "@components/Details/SearchDetail";
 import axios from "axios";
@@ -16,6 +15,7 @@ import { ArrowLeft, Building, Calendar, MapPin, Search } from "lucide-react";
 import { Button } from "@ui/button";
 import { FooterUser } from "@components/Footer/FooterUser";
 import getBusiness from "@api/getBusiness";
+import useLoadCategories from "@hooks/useLoadCategories";
 
 export const BusinessSearch = () => {
   const location = useLocation();
@@ -24,6 +24,7 @@ export const BusinessSearch = () => {
     location: "",
     category: "",
   };
+  const { categories, loading } = useLoadCategories();
   const resultSearch = location.state?.resultSearch || [];
   const [result, setResult] = useState(resultSearch);
   const [searchBusiness, setSearchBusiness] = useState(stateSearchBusiness);
@@ -50,7 +51,7 @@ export const BusinessSearch = () => {
     event.preventDefault();
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v0/business/search",
+        `${import.meta.env.VITE_API_URL}/business/search`,
         {
           params: {
             name: searchBusiness.nameEstablishment,
@@ -109,6 +110,7 @@ export const BusinessSearch = () => {
                   size={18}
                 />
                 <Select
+                  defaultValue={searchBusiness.category}
                   onValueChange={(value) =>
                     handleChange(
                       {

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Eye, EyeOff, LockKeyhole, Mail, X } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, X } from "lucide-react";
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface ModalProps {
   onClose: () => void;
@@ -10,6 +12,7 @@ interface ModalProps {
 }
 export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ email: false, password: false });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loginWithRedirect } = useAuth0();
 
@@ -23,6 +26,36 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
     }));
   };
 
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const newErrors = {
+      email: loginData.email.trim() === "",
+      password: loginData.password.trim() === "",
+    };
+    setErrors(newErrors);
+
+    if (newErrors.email || newErrors.password) return;
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/signIn`,
+        loginData
+      );
+      if (response.status === 200) {
+        onClose();
+        toast.success("Bienvenido!", {
+          description: "Has iniciado sesión correctamente.",
+          icon: <CheckCircle2 className="h-4 w-4" />,
+          duration: 3000,
+        });
+      }
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Ocurrió un error inesperado";
+      toast.error(message, { duration: 3000 });
+    }
+  };
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
   };
@@ -34,133 +67,138 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   };
 
   return (
-    <main className="fixed bg-[#000000e7] top-0 left-0 w-[100%] h-[100%] z-1000 flex justify-center items-center text-[#fff]">
-      <div
-        className="absolute top-0 left-0 w-[100%] h-[100%] bg-[#00000000] z-1"
-        onClick={onClose}
-      ></div>
-      <div className="relative z-2 bg-[#000000e7] rounded-3xl p-[20px] w-[100%] flex flex-col max-w-[450px] max-h-[550px]">
-        <section className="flex flex-col w-[65%]">
-          <h1 className="font-medium text-[1.2em]">Iniciar Sesión</h1>
-          <p className="text-[0.8em] font-light">
-            Si no tienes una cuenta creada puedes
-          </p>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">Iniciar Sesión</h2>
           <button
-            onClick={onOpenRegister}
-            className="text-[0.8em] cursor-pointer w-[110px] underline"
+            className="text-gray-500 hover:text-gray-700 cursor-pointer"
+            onClick={() => onClose()}
           >
-            Registrarte aqui!
+            X
           </button>
-          <X
-            onClick={onClose}
-            className="cursor-pointer absolute right-[20px] w-[30px]"
-          />
-        </section>
-        <form className="mt-5">
-          <section>
-            <h5 className="text-[0.8em]">Email</h5>
-            <div className="flex relative items-center w-full">
-              <Mail
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type="email"
-                value={loginData.email}
-                onChange={(event) => handleChange(event, "email")}
-                name="email"
-                id="email"
-                className="pl-7  text-white"
-                placeholder="Email"
-              />
-            </div>
-          </section>
-          <section className="mt-2">
-            <h5 className="text-[0.8em]">Contraseña</h5>
-            <div className="flex relative items-center w-full">
-              <LockKeyhole
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type={isPasswordVisible ? "text" : "password"}
-                className="pl-7  text-white"
-                onChange={(event) => handleChange(event, "password")}
-                value={loginData.password}
-                placeholder="Contraseña"
-              />
-              {isPasswordVisible ? (
-                <Eye
-                  color="#ffffff"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-[20px] w-[20px]"
-                />
-              ) : (
-                <EyeOff
-                  color="#ffffff"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-[20px] w-[20px]"
-                />
-              )}
-            </div>
-          </section>
-          <section className="flex flex-col mt-2">
-            <div>
-              <input type="checkbox" id="remember-me" className="w-[15px] " />
-              <label htmlFor="remember-me" className="text-[0.8em] pl-[0.5rem]">
-                Mantener sesión iniciada
-              </label>
-            </div>
-            <div>
-              <a className="text-white text-[0.8em] pl-[15rem]">
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
-          </section>
-          <Button className="bg-[#353535] mt-[15px] mb-[15px] w-full h-full border-none cursor-pointer">
+        </div>
+        <p className="text-gray-600 mb-4 flex gap-2">
+          ¿No tienes cuenta?
+          <button
+            onClick={() => onOpenRegister()}
+            className="text-sky-600 hover:text-sky-700 font-medium cursor-pointer "
+          >
+            Regístrate aquí
+          </button>
+        </p>
+
+        <form className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className={`w-full px-3 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="tu@email.com"
+              onChange={(e) => handleChange(e, "email")}
+              value={loginData.email}
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">El correo es obligatorio.</p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Contraseña
+            </label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              className={`w-full px-3 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="••••••••"
+              onChange={(e) => handleChange(e, "password")}
+              value={loginData.password}
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500">
+                La contraseña es obligatoria.
+              </p>
+            )}
+          </div>
+          <div className="text-right">
+            <button
+              type="button"
+              className="text-sm text-sky-600 hover:text-sky-700"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-700 transition-colors"
+            onClick={(e) => handleLogin(e)}
+          >
             Iniciar Sesión
-          </Button>
+          </button>
         </form>
-        <section>
-          <h1 className="text-[0.8em] font-light">O puedes iniciar con:</h1>
-          <div className="flex flex-row justify-center gap-5 mt-5">
-            <Button
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                O continúa con
+              </span>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <button
+              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               onClick={() => handleRedirectLogin("facebook")}
-              variant={"default"}
-              className="w-15 h-full"
             >
               <img
-                className="w-10"
+                className="w-9"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445649/qrubt0avnlt3w3gz48kn.png"
                 alt="Logo de facebook"
               />
-            </Button>
+            </button>
 
-            <Button
+            <button
+              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               onClick={() => handleRedirectLogin("apple")}
-              variant={"default"}
-              className="w-15 h-full"
             >
               <img
-                className="w-10"
+                className="w-7"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445629/oanftqh36xcvujdeoodr.png"
                 alt="Logo de apple"
               />
-            </Button>
-            <Button
+            </button>
+
+            <button
+              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
               onClick={() => handleRedirectLogin("google-oauth2")}
-              variant={"default"}
-              className="w-15 h-full"
             >
               <img
-                className="w-10"
+                className="w-7"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445666/r8xibykn0lqfspnslacj.png"
                 alt="Logo de google"
               />
-            </Button>
+            </button>
           </div>
-        </section>
+        </div>
       </div>
-    </main>
+    </div>
   );
 };

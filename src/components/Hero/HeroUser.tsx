@@ -16,23 +16,47 @@ import { Button } from "../../ui/button";
 import { toast } from "sonner";
 import { ICategory } from "../../interfaces/ICategory";
 import { Card, CardContent } from "@ui/card";
+import useLoadCategories from "@hooks/useLoadCategories";
 
-export const HeroUser = () => {
+interface ISearch {
+  id: number;
+  name: string;
+  description: string;
+  phone_number: string;
+  logo: string;
+  address: {
+    id: number;
+    street_number: number;
+    province: string;
+    country: string;
+    street: string;
+    city: string;
+  };
+  category: {
+    id: number;
+    name: string;
+  };
+}
+
+interface Props {
+  formRef: React.RefObject<HTMLFormElement>;
+}
+
+export const HeroUser = ({ formRef }: Props) => {
   const { isAuthenticated } = useAuth0();
   const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",
     category: "",
   });
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [resultSearch, setResultSearch] = useState();
+  const [resultSearch, setResultSearch] = useState<ISearch[]>();
+  const [errors, setErrors] = useState({
+    location: false,
+    category: false,
+  });
   const showWelcome = useRef(false);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setCategories(category);
-  }, []);
+  const { categories, loading } = useLoadCategories();
 
   useEffect(() => {
     if (isAuthenticated && !showWelcome.current) {
@@ -54,9 +78,18 @@ export const HeroUser = () => {
   const handleOnSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
+    const newErrors = {
+      location: searchBusiness.location.trim() === "",
+      category: searchBusiness.category.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.location || newErrors.category) return;
+
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v0/business/search",
+        `${import.meta.env.VITE_API_URL}/business/search`,
         {
           params: {
             name: searchBusiness.nameEstablishment,
@@ -65,6 +98,7 @@ export const HeroUser = () => {
           },
         }
       );
+
       const result = response.data;
       setResultSearch(result);
 
@@ -108,7 +142,7 @@ export const HeroUser = () => {
       </div>
 
       {/* Derecha */}
-      <form className="max-w-xl">
+      <form className="max-w-xl" ref={formRef}>
         <Card className="border-0 shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm">
           <CardContent className="px-6">
             <h1 className="text-xl font-semibold text-gray-800 mb-6">
@@ -123,60 +157,78 @@ export const HeroUser = () => {
                 onChange={(event) => handleChange(event, "nameEstablishment")}
                 placeholder="Nombre del establecimiento"
               />
-              <Input
-                className="bg-white border-gray-200 focus:border-sky-500 border rounded-md"
-                type="text"
-                id="location"
-                value={searchBusiness.location}
-                onChange={(event) => handleChange(event, "location")}
-                placeholder="Selecciona tu localidad"
-              />
-              <Select
-                onValueChange={(value) =>
-                  handleChange(
-                    {
-                      target: { value },
-                    } as React.ChangeEvent<HTMLInputElement>,
-                    "category"
-                  )
-                }
-              >
-                <SelectTrigger className="bg-white border-gray-200 focus:border-sky-500 w-full">
-                  <SelectValue placeholder="Selecciona una categoría" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-1">
+                <Input
+                  className={`bg-white border rounded-md ${
+                    errors.location ? "border-red-500" : "border-gray-200"
+                  } focus:border-sky-500`}
+                  type="text"
+                  id="location"
+                  value={searchBusiness.location}
+                  onChange={(event) => handleChange(event, "location")}
+                  placeholder="Selecciona tu localidad"
+                />
+                {errors.location && (
+                  <p className="text-sm text-red-500">
+                    La localidad es obligatoria.
+                  </p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <Select
+                  onValueChange={(value) =>
+                    handleChange(
+                      {
+                        target: { value },
+                      } as React.ChangeEvent<HTMLInputElement>,
+                      "category"
+                    )
+                  }
+                >
+                  <SelectTrigger
+                    className={`bg-white w-full rounded-md ${
+                      errors.category ? "border-red-500" : "border-gray-200"
+                    } focus:border-sky-500`}
+                  >
+                    <SelectValue placeholder="Selecciona una categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.category && (
+                  <p className="text-sm text-red-500">
+                    La categoría es obligatoria.
+                  </p>
+                )}
+              </div>
             </div>
             <Button
-              className="rounded-md text-lg w-full p-4 font-bold bg-[#0284C7] cursor-pointer hover:bg-sky-700"
+              className="rounded-md text-lg w-full p-4 font-bold bg-[#0284C7] mt-4 cursor-pointer hover:bg-sky-700"
               onClick={handleOnSubmit}
             >
               Buscar
             </Button>
 
-            <div className="mt-8 pt-6 border-t border-gray-100">
+            <div className="mt-6 pt-4 border-t border-gray-100">
               <h3 className="text-sm font-medium text-gray-700 mb-3">
                 Categorías populares
               </h3>
               <div className="flex flex-wrap gap-2">
-                {["Peluquerías", "Spa", "Dentistas", "Médicos", "Estética"].map(
-                  (category, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full border-gray-200 text-gray-700 hover:border-sky-500 hover:text-sky-700 cursor-pointer"
-                    >
-                      {category}
-                    </Button>
-                  )
-                )}
+                {categories.slice(0, 5).map((category, index) => (
+                  <Button
+                    key={category.id ?? index}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full border-gray-200 text-gray-700 hover:border-sky-500 hover:text-sky-700 cursor-pointer"
+                  >
+                    {category.name}
+                  </Button>
+                ))}
               </div>
             </div>
           </CardContent>

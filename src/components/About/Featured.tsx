@@ -27,7 +27,11 @@ const establishment = [
   },
 ];
 
-export const Featured = () => {
+interface FeaturedProps {
+  scrollToForm: () => void;
+}
+
+export const Featured = ({ scrollToForm }: FeaturedProps) => {
   return (
     <div>
       <section className="bg-gradient-to-br from-sky-100 to-white py-16">
@@ -158,7 +162,10 @@ export const Featured = () => {
             Miles de personas ya están usando ProGestion para reservar sus
             turnos de manera rápida y sencilla.
           </p>
-          <Button className="bg-white text-orange-500 hover:bg-orange-50 px-6 py-3 rounded-md">
+          <Button
+            className="bg-white text-orange-500 hover:bg-orange-50 px-6 py-3 rounded-md cursor-pointer"
+            onClick={scrollToForm}
+          >
             Buscar establecimientos
           </Button>
         </div>

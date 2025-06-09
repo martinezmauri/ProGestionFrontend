@@ -1,9 +1,14 @@
 import { Button } from "@ui/button";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export const HeroClient = () => {
   return (
-    <main>
+    <motion.main
+      initial={{ scale: 0.5, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <section className="container mx-auto px-4 py-12 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
@@ -39,6 +44,6 @@ export const HeroClient = () => {
           </section>
         </div>
       </section>
-    </main>
+    </motion.main>
   );
 };

@@ -12,7 +12,7 @@ export const NavbarClient = ({ onOpenLogin }: props) => {
   return (
     <header className="container mx-auto px-4 py-4 flex items-center justify-between">
       {/* Título izquierda */}
-      <div className="flex-1">
+      <div className="flex items-center">
         <Link to={"/client"} className="text-[#f96e2a] text-[2.3em] font-bold">
           ProGestion
         </Link>
@@ -35,20 +35,19 @@ export const NavbarClient = ({ onOpenLogin }: props) => {
       </nav>
 
       {/* Derecha: botones */}
-      <div className="flex-1 flex justify-end items-center gap-4">
-        <Button
-          variant="outline"
-          className="border-sky-600 text-sky-600 hover:bg-sky-50"
+      <div className="flex items-center gap-5">
+        <Link
+          className="bg-white border border-[#0284C7] text-[#0284C7] font-medium px-6 py-2 rounded-md hover:bg-[#E0F2FE] transition-colors"
+          to={"/"}
+        >
+          Sacar Turno
+        </Link>
+        <button
+          className="bg-[#0284C7] hover:bg-[#0369A1] text-white font-medium px-6 py-2 rounded-md transition-colors"
           onClick={onOpenLogin}
         >
           Iniciar Sesión
-        </Button>
-        <Button
-          className="bg-sky-600 hover:bg-sky-700"
-          onClick={() => navigate("/")}
-        >
-          Sacar Turno
-        </Button>
+        </button>
       </div>
     </header>
   );

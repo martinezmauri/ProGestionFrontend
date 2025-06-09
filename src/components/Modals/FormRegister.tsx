@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
+  CheckCircle2,
   CircleUserRound,
   Eye,
   EyeOff,
@@ -29,6 +30,13 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
     password: "",
     confirmPassword: "",
   });
+  const [errors, setErrors] = useState({
+    email: false,
+    nameUser: false,
+    phone: false,
+    password: false,
+    confirmPassword: false,
+  });
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
     confirmPassword: false,
@@ -53,168 +61,203 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
 
   const handleOnSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    const newErrors = {
+      email: registerData.email.trim() === "",
+      nameUser: registerData.nameUser.trim() === "",
+      phone: registerData.phone.trim() === "",
+      password: registerData.password.trim() === "",
+      confirmPassword: registerData.confirmPassword.trim() === "",
+    };
+
+    setErrors(newErrors);
+    if (
+      newErrors.email ||
+      newErrors.nameUser ||
+      newErrors.password ||
+      newErrors.phone ||
+      newErrors.confirmPassword
+    )
+      return;
+
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v0/user/save",
+        `${import.meta.env.VITE_API_URL}/auth/signUp`,
         {
           name: registerData.nameUser,
           password: registerData.password,
-          phoneNumber: registerData.phone,
+          phone: registerData.phone,
           email: registerData.email,
-          role: Rol.Client,
+          confirmPassword: registerData.confirmPassword,
         }
       );
 
       if (response.status === 201) {
-        toast.success("Usuario registrado!");
-        setTimeout(() => {
-          navigate("/register-business");
-        }, 700);
+        onClose();
+        toast.success("Usuario registrado!", {
+          description: "Te has registrado correctamente.",
+          icon: <CheckCircle2 className="h-4 w-4" />,
+          duration: 3000,
+        });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Ocurrió un error inesperado";
+      toast.error(message, { duration: 3000 });
     }
   };
 
   return (
-    <main className="fixed bg-[#000000e7] top-0 left-0 w-[100%] h-[100%] z-1000 flex justify-center items-center text-[#fff]">
-      <div
-        className="absolute top-0 left-0 w-[100%] h-[100%] bg-[#00000000] z-1"
-        onClick={onClose}
-      ></div>
-      <div className="relative z-2 bg-[#000000e7] rounded-3xl p-[20px] w-[100%] flex flex-col max-w-[450px] max-h-[550px]">
-        <section className="flex flex-col">
-          <h1 className="font-medium text-[1.2em]">Registrarse</h1>
-          <p className="font-light text-[0.8em]">
-            Si ya tienes una cuenta creada inicia sesión
-          </p>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">Crear Cuenta</h2>
           <button
-            onClick={onOpenLogin}
-            className="text-[0.8em] cursor-pointer w-[40px] underline"
+            onClick={() => onClose()}
+            className="text-gray-500 hover:text-gray-700 cursor-pointer"
           >
-            Aqui!
+            ✕
           </button>
-          <X
-            onClick={onClose}
-            className="cursor-pointer absolute right-[20px] w-[30px]"
-          />
-        </section>
-        <form
-          onSubmit={handleOnSubmit}
-          className="mt-[15px] flex flex-col gap-3"
-        >
-          <section>
-            <h5 className="text-[0.8em]">Email</h5>
-            <div className="flex relative items-center w-full">
-              <Mail
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type="email"
-                value={registerData.email}
-                onChange={(event) => handleChange(event, "email")}
-                className="pl-7  text-white"
-                placeholder="Email"
-              />
-            </div>
-          </section>
-          <section>
-            <h5 className="text-[0.8em]">Nombre de Usuario</h5>
-            <div className="flex relative items-center w-full">
-              <CircleUserRound
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type="text"
-                value={registerData.nameUser}
-                onChange={(event) => handleChange(event, "nameUser")}
-                className="pl-7 text-white"
-                placeholder="Nombre de usuario"
-              />
-            </div>
-          </section>
-          <section>
-            <h5 className="text-[0.8em]">Numero de telefono</h5>
-            <div className="flex relative items-center w-full">
-              <Phone
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type="number"
-                value={registerData.phone}
-                onChange={(event) => handleChange(event, "phone")}
-                className="pl-7 text-white no-spinner"
-                placeholder="Numero de telefono"
-              />
-            </div>
-          </section>
-          <section>
-            <h5 className="text-[0.8em]">Contraseña</h5>
-            <div className="flex relative items-center w-full">
-              <LockKeyhole
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type={passwordVisibility.password ? "text" : "password"}
-                value={registerData.password}
-                onChange={(event) => handleChange(event, "password")}
-                className="pl-7 text-white"
-                placeholder="Contraseña"
-              />
-              {passwordVisibility.password ? (
-                <Eye
-                  color="#ffffff"
-                  onClick={() => togglePasswordVisibility("password")}
-                  className="absolute right-[20px] w-[20px] cursor-pointer"
-                />
-              ) : (
-                <EyeOff
-                  color="#ffffff"
-                  onClick={() => togglePasswordVisibility("password")}
-                  className="absolute right-[20px] w-[20px]"
-                />
-              )}
-            </div>
-          </section>
-          <section>
-            <h5 className="text-[0.8em]">Confirmar Contraseña</h5>
-            <div className="flex relative items-center w-full">
-              <LockKeyhole
-                color="#ffffff"
-                className="absolute w-[20px] mr-[10px] pl-1"
-              />
-              <Input
-                type={passwordVisibility.confirmPassword ? "text" : "password"}
-                value={registerData.confirmPassword}
-                onChange={(event) => handleChange(event, "confirmPassword")}
-                className="pl-7 text-white"
-                placeholder="Confirmar contraseña"
-              />
+        </div>
 
-              {passwordVisibility.confirmPassword ? (
-                <Eye
-                  color="#ffffff"
-                  onClick={() => togglePasswordVisibility("confirmPassword")}
-                  className="absolute right-[20px] w-[20px] cursor-pointer"
-                />
-              ) : (
-                <EyeOff
-                  color="#ffffff"
-                  onClick={() => togglePasswordVisibility("confirmPassword")}
-                  className="absolute right-[20px] w-[20px]"
-                />
-              )}
-            </div>
-          </section>
-          <Button className="bg-[#353535] mt-[15px] mb-[15px] w-full h-full border-none cursor-pointer">
-            Registrarse
-          </Button>
+        <p className="text-gray-600 mb-4 flex gap-2">
+          ¿Ya tienes cuenta?{" "}
+          <button
+            onClick={() => {
+              onOpenLogin();
+            }}
+            className="text-sky-600 hover:text-sky-700 font-medium"
+          >
+            Inicia sesión aquí
+          </button>
+        </p>
+
+        <form className="space-y-4">
+          <div>
+            <label
+              htmlFor="register-email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="register-email"
+              className={`w-full px-3 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="tu@email.com"
+              value={registerData.email}
+              onChange={(e) => handleChange(e, "email")}
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">El correo es obligatorio.</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Nombre completo
+            </label>
+            <input
+              type="text"
+              id="register-name"
+              className={`w-full px-3 py-2 border ${
+                errors.nameUser ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="Tu nombre completo"
+              value={registerData.nameUser}
+              onChange={(e) => handleChange(e, "nameUser")}
+            />
+            {errors.nameUser && (
+              <p className="text-sm text-red-500">El nombre es obligatorio.</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-phone"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Número de teléfono
+            </label>
+            <input
+              type="tel"
+              id="register-phone"
+              className={`w-full px-3 py-2 border ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="+54 11 1234-5678"
+              value={registerData.phone}
+              onChange={(e) => handleChange(e, "phone")}
+            />
+            {errors.phone && (
+              <p className="text-sm text-red-500">
+                El numero de telefono es obligatorio.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Contraseña
+            </label>
+            <input
+              type="password"
+              id="register-password"
+              className={`w-full px-3 py-2 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="••••••••"
+              value={registerData.password}
+              onChange={(e) => handleChange(e, "password")}
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500">
+                La contraseña es obligatoria.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="register-confirm-password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Confirmar contraseña
+            </label>
+            <input
+              type="password"
+              id="register-confirm-password"
+              className={`w-full px-3 py-2 border ${
+                errors.confirmPassword ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              placeholder="••••••••"
+              value={registerData.confirmPassword}
+              onChange={(e) => handleChange(e, "confirmPassword")}
+            />
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">
+                Debes confirmar la contraseña.
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-700 transition-colors"
+            onClick={handleOnSubmit}
+          >
+            Crear Cuenta
+          </button>
         </form>
       </div>
-    </main>
+    </div>
   );
 };

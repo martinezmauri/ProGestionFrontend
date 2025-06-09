@@ -3,15 +3,12 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "../../ui/avatar";
 import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
-import { Button } from "@ui/button";
-import { useSeedData } from "@hooks/database/useSeed";
 import { useAuthContext } from "@context/AuthContext";
 
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
   const { user, isAuthenticated, logout } = useAuthContext();
-  const { seedData, isLoading } = useSeedData();
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);
@@ -32,7 +29,6 @@ export const NavbarUser = () => {
         <Link to={"/"} className="text-[#f96e2a] text-[2.3em] font-bold">
           ProGestion
         </Link>
-        <Button onClick={() => seedData()}>Cargar datos</Button>
       </div>
 
       {/* Lado derecho */}

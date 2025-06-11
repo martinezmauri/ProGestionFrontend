@@ -22,7 +22,7 @@ const HorariosCard = ({ business }: { business: PropsBusiness }) => {
 
   // Ordenamos los días y rellenamos con "Cerrado" si no hay horarios
   const horariosOrdenados = daysOrder.map((day) => {
-    const horario = business.business_hours.find((h) => h.day_of_week === day);
+    const horario = business.businessHours.find((h) => h.day_of_week === day);
 
     if (!horario) {
       return { day, hours: "Cerrado" };

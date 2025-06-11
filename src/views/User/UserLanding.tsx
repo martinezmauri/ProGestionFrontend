@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import { HeroUser } from "@components/Hero/HeroUser";
 import { Featured } from "@components/About/Featured";
-import { FooterLanding } from "@components/Footer/FooterLanding";
+import { FooterMega } from "@components/Footer/FooterMega";
 
 export const UserLanding = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -25,7 +25,7 @@ export const UserLanding = () => {
           }
         }}
       />
-      <FooterLanding />
+      <FooterMega />
     </div>
   );
 };

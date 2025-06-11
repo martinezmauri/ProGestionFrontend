@@ -34,16 +34,16 @@ const BusinessDetail = () => {
 
   useEffect(() => {
     if (!id) return;
-    try {
-      const data = getBusinessById(id);
-      setBusiness(data ?? undefined);
+    const fetchBusiness = async () => {
+      const data = await getBusinessById(id);
+      setBusiness(data);
+      console.log(data?.employees);
 
-      if (data && data.service.length > 0) {
-        setSelectedService(data.service[0].name);
+      if (data && data.services.length > 0) {
+        setSelectedService(data.services[0].name);
       }
-    } catch (error) {
-      console.error("Error fetching business data:", error);
-    }
+    };
+    fetchBusiness();
   }, [id]);
 
   if (!business) return <div>Cargando...</div>;
@@ -134,7 +134,7 @@ const BusinessDetail = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {business.service.map((servicio) => (
+                  {business.services.map((servicio) => (
                     <Button
                       key={servicio.id}
                       variant={
@@ -217,11 +217,11 @@ const BusinessDetail = () => {
                               diaActual.charAt(0).toUpperCase() +
                               diaActual.slice(1);
 
-                            const horarioDeHoy = business.business_hours.find(
+                            const horarioDeHoy = business.businessHours.find(
                               (h) => h.day_of_week === capitalizado
                             );
 
-                            const servicioSeleccionado = business.service.find(
+                            const servicioSeleccionado = business.services.find(
                               (s) => s.id === selectedService
                             );
 

@@ -4,7 +4,7 @@ import axios from "axios";
 const getCategories = async (): Promise<ICategory[]> => {
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/v0/category/findAll"
+      `${import.meta.env.VITE_API_URL}/category`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");

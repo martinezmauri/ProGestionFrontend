@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { AddressForm } from "@components/Forms/AddressForm";
 import { DaysWithCheckbox } from "@components/Dropdowns/DaysWithCheckbox";
-import { BusinessSchedule } from "@components/Schedules/BusinessSchedule";
 import { BusinessForm } from "@components/Forms/BusinessForm";
 import { Card } from "@ui/card";
 import { IAddress } from "@interfaces/IAddress";
@@ -14,17 +13,24 @@ import { toast } from "sonner";
 import { Dashboard } from "@components/Sidebar/Dashboard";
 import { AppHeader } from "@components/Header/AppHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/tabs";
+import StepIndicator from "@components/StepIndicator/StepIndicator";
+import { IBusiness } from "@interfaces/IBusiness";
+import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
   const [workDays, setWorkDays] = useState<WeekDays[]>([]);
-  const [businessSchedule, setbusinessSchedule] = useState<IWorkSchedule[]>([]);
-  const [businessData, setBusinessData] = useState<IRegisterBusiness>({
-    business: { name: "", description: "", phone_number: "", logo: "" },
-    id_category: null,
+  const [businessHours, setBusinessHours] = useState<IWorkSchedule[]>([]);
+  const [businessData, setBusinessData] = useState<IBusiness>({
+    name: "",
+    description: "",
+    phone_number: "",
+    logo: "",
+    userId: "",
+    categoryId: "",
   });
   const [addressData, setAddressData] = useState<IAddress>({
-    street_number: null,
+    street_number: 0,
     province: "",
     country: "",
     street: "",
@@ -33,22 +39,23 @@ export const RegistersBusiness = () => {
 
   const { registerBusiness, loading, error } = useRegistrationBusiness();
 
-  const handleScheduleChange = (newSchedule: IWorkSchedule[]) => {
-    setbusinessSchedule(newSchedule);
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
-  const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-
-    const success = await registerBusiness(
-      businessSchedule,
-      businessData,
-      addressData
-    );
+  const handleFinalSubmit = async () => {
+    const success = await registerBusiness({
+      ...businessData,
+      businessHours,
+      address: addressData,
+    });
 
     if (success) {
       toast.success("Negocio creado!", {
-        description: `Se ha creado correctamente el negocio ${businessData.business.name}`,
+        description: `Se ha creado correctamente el negocio ${businessData.name}`,
       });
       navigate("/personal");
     }
@@ -58,35 +65,53 @@ export const RegistersBusiness = () => {
     <div className="flex flex-col min-h-screen w-full bg-[#F4FBFF]">
       <div className="flex flex-1">
         <Dashboard />
-        <div className="flex-1 p-6 space-y-3 overflow-x-auto max-w-full">
+        <div className="flex-1 p-6 space-y-6 max-w-4xl mx-auto">
           <AppHeader title="Información de la Empresa" />
           <p className="text-muted-foreground">
             Gestiona los datos de tu negocio
           </p>
 
-          <Tabs defaultValue="datos" className="space-y-6">
-            <TabsList className="bg-white border max-w-md grid grid-cols-2">
-              <TabsTrigger value="datos" className="text-sm">
-                Datos Principales
-              </TabsTrigger>
-              <TabsTrigger value="ubicacion" className="text-sm">
-                Ubicación del Negocio
-              </TabsTrigger>
-            </TabsList>
+          {/* Paso visual */}
+          <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center space-x-4">
+              <StepIndicator step={1} title="Datos principales" active />
+              <StepIndicator step={2} title="Ubicación" />
+              <StepIndicator step={3} title="Horarios" />
+            </div>
+          </div>
 
-            <TabsContent value="datos" className="space-y-6">
-              <BusinessForm
-                registerData={businessData}
-                setRegisterData={setBusinessData}
-              />
-            </TabsContent>
-            <TabsContent value="ubicacion" className="space-y-6">
-              <AddressForm
-                addressData={addressData}
-                setAddressData={setAddressData}
-              />
-            </TabsContent>
-          </Tabs>
+          {/* Paso 1 */}
+          <div id="form-datos">
+            <BusinessForm
+              registerData={businessData}
+              setRegisterData={setBusinessData}
+              onContinue={() => scrollToSection("form-ubicacion")}
+            />
+          </div>
+
+          {/* Paso 2 */}
+          <div id="form-ubicacion">
+            <AddressForm
+              addressData={addressData}
+              setAddressData={setAddressData}
+              onContinue={() => scrollToSection("form-horarios")}
+            />
+          </div>
+
+          {/* Paso 3 */}
+          <div id="form-horarios">
+            <BusinessHoursForm
+              businessHours={businessHours}
+              setBusinessHours={setBusinessHours}
+              handleFinalSubmit={handleFinalSubmit}
+            />
+            {/*   <BusinessSchedule
+              selectedDays={workDays}
+              setSelectedDays={setWorkDays}
+              schedule={businessSchedule}
+              onScheduleChange={setBusinessSchedule}
+            /> */}
+          </div>
         </div>
       </div>
     </div>

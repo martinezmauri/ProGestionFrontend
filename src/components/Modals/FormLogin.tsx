@@ -5,6 +5,7 @@ import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import axios from "axios";
 import { toast } from "sonner";
+import { useAuth } from "@context/AuthContext";
 
 interface ModalProps {
   onClose: () => void;
@@ -15,6 +16,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   const [errors, setErrors] = useState({ email: false, password: false });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loginWithRedirect } = useAuth0();
+  const { login } = useAuth();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -42,11 +44,14 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
         loginData
       );
       if (response.status === 200) {
+        const { id, token } = response.data;
+
+        login(id, token);
         onClose();
         toast.success("Bienvenido!", {
           description: "Has iniciado sesión correctamente.",
           icon: <CheckCircle2 className="h-4 w-4" />,
-          duration: 3000,
+          duration: 1000,
         });
       }
     } catch (error: any) {

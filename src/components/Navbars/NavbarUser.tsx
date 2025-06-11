@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "../../ui/avatar";
 import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
-import { useAuthContext } from "@context/AuthContext";
+import { useAuth } from "@context/AuthContext";
+import { UserMenu } from "./UserMenu";
 
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
-  const { user, isAuthenticated, logout } = useAuthContext();
+  const { userInfo, isAuthenticated, logout } = useAuth();
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);
@@ -41,20 +42,8 @@ export const NavbarUser = () => {
         </Link>
 
         {isAuthenticated ? (
-          <div className="flex items-center gap-4 relative">
-            <Avatar>
-              <AvatarImage
-                className="rounded-full object-cover"
-                src={user?.picture}
-                alt={user?.name}
-              />
-            </Avatar>
-            <button
-              onClick={() => logout()}
-              className="text-black font-medium hover:underline"
-            >
-              Salir
-            </button>
+          <div className="flex items-center  gap-4 relative">
+            <UserMenu />
           </div>
         ) : (
           <button

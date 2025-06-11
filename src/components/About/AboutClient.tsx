@@ -36,7 +36,10 @@ export const AboutClient = () => {
               icon: "bar-chart",
             },
           ].map((feature, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-md">
+            <div
+              key={index}
+              className="bg-white p-6 rounded-xl shadow-md transform scale-100 transition-transform duration-300 hover:scale-105"
+            >
               <div className="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center mb-4">
                 {feature.icon === "calendar" ? (
                   <svg
@@ -111,13 +114,10 @@ export const AboutClient = () => {
             gestión de sus turnos.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button className="bg-white text-sky-600 hover:bg-sky-50 px-6 py-3 rounded-md">
+            <Button className="bg-white text-sky-600 hover:bg-sky-50 px-6 py-3 rounded-md cursor-pointer">
               Comenzar ahora
             </Button>
-            <Button
-              variant="outline"
-              className="bg-white text-sky-600 hover:bg-sky-50 px-6 py-3 rounded-md"
-            >
+            <Button className="bg-white text-sky-600 hover:bg-sky-50 px-6 py-3 rounded-md cursor-pointer">
               Ver planes
             </Button>
           </div>

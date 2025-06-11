@@ -1,84 +1,93 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
-interface User {
-  name: string;
-  email: string;
-  picture: string;
-}
-
-interface AuthContextType {
-  user: User | null;
+interface AuthContextProps {
+  userId: string | null;
+  token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  loginWithRedirect: () => void;
+  login: (id: string, token: string) => void;
   logout: () => void;
+  userInfo: {
+    id: string;
+    email: string;
+    rol: string;
+    avatar_url: string;
+  } | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const {
-    user,
-    isAuthenticated: auth0Authenticated,
-    isLoading,
-    loginWithRedirect,
-    logout,
-  } = useAuth0();
+const LOCAL_STORAGE_KEY = "auth_data";
 
-  const [sessionUser, setSessionUser] = useState<User | null>(null);
-  const [localAuthenticated, setLocalAuthenticated] = useState(false);
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
 
-  // Guardar en localStorage si el usuario está autenticado por Auth0
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [token, setToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<{
+    id: string;
+    email: string;
+    rol: string;
+    avatar_url: string;
+  } | null>(null);
+
   useEffect(() => {
-    if (user && auth0Authenticated) {
-      const userData: User = {
-        email: user.email ?? "",
-        name: user.name ?? "",
-        picture: user.picture ?? "",
-      };
-      localStorage.setItem("user", JSON.stringify(userData));
-      setSessionUser(userData);
-      setLocalAuthenticated(true);
-    }
-  }, [user, auth0Authenticated]);
-
-  // Leer desde localStorage al cargar la app
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser: User = JSON.parse(storedUser);
-      setSessionUser(parsedUser);
-      setLocalAuthenticated(true); // <<-- forzamos isAuthenticated = true si había sesión guardada
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      try {
+        const { id, token } = JSON.parse(stored);
+        setToken(token);
+        setUserId(id);
+        const decoded = jwtDecode<any>(token);
+        setUserInfo(decoded);
+      } catch (err) {
+        console.error("Error al cargar los datos de autenticación:", err);
+      }
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setSessionUser(null);
-    setLocalAuthenticated(false);
-    logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    });
+  const login = (id: string, token: string) => {
+    setToken(token);
+    setUserId(id);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ id, token }));
+
+    try {
+      const decoded = jwtDecode<any>(token);
+      setUserInfo(decoded);
+    } catch (err) {
+      console.error("Error al decodificar el token:", err);
+    }
   };
 
-  const value: AuthContextType = {
-    user: sessionUser,
-    isAuthenticated: localAuthenticated, // usamos nuestra propia lógica
-    isLoading,
-    loginWithRedirect,
-    logout: handleLogout,
+  const logout = () => {
+    setToken(null);
+    setUserId(null);
+    setUserInfo(null);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        userId,
+        login,
+        logout,
+        isAuthenticated: !!token,
+        userInfo,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuthContext = () => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuthContext must be used within an AuthProvider");
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
   }
   return context;
 };

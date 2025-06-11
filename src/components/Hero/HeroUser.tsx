@@ -214,23 +214,25 @@ export const HeroUser = ({ formRef }: Props) => {
               Buscar
             </Button>
 
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">
-                Categorías populares
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {categories.slice(0, 5).map((category, index) => (
-                  <Button
-                    key={category.id ?? index}
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full border-gray-200 text-gray-700 hover:border-sky-500 hover:text-sky-700 cursor-pointer"
-                  >
-                    {category.name}
-                  </Button>
-                ))}
+            {categories.length > 0 && (
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                  Categorías populares
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.slice(0, 5).map((category, index) => (
+                    <Button
+                      key={category.id ?? index}
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full border-gray-200 text-gray-700 hover:border-sky-500 hover:text-sky-700 cursor-pointer"
+                    >
+                      {category.name}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </form>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@ui/input";
 import {
   Select,
@@ -10,18 +10,44 @@ import {
 import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
 import useHandleBusinessForm from "@hooks/useHandleBusinessForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
-import { Building2 } from "lucide-react";
+import { ArrowDown, Building2 } from "lucide-react";
 import { Label } from "@ui/label";
 import { Textarea } from "@ui/textarea";
 import { Button } from "@ui/button";
+import { IBusiness } from "@interfaces/IBusiness";
 
 interface Props {
-  registerData: IRegisterBusiness;
-  setRegisterData: React.Dispatch<React.SetStateAction<IRegisterBusiness>>;
+  registerData: IBusiness;
+  setRegisterData: (data: IBusiness) => void;
+  onContinue: () => void; //
 }
 
-export const BusinessForm = ({ registerData, setRegisterData }: Props) => {
+export const BusinessForm = ({
+  registerData,
+  setRegisterData,
+  onContinue,
+}: Props) => {
   const { categories } = useHandleBusinessForm();
+  const [errors, setErrors] = useState({
+    name: false,
+    phone_number: false,
+    categoryId: false,
+  });
+
+  const handleScroll = () => {
+    const newErrors = {
+      name: registerData.name.trim() === "",
+      phone_number: registerData.phone_number.trim() === "",
+      categoryId: registerData.categoryId.trim() === "",
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.categoryId || newErrors.name || newErrors.phone_number)
+      return;
+
+    onContinue();
+  };
 
   return (
     <Card className="border-0 shadow-md overflow-hidden p-0">
@@ -39,39 +65,83 @@ export const BusinessForm = ({ registerData, setRegisterData }: Props) => {
                 Nombre del Negocio
               </Label>
               <Input
-                className="mt-1 border rounded-md"
+                value={registerData.name}
+                onChange={(e) => {
+                  setErrors({ ...errors, name: false });
+                  setRegisterData({ ...registerData, name: e.target.value });
+                }}
+                className={`mt-1 border rounded-md ${
+                  errors.name ? "border-red-500" : "border-gray-200"
+                }`}
                 id="nombre"
                 placeholder="Ej: Peluquería Estilo"
               />
+              {errors.name && (
+                <p className="text-sm text-red-500">
+                  El nombre es obligatorio.
+                </p>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="documento" className="text-gray-700">
-                  Número identificativo de la empresa
+                <Label htmlFor="phone" className="text-gray-700">
+                  Número de contacto
                 </Label>
                 <Input
-                  id="documento"
-                  placeholder="Ej: 30-12345678-9"
-                  className="mt-1 border rounded-md"
+                  value={registerData.phone_number}
+                  onChange={(e) => {
+                    setErrors({ ...errors, phone_number: false });
+                    setRegisterData({
+                      ...registerData,
+                      phone_number: e.target.value,
+                    });
+                  }}
+                  id="phone"
+                  placeholder="Ej: 2634253243"
+                  className={`mt-1 border rounded-md ${
+                    errors.phone_number ? "border-red-500" : "border-gray-200"
+                  }`}
                 />
+                {errors.phone_number && (
+                  <p className="text-sm text-red-500">
+                    El numero de contacto es obligatorio.
+                  </p>
+                )}
               </div>
 
               <div>
                 <Label htmlFor="categoria" className="text-gray-700">
                   Categoría
                 </Label>
-                <Select>
-                  <SelectTrigger className="mt-1 border rounded-md w-full">
+                <Select
+                  onValueChange={(value) => {
+                    setErrors({ ...errors, categoryId: false });
+                    setRegisterData({
+                      ...registerData,
+                      categoryId: value,
+                    });
+                  }}
+                >
+                  <SelectTrigger
+                    className={`mt-1 border rounded-md w-full ${
+                      errors.categoryId ? "border-red-500" : "border-gray-200"
+                    }`}
+                  >
                     <SelectValue placeholder="Seleccionar categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="peluqueria">Peluquería</SelectItem>
-                    <SelectItem value="spa">Spa</SelectItem>
-                    <SelectItem value="estetica">Centro de Estética</SelectItem>
-                    <SelectItem value="dental">Consultorio Dental</SelectItem>
-                    <SelectItem value="medico">Consultorio Médico</SelectItem>
+                    {categories.map((c, index) => (
+                      <SelectItem key={c.id} value={String(c.id)}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {errors.categoryId && (
+                  <p className="text-sm text-red-500">
+                    Debes seleccionar una categoria.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -80,6 +150,13 @@ export const BusinessForm = ({ registerData, setRegisterData }: Props) => {
                 Descripción
               </Label>
               <Textarea
+                value={registerData.description}
+                onChange={(e) =>
+                  setRegisterData({
+                    ...registerData,
+                    description: e.target.value,
+                  })
+                }
                 id="descripcion"
                 placeholder="Describe brevemente tu negocio..."
                 className="mt-1 resize-none"
@@ -88,11 +165,13 @@ export const BusinessForm = ({ registerData, setRegisterData }: Props) => {
             </div>
           </div>
           <div className="flex justify-end space-x-3 pt-4">
-            <Button variant="outline" className="border-gray-300 text-gray-700">
-              Cancelar
-            </Button>
-            <Button className="bg-orange-500 hover:bg-orange-600">
-              Guardar Cambios
+            <Button
+              type="button"
+              onClick={handleScroll}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              Continuar con ubicación
+              <ArrowDown className="w-4 h-4 ml-2" />
             </Button>
           </div>
         </form>

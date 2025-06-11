@@ -19,7 +19,7 @@ const HorarioCierreHoy = ({ business }: Props) => {
   const todayName = daysMap[new Date().getDay()];
 
   // Busco el horario para hoy
-  const horarioHoy = business.business_hours.find(
+  const horarioHoy = business.businessHours.find(
     (h) => h.day_of_week === todayName
   );
 

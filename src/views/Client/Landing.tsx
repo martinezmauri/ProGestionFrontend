@@ -5,7 +5,7 @@ import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
 import { HeroClient } from "@components/Hero/HeroClient";
 import { AboutClient } from "@components/About/AboutClient";
-import { FooterLanding } from "@components/Footer/FooterLanding";
+import { FooterMega } from "@components/Footer/FooterMega";
 
 export const ClientLanding = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
@@ -27,7 +27,7 @@ export const ClientLanding = () => {
       <NavbarClient onOpenLogin={handleOpenLogin} />
       <HeroClient />
       <AboutClient />
-      <FooterLanding />
+      <FooterMega />
       {isOpenLogin && (
         <FormLogin
           onClose={handleCloseLogin}

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@ui/card";
 import { Button } from "@ui/button";
 import { Badge } from "@ui/badge";
-import { FooterUser } from "@components/Footer/FooterUser";
+import { FooterSimple } from "@components/Footer/FooterSimple";
 import {
   Select,
   SelectContent,
@@ -13,26 +13,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
+import { PropsBusiness } from "@api/getBusiness";
 
-interface PropsBusiness {
-  id: string;
-  name: string;
-  logo: string;
-  address: IAddress;
-  open: boolean;
-  service: {
-    id: string;
-    name: string;
-    price: number;
-    duration: number;
-    description: string;
-  }[];
-  category: string;
+interface Props {
+  business: PropsBusiness[];
+  searchInputs: {
+    nameEstablishment: string;
+    location: string;
+    category: string;
+  };
 }
 
-export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
-  console.log(business);
-
+export const SearchDetail = ({ business, searchInputs }: Props) => {
   const navigate = useNavigate();
 
   const handleOnClick = (id: string) => {
@@ -45,10 +37,16 @@ export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
           <h2 className="text-2xl font-bold text-gray-800">
             Resultados de búsqueda
           </h2>
-          <p className="text-gray-500">
-            Encontramos {business.length} establecimientos en Palermo, Buenos
-            Aires
-          </p>
+          {business.length > 0 ? (
+            <p className="text-gray-500">
+              Encontramos {business.length} establecimiento
+              {business.length > 1 && "s"} en {searchInputs.location}
+            </p>
+          ) : (
+            <p className="text-gray-500">
+              No pudimos encontrar el negocio. Probá con otros datos.
+            </p>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto ">
           <Select defaultValue="relevancia">
@@ -70,20 +68,35 @@ export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
       </div>
 
       <div className="flex flex-wrap gap-2 mb-6">
-        <Badge
-          variant="secondary"
-          className="bg-sky-100 text-sky-700 border-sky-200"
-        >
-          Palermo, Buenos Aires
-          <button className="ml-1 hover:text-sky-900">×</button>
-        </Badge>
-        <Badge
-          variant="secondary"
-          className="bg-orange-100 text-orange-700 border-orange-200"
-        >
-          Peluquería
-          <button className="ml-1 hover:text-orange-900">×</button>
-        </Badge>
+        {searchInputs.location && (
+          <Badge
+            variant="secondary"
+            className="bg-sky-100 text-sky-700 border-sky-200"
+          >
+            {searchInputs.location}
+            <button className="ml-1 hover:text-sky-900">×</button>
+          </Badge>
+        )}
+
+        {searchInputs.category && (
+          <Badge
+            variant="secondary"
+            className="bg-orange-100 text-orange-700 border-orange-200"
+          >
+            {searchInputs.category}
+            <button className="ml-1 hover:text-sky-900">×</button>
+          </Badge>
+        )}
+
+        {searchInputs.nameEstablishment && (
+          <Badge
+            variant="secondary"
+            className="bg-sky-100 text-sky-700 border-sky-200"
+          >
+            {searchInputs.nameEstablishment}
+            <button className="ml-1 hover:text-sky-900">×</button>
+          </Badge>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6 ">
@@ -105,7 +118,7 @@ export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
                     variant="secondary"
                     className="bg-white/90 text-gray-700"
                   >
-                    {place.category}
+                    {place.category.name}
                   </Badge>
                 </div>
               </div>
@@ -142,7 +155,7 @@ export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
                   </div>
 
                   <div className="flex flex-wrap gap-1">
-                    {place.service.slice(0, 3).map((service, index) => (
+                    {place.services.slice(0, 3).map((service, index) => (
                       <Badge
                         key={index}
                         variant="outline"
@@ -151,12 +164,12 @@ export const SearchDetail = ({ business }: { business: PropsBusiness[] }) => {
                         {service.name}
                       </Badge>
                     ))}
-                    {place.service.length > 3 && (
+                    {place.services.length > 3 && (
                       <Badge
                         variant="outline"
                         className="text-xs bg-gray-50 text-gray-600"
                       >
-                        +{place.service.length - 3} más
+                        +{place.services.length - 3} más
                       </Badge>
                     )}
                   </div>

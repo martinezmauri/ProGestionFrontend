@@ -1,5 +1,5 @@
 export interface IAddress {
-  street_number: number | null;
+  street_number: number;
   province: string;
   country: string;
   street: string;

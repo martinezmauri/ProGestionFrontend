@@ -1,6 +1,6 @@
 import React from "react";
 
-export const FooterLanding = () => {
+export const FooterMega = () => {
   return (
     <footer className="bg-gray-50 py-6">
       <div className="container mx-auto px-4">

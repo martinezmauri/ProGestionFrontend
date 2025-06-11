@@ -13,7 +13,7 @@ import {
 } from "@ui/select";
 import { ArrowLeft, Building, Calendar, MapPin, Search } from "lucide-react";
 import { Button } from "@ui/button";
-import { FooterUser } from "@components/Footer/FooterUser";
+import { FooterSimple } from "@components/Footer/FooterSimple";
 import getBusiness from "@api/getBusiness";
 import useLoadCategories from "@hooks/useLoadCategories";
 
@@ -41,7 +41,9 @@ export const BusinessSearch = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = getBusiness();
+      const data = await getBusiness();
+      console.log(data);
+
       setResult(data ?? []);
     };
     fetchData();
@@ -143,8 +145,8 @@ export const BusinessSearch = () => {
           </div>
         </div>
       </section>
-      <SearchDetail business={result} />
-      <FooterUser />
+      <SearchDetail business={result} searchInputs={searchBusiness} />
+      <FooterSimple />
     </div>
   );
 };

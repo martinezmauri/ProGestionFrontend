@@ -1,5 +1,4 @@
 import { DaysWithCheckbox } from "@components/Dropdowns/DaysWithCheckbox";
-import { BusinessSchedule } from "@components/Schedules/BusinessSchedule";
 import { Rol } from "@enum/UserRol";
 import { WeekDays } from "@enum/WeekDays";
 import useHandlePersonalView from "@hooks/useHandlePersonalView";
@@ -216,17 +215,7 @@ export const PersonalEditForm = () => {
           </section>
         </div>
       </Card>
-      <Card className="flex justify-center m-auto mt-10 p-5 w-[70vw]">
-        <div className="flex gap-10 items-center">
-          <p>Seleccione sus dias laborales:</p>
-          <DaysWithCheckbox onDaysChange={setWorkDays} />
-        </div>
-
-        <BusinessSchedule
-          work_days={workDays}
-          onScheduleChange={handleScheduleChange}
-        />
-      </Card>
+      {/* HorariosForm */}
 
       <article className="flex gap-[20px] p-[20px]">
         <Button className="bg-[#295366] p-[15px] rounded-3xl text-white text-[1em] ">

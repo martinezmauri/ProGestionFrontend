@@ -1,6 +1,6 @@
 import { IService } from "@interfaces/IService";
 import React, { useEffect, useState } from "react";
-import getService from "@api/getServices";
+import { getService } from "@api/getServices";
 
 const useHandlePersonalView = () => {
   const [services, setServices] = useState<IService[]>([]);

@@ -16,10 +16,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/tabs";
 import StepIndicator from "@components/StepIndicator/StepIndicator";
 import { IBusiness } from "@interfaces/IBusiness";
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
+import { useAuth } from "@context/AuthContext";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
-  const [workDays, setWorkDays] = useState<WeekDays[]>([]);
   const [businessHours, setBusinessHours] = useState<IWorkSchedule[]>([]);
   const [businessData, setBusinessData] = useState<IBusiness>({
     name: "",
@@ -36,8 +36,14 @@ export const RegistersBusiness = () => {
     street: "",
     city: "",
   });
-
+  const { userId } = useAuth();
   const { registerBusiness, loading, error } = useRegistrationBusiness();
+
+  useEffect(() => {
+    if (userId) {
+      setBusinessData((prev) => ({ ...prev, userId }));
+    }
+  }, [userId]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -47,9 +53,13 @@ export const RegistersBusiness = () => {
   };
 
   const handleFinalSubmit = async () => {
+    if (!userId) {
+      toast.error("No se pudo registrar el negocio. Usuario no autenticado.");
+      return;
+    }
     const success = await registerBusiness({
       ...businessData,
-      businessHours,
+      businessHours: businessHours.filter((d) => d.active),
       address: addressData,
     });
 
@@ -105,12 +115,6 @@ export const RegistersBusiness = () => {
               setBusinessHours={setBusinessHours}
               handleFinalSubmit={handleFinalSubmit}
             />
-            {/*   <BusinessSchedule
-              selectedDays={workDays}
-              setSelectedDays={setWorkDays}
-              schedule={businessSchedule}
-              onScheduleChange={setBusinessSchedule}
-            /> */}
           </div>
         </div>
       </div>

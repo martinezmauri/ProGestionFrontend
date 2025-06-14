@@ -20,8 +20,6 @@ interface Props {
 
 export const PersonalTable = ({ employees, loading }: Props) => {
   const navigate = useNavigate();
-  console.log(employees);
-
   if (loading) {
     return (
       <div className="space-y-2">
@@ -57,8 +55,8 @@ export const PersonalTable = ({ employees, loading }: Props) => {
             >
               <TableCell className="font-medium flex items-center gap-2">
                 <img
-                  src={t.profilePicture}
-                  alt="Imagen de perfil del usuario"
+                  src={t?.profile_picture || "/default-avatar.png"}
+                  alt="avatar"
                   className="w-10 h-10 rounded-full object-cover"
                 />
 

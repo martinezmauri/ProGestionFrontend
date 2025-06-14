@@ -1,12 +1,12 @@
 import axios from "axios";
-import { IEmployee, IEmployeeTableResponse } from "../interfaces/IEmployee";
+import { IEmployeeTableResponse } from "../interfaces/IEmployee";
 
-const getEmployeesByBusinessId = async (
+export const getEmployeesByBusinessId = async (
   id: number
 ): Promise<IEmployeeTableResponse[] | null> => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/v0/employee/findAll/?businessId=${id}`
+      `${import.meta.env.VITE_API_URL}/employee/${id}`
     );
     console.log(response.data);
 
@@ -20,4 +20,20 @@ const getEmployeesByBusinessId = async (
   }
 };
 
-export default getEmployeesByBusinessId;
+export const getEmployeesByUserId = async (
+  id: number
+): Promise<IEmployeeTableResponse[] | null> => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/employee/user/${id}`
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Error al obtener el empleado.");
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

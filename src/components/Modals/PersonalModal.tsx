@@ -1,6 +1,8 @@
-import { Rol } from "@enum/UserRol";
+import { EmployeeRol } from "@enum/EmployeeRol";
+import { IEmployee } from "@interfaces/IEmployee";
 import { IService } from "@interfaces/IService";
 import { Button } from "@ui/button";
+import { Checkbox } from "@ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +11,7 @@ import {
   DialogTrigger,
 } from "@ui/dialog";
 import { Input } from "@ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import {
   Select,
   SelectContent,
@@ -20,42 +23,21 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-const exampleService: IService[] = [
-  {
-    id: "1",
-    name: "Corte de cabello",
-    duration: 30,
-    description: "Corte de cabello tradicional para hombre o mujer",
-    price: 1500,
-  },
-  {
-    id: "2",
-    name: "Manicura",
-    duration: 45,
-    description: "Servicio completo de manicura con esmalte",
-    price: 2000,
-  },
-  {
-    id: "3",
-    name: "Masaje relajante",
-    duration: 60,
-    description: "Masaje corporal completo para aliviar tensiones",
-    price: 3500,
-  },
-];
-
 interface Props {
+  services: IService[];
   onPersonalCreated: () => void;
 }
 
-export const PersonalModal = ({ onPersonalCreated }: Props) => {
-  const roles = Object.values(Rol);
-  const [employee, setEmployee] = useState({
+export const PersonalModal = ({ services, onPersonalCreated }: Props) => {
+  console.log(services);
+
+  const roles = Object.values(EmployeeRol);
+  const [employee, setEmployee] = useState<IEmployee>({
     name: "",
-    profilePicture: "",
+    profile_picture: "",
     serviceIds: [],
     businessId: "",
-    rol: "",
+    rol: EmployeeRol.MANAGER,
     email: "",
   });
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,10 +49,10 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
       onPersonalCreated();
       setEmployee({
         name: "",
-        profilePicture: "",
+        profile_picture: "",
         serviceIds: [],
         businessId: "",
-        rol: "",
+        rol: EmployeeRol.MANAGER,
         email: "",
       });
     } catch (error) {
@@ -81,11 +63,10 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
   };
 
   return (
-    <div className="flex justify-between items-center">
-      <h1 className="text-xl font-semibold">Lista de Empleados</h1>
+    <div className="flex justify-end items-center">
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="bg-[#F97316] hover:bg-orange-600">
+          <Button className="bg-[#F97316] hover:bg-orange-600 rounded-sm">
             <Plus className="w-4 h-4 mr-2" />
             Añadir Personal
           </Button>
@@ -94,7 +75,7 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
           <DialogHeader>
             <DialogTitle>Nuevo Empleado</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div className="space-y-2">
               <Input
                 id="nombre"
@@ -104,10 +85,9 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
                   setEmployee({ ...employee, name: e.target.value })
                 }
               />
-              {/* Input para seleccionar imagen */}
               <Select
                 value={employee.rol}
-                onValueChange={(value: Rol) =>
+                onValueChange={(value: EmployeeRol) =>
                   setEmployee((prev) => ({ ...prev, rol: value }))
                 }
               >
@@ -123,6 +103,48 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
                 </SelectContent>
               </Select>
 
+              <Popover>
+                <PopoverTrigger className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-between"
+                  >
+                    {employee.serviceIds.length > 0
+                      ? services
+                          .filter((s) => employee.serviceIds.includes(s.id))
+                          .map((s) => s.name)
+                          .join(", ")
+                      : "Selecciona servicios"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <div className="flex flex-col gap-2">
+                    {services.map((service) => (
+                      <label
+                        key={service.id}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={employee.serviceIds.includes(service.id)}
+                          onCheckedChange={(checked) => {
+                            setEmployee((prev) => ({
+                              ...prev,
+                              serviceIds: checked
+                                ? [...prev.serviceIds, service.id]
+                                : prev.serviceIds.filter(
+                                    (id) => id !== service.id
+                                  ),
+                            }));
+                          }}
+                        />
+                        {service.name}
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+
               <Input
                 id="email"
                 placeholder="Correo electrónico"
@@ -135,7 +157,7 @@ export const PersonalModal = ({ onPersonalCreated }: Props) => {
               {/* Select con los servicios del negocio */}
             </div>
             <div className="flex justify-end">
-              <Button type="submit" className="bg-[#F97316]">
+              <Button onClick={handleSubmit} className="bg-[#F97316]">
                 Crear Empleado
               </Button>
             </div>

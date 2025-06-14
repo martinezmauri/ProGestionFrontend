@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
-import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
 import useHandleBusinessForm from "@hooks/useHandleBusinessForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
 import { ArrowDown, Building2 } from "lucide-react";

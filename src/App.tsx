@@ -15,6 +15,7 @@ import { PersonalDetailView } from "@views/Client/PersonalDetailView";
 import { Support } from "@views/Client/Support";
 import BusinessDetail from "@views/User/BusinessDetail";
 import { Personal } from "@views/Client/Personal";
+import NotFound from "@components/NotFound/NotFound";
 
 function App() {
   return (
@@ -37,6 +38,8 @@ function App() {
           <Route path="/services/new" element={<ServiceDetailView />} />
           <Route path="/services/edit/:id" element={<ServiceDetailView />} />
         </Route>
+        {/* Ruta catch-all para 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

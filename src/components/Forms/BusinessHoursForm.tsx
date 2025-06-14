@@ -1,3 +1,4 @@
+import { WeekDays } from "@enum/WeekDays";
 import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { Button } from "@ui/button";
@@ -6,29 +7,66 @@ import { Checkbox } from "@ui/checkbox";
 import { Input } from "@ui/input";
 import { Label } from "@ui/label";
 import { CheckCircle, Clock } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface Props {
   businessHours: IWorkSchedule[];
   setBusinessHours: React.Dispatch<React.SetStateAction<IWorkSchedule[]>>;
-  handleFinalSubmit: (data: IRegisterBusiness) => void;
+  handleFinalSubmit: () => void;
 }
 /* Implemetar: */
 /* https://chatgpt.com/c/6849263e-f95c-8001-8d71-992e6e83e676 */
+
+const days = [
+  { day: "Lunes", key: "lunes" },
+  { day: "Martes", key: "martes" },
+  { day: "Miércoles", key: "miercoles" },
+  { day: "Jueves", key: "jueves" },
+  { day: "Viernes", key: "viernes" },
+  { day: "Sábado", key: "sabado" },
+  { day: "Domingo", key: "domingo" },
+];
 export const BusinessHoursForm = ({
   businessHours,
   handleFinalSubmit,
   setBusinessHours,
 }: Props) => {
-  const [splitHours, setSplitHours] = useState<Record<string, boolean>>({
-    lunes: false,
-    martes: false,
-    miercoles: false,
-    jueves: false,
-    viernes: false,
-    sabado: false,
-    domingo: false,
-  });
+  const [splitHours, setSplitHours] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (businessHours.length === 0) {
+      const initial: IWorkSchedule[] = days.map((d) => ({
+        day_of_week: d.key as WeekDays,
+        opening_morning_time: "",
+        closing_morning_time: "",
+        opening_evening_time: "",
+        closing_evening_time: "",
+        active: false,
+      }));
+
+      const initialSplitState: Record<string, boolean> = {};
+      days.forEach((d) => (initialSplitState[d.key] = false));
+
+      setBusinessHours(initial);
+      setSplitHours(initialSplitState);
+    }
+  }, []);
+
+  const handleHourChange = (
+    index: number,
+    field: keyof IWorkSchedule,
+    value: string
+  ) => {
+    setBusinessHours((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
+  };
+
+  const handleDayActiveChange = (index: number, checked: boolean) => {
+    setBusinessHours((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, active: checked } : item))
+    );
+  };
 
   const handleSplitChange = (dayKey: string, checked: boolean) => {
     setSplitHours((prev) => ({
@@ -36,6 +74,12 @@ export const BusinessHoursForm = ({
       [dayKey]: checked,
     }));
   };
+
+  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleFinalSubmit();
+  };
+
   return (
     <Card className="border-0 shadow-md overflow-hidden p-0">
       <CardHeader className="bg-gradient-to-r from-green-500 to-green-400 text-white px-4 py-4">
@@ -47,22 +91,20 @@ export const BusinessHoursForm = ({
       <CardContent className="p-6">
         <form className="space-y-6">
           <div className="space-y-4">
-            {[
-              { day: "Lunes", key: "lunes" },
-              { day: "Martes", key: "martes" },
-              { day: "Miércoles", key: "miercoles" },
-              { day: "Jueves", key: "jueves" },
-              { day: "Viernes", key: "viernes" },
-              { day: "Sábado", key: "sabado" },
-              { day: "Domingo", key: "domingo" },
-            ].map((dayInfo, index) => (
+            {days.map((dayInfo, index) => (
               <div
                 key={index}
                 className="border border-gray-200 rounded-lg p-4"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <Checkbox id={`${dayInfo.key}-active`} />
+                    <Checkbox
+                      id={`${dayInfo.key}-active`}
+                      checked={businessHours[index]?.active}
+                      onCheckedChange={(checked) =>
+                        handleDayActiveChange(index, !!checked)
+                      }
+                    />
                     <Label
                       htmlFor={`${dayInfo.key}-active`}
                       className="ml-2 font-medium text-gray-700"
@@ -99,8 +141,16 @@ export const BusinessHoursForm = ({
                     <Input
                       id={`${dayInfo.key}-open1`}
                       type="time"
-                      defaultValue="09:00"
+                      value={businessHours[index]?.opening_morning_time}
+                      onChange={(e) =>
+                        handleHourChange(
+                          index,
+                          "opening_morning_time",
+                          e.target.value
+                        )
+                      }
                       className="mt-1"
+                      disabled={!businessHours[index]?.active}
                     />
                   </div>
                   <div>
@@ -113,8 +163,16 @@ export const BusinessHoursForm = ({
                     <Input
                       id={`${dayInfo.key}-close1`}
                       type="time"
-                      defaultValue="13:00"
+                      value={businessHours[index]?.closing_morning_time}
+                      onChange={(e) =>
+                        handleHourChange(
+                          index,
+                          "closing_morning_time",
+                          e.target.value
+                        )
+                      }
                       className="mt-1"
+                      disabled={!businessHours[index]?.active}
                     />
                   </div>
                 </div>
@@ -135,9 +193,19 @@ export const BusinessHoursForm = ({
                     <Input
                       id={`${dayInfo.key}-open2`}
                       type="time"
-                      defaultValue="15:00"
+                      value={businessHours[index]?.opening_evening_time}
+                      onChange={(e) =>
+                        handleHourChange(
+                          index,
+                          "opening_evening_time",
+                          e.target.value
+                        )
+                      }
                       className="mt-1"
-                      disabled={!splitHours[dayInfo.key]}
+                      disabled={
+                        !businessHours[index]?.active ||
+                        !splitHours[dayInfo.key]
+                      }
                     />
                   </div>
                   <div>
@@ -150,9 +218,19 @@ export const BusinessHoursForm = ({
                     <Input
                       id={`${dayInfo.key}-close2`}
                       type="time"
-                      defaultValue="19:00"
+                      value={businessHours[index]?.closing_evening_time}
+                      onChange={(e) =>
+                        handleHourChange(
+                          index,
+                          "closing_evening_time",
+                          e.target.value
+                        )
+                      }
                       className="mt-1"
-                      disabled={!splitHours[dayInfo.key]}
+                      disabled={
+                        !businessHours[index]?.active ||
+                        !splitHours[dayInfo.key]
+                      }
                     />
                   </div>
                 </div>
@@ -179,7 +257,10 @@ export const BusinessHoursForm = ({
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
-            <Button className="bg-green-500 hover:bg-green-600">
+            <Button
+              className="bg-green-500 hover:bg-green-600"
+              onClick={handleOnClick}
+            >
               <CheckCircle className="w-4 h-4 mr-2" />
               Finalizar configuración
             </Button>

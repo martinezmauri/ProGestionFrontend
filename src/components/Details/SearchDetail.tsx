@@ -1,11 +1,9 @@
 import React from "react";
-import { IAddress } from "../../interfaces/IAddress";
-import { Clock, MapPin, Phone, SlidersHorizontal, Star } from "lucide-react";
+import { MapPin, SlidersHorizontal, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@ui/card";
 import { Button } from "@ui/button";
 import { Badge } from "@ui/badge";
-import { FooterSimple } from "@components/Footer/FooterSimple";
 import {
   Select,
   SelectContent,

@@ -30,8 +30,7 @@ function App() {
         <Route element={<SidebarLayout />}>
           <Route path="/register-business" element={<RegistersBusiness />} />
           <Route path="/support" element={<Support />} />
-          <Route path="/business" element={<HomeClient />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<HomeClient />} />
           <Route path="/personal" element={<Personal />} />
           <Route path="/personal/edit/:id" element={<PersonalDetailView />} />
           <Route path="/services" element={<ServiceView />} />

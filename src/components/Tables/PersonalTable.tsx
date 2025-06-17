@@ -1,4 +1,9 @@
-import { IEmployeeTableResponse } from "@interfaces/IEmployee";
+import {
+  IEmployee,
+  IEmployeeEditResponse,
+  IEmployeeResponse,
+} from "@interfaces/IEmployee";
+import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
 import { Skeleton } from "@ui/skeleton";
 import {
@@ -11,14 +16,18 @@ import {
   TableHeader,
   TableRow,
 } from "@ui/table";
+import { Pencil } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 interface Props {
-  employees: IEmployeeTableResponse[];
+  employees: IEmployeeResponse[];
   loading?: boolean;
+  onEdit?: (employee: IEmployeeResponse) => void;
 }
 
-export const PersonalTable = ({ employees, loading }: Props) => {
+export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
+  console.log(employees);
+
   const navigate = useNavigate();
   if (loading) {
     return (
@@ -64,17 +73,22 @@ export const PersonalTable = ({ employees, loading }: Props) => {
               </TableCell>
               <TableCell>{t.rol ?? "No tiene rol"}</TableCell>
               <TableCell>
-                {t.service?.name ? t.service.name : "Sin servicios asignados"}
+                {t.services.length > 0
+                  ? t.services.map((s) => s.name).join(", ")
+                  : "Sin servicios asignados"}
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => navigate(`/personal/edit/${t.id}`)}
-                  >
-                    Editar
-                  </Button>
+                  {onEdit && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEdit(t)}
+                      title="Editar"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  )}
                   <Button size="sm" variant="destructive">
                     Eliminar
                   </Button>

@@ -39,7 +39,7 @@ export const UserMenu = () => {
           <ul className="py-1 text-sm text-gray-700">
             <li
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
-              onClick={() => handleNavigate("/mi-negocio")}
+              onClick={() => handleNavigate("/dashboard")}
             >
               <Store className="w-4 h-4" />
               Mi Negocio

@@ -10,7 +10,7 @@ export const HomeClient = () => {
       <main>
         <div className="pt-[10vh] pl-[40vh] grid grid-cols-3 grid-rows-2 gap-[30px] text-[#295366] font-bold">
           <div className="bg-[#fbf8ef] rounded-xl p-[20px]">
-            <Link to={"/"} className="text-center">
+            <Link to={"/personal"} className="text-center">
               <img
                 className="p-[20px] w-[150px]"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446184/moepwmyrbvrrblfjvwpo.png"
@@ -20,7 +20,7 @@ export const HomeClient = () => {
             </Link>
           </div>
           <div className="bg-[#fbf8ef] rounded-xl p-[20px]">
-            <Link to={"/"} className="text-center">
+            <Link to={"/services"} className="text-center">
               <img
                 className="p-[20px] w-[150px]"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446203/kqweob0pxuuhpbiifgtu.png"
@@ -30,7 +30,7 @@ export const HomeClient = () => {
             </Link>
           </div>
           <div className="bg-[#fbf8ef] rounded-xl p-[20px]">
-            <Link to={"/"} className="text-center">
+            <Link to={"/turnos"} className="text-center">
               <img
                 className="p-[20px] w-[150px]"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446222/u2erdekuep0dos7lqr2o.png"
@@ -50,7 +50,7 @@ export const HomeClient = () => {
             </Link>
           </div>
           <div className="bg-[#fbf8ef] rounded-xl p-[20px]">
-            <Link to={"/"} className="text-center">
+            <Link to={"/ajustes"} className="text-center">
               <img
                 className="p-[20px] w-[150px]"
                 src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446255/aghzamax91klrtunfudb.png"

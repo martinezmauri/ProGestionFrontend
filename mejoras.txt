@@ -1,0 +1,4 @@
+/dashboard:
+    Crear vista de "Mi Negocio"
+    Actualizar sidebar
+    

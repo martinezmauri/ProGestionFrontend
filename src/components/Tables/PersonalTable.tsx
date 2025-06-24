@@ -26,9 +26,6 @@ interface Props {
 }
 
 export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
-  console.log(employees);
-
-  const navigate = useNavigate();
   if (loading) {
     return (
       <div className="space-y-2">
@@ -71,7 +68,7 @@ export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
 
                 {t.name}
               </TableCell>
-              <TableCell>{t.rol ?? "No tiene rol"}</TableCell>
+              <TableCell>{t.role ?? "No tiene rol"}</TableCell>
               <TableCell>
                 {t.services.length > 0
                   ? t.services.map((s) => s.name).join(", ")

@@ -6,6 +6,9 @@ import { Button } from "@ui/button";
 import { Ban, Briefcase } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { BusinessHoursForm } from "./BusinessHoursForm";
+import { createEmployee } from "@api/getEmployees";
+import { useAuth } from "@context/AuthContext";
 interface Props {
   onPersonalCreated: () => void;
   onClose: () => void;
@@ -30,38 +33,42 @@ export const PersonalForm = ({
   const empty: IEmployeeEditResponse = {
     name: "",
     email: "",
-    rol: EmployeeRol.MANAGER,
-    services: [],
+    role: EmployeeRol.MANAGER,
+    servicesIds: [],
     employeeHours: [],
   };
+
+  const [form, setForm] = useState<IEmployeeEditResponse>(empty);
+  const roles = Object.values(EmployeeRol);
+  const { businessId } = useAuth();
+
+  useEffect(() => {
+    console.log("Business ID desde contexto:", businessId);
+  }, [businessId]);
 
   useEffect(() => {
     if (employee) {
       setForm({
         name: employee.name,
         email: employee.email,
-        rol: employee.rol,
-        services: employee.serviceIds,
+        role: employee.role,
+        servicesIds: employee.serviceIds,
         employeeHours: employee.employeeHours,
       });
     }
   }, [employee]);
 
-  const [form, setForm] = useState<IEmployeeEditResponse>(empty);
-  const roles = Object.values(EmployeeRol);
-
   const validateForm = () => {
     return (
       safeString(form.name).trim() &&
       safeString(form.email).trim() &&
-      form.rol &&
-      form.services.length > 0 &&
+      form.role &&
+      form.servicesIds.length > 0 &&
       form.employeeHours.length > 0
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return toast.warning("Por favor, completa todos los campos.", {
         icon: <Ban />,
@@ -72,12 +79,21 @@ export const PersonalForm = ({
       return;
     }
 
+    if (!businessId) {
+      toast.error("No se pudo identificar el negocio del usuario.");
+      return;
+    }
+
     try {
       if (employee && employee.id) {
         /* await updateEmployee(employee.id, form); */
         toast.success("Empleado actualizado correctamente");
       } else {
-        /*  await createEmployee(form); */
+        await createEmployee({
+          ...form,
+          businessId: businessId,
+          employeeHours: form.employeeHours.filter((d) => d.active),
+        });
         toast.success("Empleado creado correctamente");
         onPersonalCreated();
         onClose();
@@ -103,284 +119,165 @@ export const PersonalForm = ({
 
           <div className="p-6">
             <form className="space-y-6">
-              <div className="bg-gradient-to-r from-orange-500 to-orange-400 text-white p-4 rounded-t-lg">
-                <h3 className="text-lg font-semibold">Información básica</h3>
-              </div>
-              <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
-                <div>
-                  <label
-                    htmlFor="nombre"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Nombre completo
-                  </label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder="Ej: María López"
-                  />
+              <div>
+                <div className="bg-gradient-to-r from-orange-500 to-orange-400 text-white p-4 rounded-t-lg">
+                  <h3 className="text-lg font-semibold">Información básica</h3>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
                   <div>
                     <label
-                      htmlFor="rol"
+                      htmlFor="nombre"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Rol
-                    </label>
-                    <select
-                      id="rol"
-                      value={form.rol}
-                      onChange={(e) =>
-                        setForm({ ...form, rol: e.target.value as EmployeeRol })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    >
-                      {roles.map((rol) => (
-                        <option key={rol} value={rol}>
-                          {rol}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Correo electrónico
+                      Nombre completo
                     </label>
                     <input
-                      value={form.email}
+                      type="text"
+                      id="nombre"
+                      value={form.name}
                       onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
+                        setForm({ ...form, name: e.target.value })
                       }
-                      type="email"
-                      id="email"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="empleado@email.com"
+                      placeholder="Ej: María López"
                     />
                   </div>
-                </div>
-              </div>
 
-              <div className="bg-gradient-to-r from-purple-500 to-purple-400 text-white p-4 rounded-t-lg">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <Briefcase className="w-5 h-5 mr-2" />
-                  Servicios que ofrece
-                </h3>
-              </div>
-              <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
-                <p className="text-gray-600 text-sm">
-                  Selecciona todos los servicios que este empleado puede
-                  realizar
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {services.map((servicio) => (
-                    <div
-                      key={servicio.id}
-                      className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        id={`servicio-${servicio.id}`}
-                        checked={form.services.includes(servicio.id)}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="rol"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Rol
+                      </label>
+                      <select
+                        id="rol"
+                        value={form.role}
                         onChange={(e) =>
                           setForm({
                             ...form,
-                            services: e.target.checked
-                              ? [...form.services, servicio.id]
-                              : form.services.filter(
-                                  (id) => id !== servicio.id
-                                ),
+                            role: e.target.value as EmployeeRol,
                           })
                         }
-                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      >
+                        {roles.map((rol) => (
+                          <option key={rol} value={rol}>
+                            {rol}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Correo electrónico
+                      </label>
+                      <input
+                        value={form.email}
+                        onChange={(e) =>
+                          setForm({ ...form, email: e.target.value })
+                        }
+                        type="email"
+                        id="email"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        placeholder="empleado@email.com"
                       />
-                      <div className="flex-1">
-                        <label
-                          htmlFor={`servicio-${servicio.id}`}
-                          className="text-sm font-medium text-gray-700 cursor-pointer block"
-                        >
-                          {servicio.name}
-                        </label>
-                        <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                          <span>{servicio.price}</span>
-                          <span>•</span>
-                          <span>{servicio.duration}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="bg-gradient-to-r from-purple-500 to-purple-400 text-white p-4 rounded-t-lg">
+                  <h3 className="text-lg font-semibold flex items-center">
+                    <Briefcase className="w-5 h-5 mr-2" />
+                    Servicios que ofrece
+                  </h3>
+                </div>
+                <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
+                  <p className="text-gray-600 text-sm">
+                    Selecciona todos los servicios que este empleado puede
+                    realizar
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {services.map((servicio) => (
+                      <div
+                        key={servicio.id}
+                        className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          id={`servicio-${servicio.id}`}
+                          checked={form.servicesIds.includes(servicio.id)}
+                          onChange={(e) =>
+                            setForm({
+                              ...form,
+                              servicesIds: e.target.checked
+                                ? [...form.servicesIds, servicio.id]
+                                : form.servicesIds.filter(
+                                    (id) => id !== servicio.id
+                                  ),
+                            })
+                          }
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <div className="flex-1">
+                          <label
+                            htmlFor={`servicio-${servicio.id}`}
+                            className="text-sm font-medium text-gray-700 cursor-pointer block"
+                          >
+                            {servicio.name}
+                          </label>
+                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                            <span>{servicio.price}</span>
+                            <span>•</span>
+                            <span>{servicio.duration}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <Briefcase className="h-5 w-5 text-purple-600 mt-0.5" />
-                    </div>
-                    <div className="ml-3">
-                      <h4 className="text-sm font-medium text-purple-800">
-                        Especialización
-                      </h4>
-                      <p className="text-sm text-purple-700 mt-1">
-                        Los servicios seleccionados aparecerán disponibles
-                        cuando los clientes reserven turnos con este empleado.
-                        Puedes modificar esta selección en cualquier momento.
-                      </p>
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <Briefcase className="h-5 w-5 text-purple-600 mt-0.5" />
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-purple-800">
+                          Especialización
+                        </h4>
+                        <p className="text-sm text-purple-700 mt-1">
+                          Los servicios seleccionados aparecerán disponibles
+                          cuando los clientes reserven turnos con este empleado.
+                          Puedes modificar esta selección en cualquier momento.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-sky-500 to-sky-400 text-white p-4 rounded-t-lg">
-                <h3 className="text-lg font-semibold">Horarios de atención</h3>
-              </div>
-              <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
-                {[
-                  { day: "Lunes", key: "lunes" },
-                  { day: "Martes", key: "martes" },
-                  { day: "Miércoles", key: "miercoles" },
-                  { day: "Jueves", key: "jueves" },
-                  { day: "Viernes", key: "viernes" },
-                  { day: "Sábado", key: "sabado" },
-                  { day: "Domingo", key: "domingo" },
-                ].map((dayInfo, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-200 rounded-lg p-4"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`${dayInfo.key}-active`}
-                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor={`${dayInfo.key}-active`}
-                          className="ml-2 font-medium text-gray-700"
-                        >
-                          {dayInfo.day}
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`${dayInfo.key}-split`}
-                          className="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor={`${dayInfo.key}-split`}
-                          className="ml-2 text-sm text-gray-600"
-                        >
-                          Horario partido
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      <div>
-                        <label
-                          htmlFor={`${dayInfo.key}-open1`}
-                          className="block text-sm text-gray-600 mb-1"
-                        >
-                          Entrada
-                        </label>
-                        <input
-                          type="time"
-                          id={`${dayInfo.key}-open1`}
-                          defaultValue="09:00"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor={`${dayInfo.key}-close1`}
-                          className="block text-sm text-gray-600 mb-1"
-                        >
-                          Salida
-                        </label>
-                        <input
-                          type="time"
-                          id={`${dayInfo.key}-close1`}
-                          defaultValue="17:00"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 opacity-50">
-                      <div>
-                        <label
-                          htmlFor={`${dayInfo.key}-open2`}
-                          className="block text-sm text-gray-600 mb-1"
-                        >
-                          Reingreso
-                        </label>
-                        <input
-                          type="time"
-                          id={`${dayInfo.key}-open2`}
-                          defaultValue="15:00"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          disabled
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor={`${dayInfo.key}-close2`}
-                          className="block text-sm text-gray-600 mb-1"
-                        >
-                          Salida final
-                        </label>
-                        <input
-                          type="time"
-                          id={`${dayInfo.key}-close2`}
-                          defaultValue="19:00"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="bg-sky-50 border border-sky-200 rounded-lg p-4">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <svg
-                        className="h-5 w-5 text-sky-600 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <h4 className="text-sm font-medium text-sky-800">
-                        Configuración de horarios
-                      </h4>
-                      <p className="text-sm text-sky-700 mt-1">
-                        Los horarios configurados aquí determinarán la
-                        disponibilidad del empleado para recibir turnos. El
-                        horario partido permite manejar negocios que cierran al
-                        mediodía.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <BusinessHoursForm
+                  title="Horario del empleado"
+                  businessHours={form.employeeHours}
+                  setBusinessHours={(hours) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      employeeHours:
+                        typeof hours === "function"
+                          ? hours(prev.employeeHours)
+                          : hours,
+                    }))
+                  }
+                  showSubmitButton={false}
+                />
               </div>
 
               <div className="flex justify-end space-x-3 pt-4 border-t">

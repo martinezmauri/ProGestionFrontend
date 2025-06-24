@@ -1,4 +1,19 @@
-/dashboard:
-    Crear vista de "Mi Negocio"
-    Actualizar sidebar
-    
+Register:
+    Agregar validacion para contraseña de 8 caracteres, 1 mayuscula, 1 numero y 1 simbolo
+    Agregar funcionalidad para que cuando el usuario se registra correctamente ya aparezca logeado.
+
+Personal:
+    En la seccion de servicios, si no hay servicios, mostrar un mensaje de que no hay servicios y un boton para agregar un servicio
+    El modal tiene un rectangulo que sobresale de los bordes, se debe quitar.
+    En el form debemos cargar los servicios propios del negocio por el userId. 
+    (http://localhost:3000/service/user/${userId})
+
+register-business:
+    Deben existir 2 vistas, una para cuando el usuario no tiene un negocio (mostramos la vista con los formularios) y otra para cuando el usuario ya tiene un negocio (mostramos la vista con la informacion del negocio donde pueda editarla) o tambien podemos controlar que cuando el usuario entre a mi negocio se le redirija a la vista de register-business
+
+context:
+    Existe un problema con el businessId en la creacion del personal, el businessId llega como null pero en register-business y/o en el login se carga correctamente.
+
+sidebar: 
+    Se deben agrandar los iconos.
+

@@ -17,6 +17,7 @@ import StepIndicator from "@components/StepIndicator/StepIndicator";
 import { IBusiness } from "@interfaces/IBusiness";
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
 import { useAuth } from "@context/AuthContext";
+import AppSidebar from "@components/Sidebar/AppSidebar";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export const RegistersBusiness = () => {
     street: "",
     city: "",
   });
-  const { userId } = useAuth();
+  const { userId, setBusinessId } = useAuth();
   const { registerBusiness, loading, error } = useRegistrationBusiness();
 
   useEffect(() => {
@@ -57,24 +58,30 @@ export const RegistersBusiness = () => {
       toast.error("No se pudo registrar el negocio. Usuario no autenticado.");
       return;
     }
-    const success = await registerBusiness({
+    const newBusinessId = await registerBusiness({
       ...businessData,
       businessHours: businessHours.filter((d) => d.active),
       address: addressData,
     });
 
-    if (success) {
+    if (newBusinessId) {
       toast.success("Negocio creado!", {
         description: `Se ha creado correctamente el negocio ${businessData.name}`,
       });
-      navigate("/personal");
+
+      setBusinessId(String(newBusinessId));
+      setTimeout(() => {
+        navigate("/personal");
+      }, 0);
+    } else {
+      toast.error("No se pudo registrar el negocio.");
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#F4FBFF]">
       <div className="flex flex-1">
-        <Dashboard />
+        <AppSidebar />
         <div className="flex-1 p-6 space-y-6 max-w-4xl mx-auto">
           <AppHeader title="Información de la Empresa" />
           <p className="text-muted-foreground">

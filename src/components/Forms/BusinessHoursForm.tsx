@@ -12,10 +12,21 @@ import React, { useEffect, useState } from "react";
 interface Props {
   businessHours: IWorkSchedule[];
   setBusinessHours: React.Dispatch<React.SetStateAction<IWorkSchedule[]>>;
-  handleFinalSubmit: () => void;
+  handleFinalSubmit?: () => void;
+  title?: string;
+  showSubmitButton?: boolean;
 }
 /* Implemetar: */
 /* https://chatgpt.com/c/6849263e-f95c-8001-8d71-992e6e83e676 */
+const diasAIngles: Record<string, WeekDays> = {
+  lunes: WeekDays.Monday,
+  martes: WeekDays.Tuesday,
+  miercoles: WeekDays.Wednesday,
+  jueves: WeekDays.Thursday,
+  viernes: WeekDays.Friday,
+  sabado: WeekDays.Saturday,
+  domingo: WeekDays.Sunday,
+};
 
 const days = [
   { day: "Lunes", key: "lunes" },
@@ -30,13 +41,15 @@ export const BusinessHoursForm = ({
   businessHours,
   handleFinalSubmit,
   setBusinessHours,
+  title = "Horarios de atención",
+  showSubmitButton = true,
 }: Props) => {
   const [splitHours, setSplitHours] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (businessHours.length === 0) {
       const initial: IWorkSchedule[] = days.map((d) => ({
-        day_of_week: d.key as WeekDays,
+        day_of_week: diasAIngles[d.key],
         opening_morning_time: "",
         closing_morning_time: "",
         opening_evening_time: "",
@@ -63,9 +76,12 @@ export const BusinessHoursForm = ({
   };
 
   const handleDayActiveChange = (index: number, checked: boolean) => {
-    setBusinessHours((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, active: checked } : item))
-    );
+    setBusinessHours((prev) => {
+      const updated = prev.map((item, i) =>
+        i === index ? { ...item, active: checked } : item
+      );
+      return updated;
+    });
   };
 
   const handleSplitChange = (dayKey: string, checked: boolean) => {
@@ -75,17 +91,12 @@ export const BusinessHoursForm = ({
     }));
   };
 
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    handleFinalSubmit();
-  };
-
   return (
     <Card className="border-0 shadow-md overflow-hidden p-0">
       <CardHeader className="bg-gradient-to-r from-green-500 to-green-400 text-white px-4 py-4">
         <CardTitle className="flex items-center">
           <Clock className="w-5 h-5 mr-2" />
-          Horarios de atención
+          {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -237,7 +248,7 @@ export const BusinessHoursForm = ({
               </div>
             ))}
           </div>
-
+          {/* Info extra */}
           <div className="bg-sky-50 border border-sky-200 rounded-lg p-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -256,15 +267,20 @@ export const BusinessHoursForm = ({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button
-              className="bg-green-500 hover:bg-green-600"
-              onClick={handleOnClick}
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Finalizar configuración
-            </Button>
-          </div>
+          {showSubmitButton && handleFinalSubmit && (
+            <div className="flex justify-end pt-4">
+              <Button
+                className="bg-green-500 hover:bg-green-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleFinalSubmit();
+                }}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Finalizar configuración
+              </Button>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

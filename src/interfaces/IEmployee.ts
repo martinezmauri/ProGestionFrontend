@@ -1,4 +1,5 @@
 import { EmployeeRol } from "@enum/EmployeeRol";
+import { IWorkSchedule } from "./IWorkSchedule";
 
 export interface IEmployee {
   id?: string | null;
@@ -7,14 +8,8 @@ export interface IEmployee {
   email: string;
   serviceIds: string[];
   businessId: string;
-  rol: EmployeeRol;
-  employeeHours: {
-    day_of_week: string;
-    opening_morning_time: string;
-    closing_morning_time: string;
-    opening_evening_time: string;
-    closing_evening_time: string;
-  }[];
+  role: EmployeeRol;
+  employeeHours: IWorkSchedule[];
 }
 
 export interface IEmployeeResponse {
@@ -27,14 +22,8 @@ export interface IEmployeeResponse {
     name: string;
   }[];
   businessId: string;
-  rol: EmployeeRol;
-  employeeHours: {
-    day_of_week: string;
-    opening_morning_time: string;
-    closing_morning_time: string;
-    opening_evening_time: string;
-    closing_evening_time: string;
-  }[];
+  role: EmployeeRol;
+  employeeHours: IWorkSchedule[];
 }
 
 export interface IEmployeeEditResponse {
@@ -42,13 +31,16 @@ export interface IEmployeeEditResponse {
   name: string;
   email: string;
   profile_picture?: string;
-  services: string[];
-  rol: EmployeeRol;
-  employeeHours: {
-    day_of_week: string;
-    opening_morning_time: string;
-    closing_morning_time: string;
-    opening_evening_time: string;
-    closing_evening_time: string;
-  }[];
+  servicesIds: string[];
+  role: EmployeeRol;
+  employeeHours: IWorkSchedule[];
+}
+
+export interface IEmployeeCreate {
+  name: string;
+  email: string;
+  role: EmployeeRol;
+  businessId: string;
+  servicesIds: string[];
+  employeeHours: IWorkSchedule[];
 }

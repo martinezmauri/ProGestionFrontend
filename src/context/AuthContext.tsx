@@ -7,12 +7,15 @@ interface AuthContextProps {
   isAuthenticated: boolean;
   login: (id: string, token: string) => void;
   logout: () => void;
+  setBusinessId: (id: string | null) => void;
   userInfo: {
     id: string;
     email: string;
     rol: string;
     avatar_url: string;
+    businessId?: string | null;
   } | null;
+  businessId: string | null;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -26,11 +29,13 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<{
     id: string;
     email: string;
     rol: string;
     avatar_url: string;
+    businessId?: string | null;
   } | null>(null);
 
   useEffect(() => {
@@ -42,6 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUserId(id);
         const decoded = jwtDecode<any>(token);
         setUserInfo(decoded);
+        setBusinessId(decoded.businessId ?? null);
       } catch (err) {
         console.error("Error al cargar los datos de autenticación:", err);
       }
@@ -52,10 +58,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setToken(token);
     setUserId(id);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ id, token }));
-
     try {
       const decoded = jwtDecode<any>(token);
       setUserInfo(decoded);
+      setBusinessId(decoded.businessId ?? null);
     } catch (err) {
       console.error("Error al decodificar el token:", err);
     }
@@ -65,6 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setToken(null);
     setUserId(null);
     setUserInfo(null);
+    setBusinessId(null);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
@@ -77,6 +84,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         logout,
         isAuthenticated: !!token,
         userInfo,
+        setBusinessId,
+        businessId,
       }}
     >
       {children}

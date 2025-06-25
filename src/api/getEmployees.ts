@@ -1,5 +1,9 @@
 import axios from "axios";
-import { IEmployeeCreate, IEmployeeResponse } from "../interfaces/IEmployee";
+import {
+  IEmployee,
+  IEmployeeCreate,
+  IEmployeeResponse,
+} from "../interfaces/IEmployee";
 
 export const getEmployeesByBusinessId = async (
   id: number
@@ -38,7 +42,7 @@ export const getEmployeesByUserId = async (
   }
 };
 
-export const createEmployee = async (payload: IEmployeeCreate) => {
+export const createEmployee = async (payload: IEmployee) => {
   const normalizedPayload = {
     ...payload,
     employeeHours: payload.employeeHours.map((h) => ({
@@ -59,8 +63,31 @@ export const createEmployee = async (payload: IEmployeeCreate) => {
       normalizedPayload
     );
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error("Error al crear el empleado.");
+    }
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const updateEmployee = async (
+  id: number,
+  employee: Partial<IEmployee>
+) => {
+  try {
+    console.log(employee);
+
+    const response = await axios.patch(
+      `${import.meta.env.VITE_API_URL}/employee/${id}`,
+      employee
+    );
+    console.log("response", response);
+
+    if (response.status !== 200) {
+      throw new Error("Error al actualizar el empleado.");
     }
     return response.data;
   } catch (error) {

@@ -3,102 +3,89 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IService } from "@interfaces/IService";
 import { Dashboard } from "@components/Sidebar/Dashboard";
+import { useAuth } from "@context/AuthContext";
+import { getServiceByBusinessId } from "@api/getServices";
+import AppSidebar from "@components/Sidebar/AppSidebar";
+import { AppHeader } from "@components/Header/AppHeader";
+import { Card, CardContent, CardHeader } from "@ui/card";
+import { Button } from "@ui/button";
+import { Plus } from "lucide-react";
+import { FooterSimple } from "@components/Footer/FooterSimple";
+import { ServicesTable } from "@components/Tables/ServicesTable";
+import { ServiceModal } from "@components/Modals/ServiceModal";
 
 export const ServiceView = () => {
   const [services, setServices] = useState<IService[]>([]);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedService, setSelectedService] = useState<IService | null>(null);
+  const { businessId, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/v0/service/findAll")
-      .then((response) => setServices(response.data))
-      .catch((error) => console.error("Error fetching services:", error));
-  }, []);
-
-  const handleDelete = (id: string) => {
-    axios
-      .delete(`http://localhost:8080/api/v0/service/delete/${id}`)
-      .then(() =>
-        setServices((prev) => prev.filter((service) => service.id !== id))
-      )
-      .catch((error) => console.error("Error deleting service:", error));
+  const loadServices = async () => {
+    if (!businessId) return;
+    setLoading(true);
+    const data = await getServiceByBusinessId(Number(businessId));
+    setServices(data ?? []);
+    setLoading(false);
   };
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadServices();
+    }
+  }, [isAuthenticated]);
+
   return (
-    <section className="flex w-full">
-      <Dashboard />
-      <div className="flex flex-col items-center justify-center min-h-[100vh] m-auto">
-        <div className="bg-[#78b3ce] p-[20px] rounded-xl w-[80%] max-w-[900px] min-w-[80vh]">
-          <h1 className="text-center text-[#fbf8ef] text-[24px] font-bold mb-[15px]">
-            SERVICIOS
-          </h1>
-          {services.map((service) => (
-            <div
-              key={service.id}
-              className="flex items-center justify-between bg-[#c9e6f0] p-[10px] rounded-lg mb-[10px]"
-            >
-              <input
-                className="border-none p-[8px] rounded-lg bg-[#fbf8ef] text-[#295366] text-[14px] w-[18%]"
-                type="text"
-                placeholder={service.name}
-                readOnly
-              />
-              <input
-                className="border-none p-[8px] rounded-lg bg-[#fbf8ef] text-[#295366] text-[14px] w-[18%]"
-                type="text"
-                placeholder={service.description}
-                readOnly
-              />
-              <input
-                className="border-none p-[8px] rounded-lg bg-[#fbf8ef] text-[#295366] text-[14px] w-[18%]"
-                type="text"
-                placeholder={`${service.duration} min`}
-                readOnly
-              />
-              <input
-                className="border-none p-[8px] rounded-lg bg-[#fbf8ef] text-[#295366] text-[14px] w-[18%]"
-                type="text"
-                placeholder={`$${service.price}`}
-                readOnly
-              />
-              <button
-                className="border-none px-[12px] py-[8px] cursor-pointer font-bold text-white"
-                onClick={() => navigate(`/services/edit/${service.id}`)}
-              >
-                Editar
-              </button>
-              <button
-                className="border-none px-[12px] py-[8px] cursor-pointer font-bold text-white"
-                onClick={() => handleDelete(service.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          ))}
-          <div className="flex items-center justify-center bg-[#c9e6f0] p-[10px] rounded-lg cursor-pointer">
-            <button
-              className="bg-[#f96e2a] border-none text-white text-[24px] px-[12px] py-[8px] rounded-3xl cursor-pointer"
-              onClick={() => navigate("/services/new")}
-            >
-              +
-            </button>
-          </div>
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
+      {/* Contenedor principal del contenido (vertical) */}
+      <div className="flex flex-col flex-1">
+        <div className="flex-1 p-6 space-y-3">
+          <AppHeader title="Servicios" />
+          <p className="text-muted-foreground">
+            Gestiona los servicios de tu negocio.
+          </p>
+          <Card className="w-full">
+            <CardHeader className="flex justify-between items-center">
+              <span className="text-lg font-semibold">
+                Listado de Servicios
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  className="bg-gradient-to-r from-orange-500 to-orange-400 text-white cursor-pointer"
+                  variant="outline"
+                  onClick={() => setOpenModal(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Agregar Servicio
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="overflow-x-auto">
+                <ServicesTable
+                  services={services}
+                  loading={loading}
+                  onEdit={(service) => {
+                    setSelectedService(service);
+                    setOpenModal(true);
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        <div className="flex justify-between w-[80%] max-w-[900px] mt-[20px]">
-          <button
-            className="px-[15px] py-[10px] rounded-lg text-[16px] cursor-pointer text-white border-none bg-[#295366]"
-            onClick={() => navigate("/")}
-          >
-            Volver
-          </button>
-          <button
-            className="px-[15px] py-[10px] rounded-lg text-[16px] cursor-pointer text-white border-none bg-[#F96E2A]"
-            onClick={() => navigate("/homeclient")}
-          >
-            Aceptar y Guardar
-          </button>
-        </div>
+
+        {/* Footer al final del contenido, centrado */}
+        <FooterSimple />
       </div>
-    </section>
+      {/* Modal afuera del layout visual principal */}
+      <ServiceModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onServiceCreated={loadServices}
+        service={selectedService}
+      />
+    </div>
   );
 };

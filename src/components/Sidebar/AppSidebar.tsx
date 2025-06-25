@@ -24,7 +24,7 @@ import { cn } from "@lib/utils";
 const navItems = [
   { to: "/personal", icon: <Users className="w-5 h-5" />, label: "Personal" },
   {
-    to: "/servicios",
+    to: "/services",
     icon: <Calendar className="w-5 h-5" />,
     label: "Servicios",
   },
@@ -61,8 +61,8 @@ export default function AppSidebar() {
         <SidebarGroup className="flex flex-col items-center w-full">
           {/* Logo redondo */}
           <SidebarGroupLabel
-            className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold mb-6"
-            onClick={() => navigate("/")}
+            className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold mb-6 cursor-pointer"
+            onClick={() => navigate("/dashboard")}
           >
             P
           </SidebarGroupLabel>

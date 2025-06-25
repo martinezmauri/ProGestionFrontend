@@ -1,13 +1,16 @@
 export interface IService {
-  id: string;
+  id?: number;
   name: string;
   duration: number;
   description: string;
   price: number;
+  employee?: { id: string; name: string }[];
+  businessId?: string;
 }
 
-export interface IServiceResponse {
-  id: string;
-  name: string;
-  employee: { id: string; name: string };
+export interface IServiceUpdate {
+  name?: string;
+  duration?: number;
+  description?: string;
+  price?: number;
 }

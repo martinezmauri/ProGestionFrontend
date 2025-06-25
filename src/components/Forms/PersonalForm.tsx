@@ -1,14 +1,15 @@
 import FechaHoraHeader from "@components/Header/FechaHoraHeader";
 import { EmployeeRol } from "@enum/EmployeeRol";
-import { IEmployee, IEmployeeEditResponse } from "@interfaces/IEmployee";
+import { IEmployee } from "@interfaces/IEmployee";
 import { IService } from "@interfaces/IService";
 import { Button } from "@ui/button";
 import { Ban, Briefcase } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { BusinessHoursForm } from "./BusinessHoursForm";
-import { createEmployee } from "@api/getEmployees";
+import { createEmployee, updateEmployee } from "@api/getEmployees";
 import { useAuth } from "@context/AuthContext";
+
 interface Props {
   onPersonalCreated: () => void;
   onClose: () => void;
@@ -21,6 +22,34 @@ function safeString(val: any): string {
   return val == null ? "" : String(val);
 }
 
+//Ayuda a enviar solo los campos que se modificaron
+function cleanUpdatePayloadEmployee(
+  form: IEmployee,
+  original: IEmployee
+): Partial<IEmployee> {
+  const cleaned: Partial<IEmployee> = {};
+
+  if (form.name.trim() !== original.name.trim()) cleaned.name = form.name;
+  if (form.email.trim() !== original.email.trim()) cleaned.email = form.email;
+  if (form.role !== original.role) cleaned.role = form.role;
+
+  if (
+    JSON.stringify(form.servicesIds.sort()) !==
+    JSON.stringify(original.servicesIds.sort())
+  ) {
+    cleaned.servicesIds = form.servicesIds;
+  }
+
+  if (
+    JSON.stringify(form.employeeHours) !==
+    JSON.stringify(original.employeeHours)
+  ) {
+    cleaned.employeeHours = form.employeeHours;
+  }
+
+  return cleaned;
+}
+
 //REGEX para validar email
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -30,7 +59,7 @@ export const PersonalForm = ({
   employee,
   services,
 }: Props) => {
-  const empty: IEmployeeEditResponse = {
+  const empty: IEmployee = {
     name: "",
     email: "",
     role: EmployeeRol.MANAGER,
@@ -38,13 +67,9 @@ export const PersonalForm = ({
     employeeHours: [],
   };
 
-  const [form, setForm] = useState<IEmployeeEditResponse>(empty);
+  const [form, setForm] = useState<IEmployee>(empty);
   const roles = Object.values(EmployeeRol);
   const { businessId } = useAuth();
-
-  useEffect(() => {
-    console.log("Business ID desde contexto:", businessId);
-  }, [businessId]);
 
   useEffect(() => {
     if (employee) {
@@ -52,7 +77,7 @@ export const PersonalForm = ({
         name: employee.name,
         email: employee.email,
         role: employee.role,
-        servicesIds: employee.serviceIds,
+        servicesIds: employee.servicesIds,
         employeeHours: employee.employeeHours,
       });
     }
@@ -63,7 +88,6 @@ export const PersonalForm = ({
       safeString(form.name).trim() &&
       safeString(form.email).trim() &&
       form.role &&
-      form.servicesIds.length > 0 &&
       form.employeeHours.length > 0
     );
   };
@@ -86,12 +110,20 @@ export const PersonalForm = ({
 
     try {
       if (employee && employee.id) {
-        /* await updateEmployee(employee.id, form); */
+        const cleanedData = cleanUpdatePayloadEmployee(form, employee);
+        if (Object.keys(cleanedData).length === 0) {
+          toast.warning("No hay cambios para actualizar.");
+          return;
+        }
+
+        await updateEmployee(employee.id, cleanedData);
         toast.success("Empleado actualizado correctamente");
+        onPersonalCreated();
+        onClose();
       } else {
         await createEmployee({
           ...form,
-          businessId: businessId,
+          businessId: String(businessId),
           employeeHours: form.employeeHours.filter((d) => d.active),
         });
         toast.success("Empleado creado correctamente");
@@ -205,42 +237,44 @@ export const PersonalForm = ({
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {services.map((servicio) => (
-                      <div
-                        key={servicio.id}
-                        className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`servicio-${servicio.id}`}
-                          checked={form.servicesIds.includes(servicio.id)}
-                          onChange={(e) =>
-                            setForm({
-                              ...form,
-                              servicesIds: e.target.checked
-                                ? [...form.servicesIds, servicio.id]
-                                : form.servicesIds.filter(
-                                    (id) => id !== servicio.id
-                                  ),
-                            })
-                          }
-                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                        />
-                        <div className="flex-1">
-                          <label
-                            htmlFor={`servicio-${servicio.id}`}
-                            className="text-sm font-medium text-gray-700 cursor-pointer block"
-                          >
-                            {servicio.name}
-                          </label>
-                          <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                            <span>{servicio.price}</span>
-                            <span>•</span>
-                            <span>{servicio.duration}</span>
+                    {services.map((servicio) =>
+                      servicio.id !== undefined ? (
+                        <div
+                          key={servicio.id}
+                          className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <input
+                            type="checkbox"
+                            id={`servicio-${servicio.id}`}
+                            checked={form.servicesIds.includes(servicio.id)}
+                            onChange={(e) =>
+                              setForm({
+                                ...form,
+                                servicesIds: e.target.checked
+                                  ? [...form.servicesIds, servicio.id!]
+                                  : form.servicesIds.filter(
+                                      (id) => id !== servicio.id
+                                    ),
+                              })
+                            }
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          />
+                          <div className="flex-1">
+                            <label
+                              htmlFor={`servicio-${servicio.id}`}
+                              className="text-sm font-medium text-gray-700 cursor-pointer block"
+                            >
+                              {servicio.name}
+                            </label>
+                            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                              <span>{servicio.price}</span>
+                              <span>•</span>
+                              <span>{servicio.duration}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ) : null
+                    )}
                   </div>
 
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">

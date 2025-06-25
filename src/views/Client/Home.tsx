@@ -59,7 +59,7 @@ export const HomeClient = () => {
               <div className="bg-sky-500 h-2"></div>
               <CardContent
                 className="p-6"
-                onClick={() => handleNavigate("/servicios")}
+                onClick={() => handleNavigate("/services")}
               >
                 <div className="w-16 h-16 rounded-lg flex items-center justify-center mb-4">
                   <img

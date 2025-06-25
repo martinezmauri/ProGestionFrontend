@@ -79,11 +79,10 @@ export const Personal = () => {
                   loading={loading}
                   onEdit={(employee) => {
                     const mapped: IEmployee = {
-                      id: employee.id,
+                      id: Number(employee.id),
                       name: employee.name,
                       email: employee.email,
-                      profile_picture: employee.profile_picture,
-                      serviceIds: employee.services.map((s) => s.id),
+                      servicesIds: employee.services.map((s) => Number(s.id)),
                       businessId: employee.businessId,
                       role: employee.role,
                       employeeHours: employee.employeeHours,

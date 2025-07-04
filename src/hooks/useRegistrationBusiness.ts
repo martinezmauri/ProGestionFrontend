@@ -27,9 +27,11 @@ export const useRegistrationBusiness = () => {
         `${import.meta.env.VITE_API_URL}/business`,
         payload
       );
+      console.log(response);
 
-      return response.data.id;
+      return response;
     } catch (error) {
+      console.log(error);
       setError(error instanceof Error ? error.message : "Error desconocido");
     } finally {
       setLoading(false);

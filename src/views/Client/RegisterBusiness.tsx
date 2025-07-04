@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { IRegisterBusiness } from "@interfaces/IRegisterBusiness";
 import { useRegistrationBusiness } from "@hooks/useRegistrationBusiness";
-import { WeekDays } from "@enum/WeekDays";
 import { useNavigate } from "react-router-dom";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { AddressForm } from "@components/Forms/AddressForm";
-import { DaysWithCheckbox } from "@components/Dropdowns/DaysWithCheckbox";
 import { BusinessForm } from "@components/Forms/BusinessForm";
-import { Card } from "@ui/card";
 import { IAddress } from "@interfaces/IAddress";
 import { toast } from "sonner";
-import { Dashboard } from "@components/Sidebar/Dashboard";
 import { AppHeader } from "@components/Header/AppHeader";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/tabs";
 import StepIndicator from "@components/StepIndicator/StepIndicator";
 import { IBusiness } from "@interfaces/IBusiness";
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
@@ -37,7 +31,7 @@ export const RegistersBusiness = () => {
     street: "",
     city: "",
   });
-  const { userId, setBusinessId } = useAuth();
+  const { userId, login } = useAuth();
   const { registerBusiness, loading, error } = useRegistrationBusiness();
 
   useEffect(() => {
@@ -58,18 +52,18 @@ export const RegistersBusiness = () => {
       toast.error("No se pudo registrar el negocio. Usuario no autenticado.");
       return;
     }
-    const newBusinessId = await registerBusiness({
+    const response = await registerBusiness({
       ...businessData,
       businessHours: businessHours.filter((d) => d.active),
       address: addressData,
     });
 
-    if (newBusinessId) {
+    if (response?.data?.token && response?.data?.business) {
       toast.success("Negocio creado!", {
         description: `Se ha creado correctamente el negocio ${businessData.name}`,
       });
 
-      setBusinessId(String(newBusinessId));
+      login(userId, response.data.token);
       setTimeout(() => {
         navigate("/personal");
       }, 0);

@@ -18,7 +18,10 @@ export const ServiceModal = ({
 }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="!max-w-[90vw] sm:!max-w-[800px] !w-full">
+      <DialogContent
+        className="!max-w-[90vw] sm:!max-w-[800px] !w-full"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle>
             {service ? "Editar Servicio" : "Nuevo Servicio"}

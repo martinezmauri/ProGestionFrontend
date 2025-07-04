@@ -1,14 +1,4 @@
-import { Avatar } from "@ui/avatar";
-import { Button } from "@ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@ui/tooltip";
-import { Bell, Search, Settings } from "lucide-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 interface Props {
   title: string;
 }

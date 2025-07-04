@@ -15,6 +15,7 @@ import { Input } from "@ui/input";
 import { Button } from "@ui/button";
 import { Rol } from "@enum/UserRol";
 import { toast } from "sonner";
+import { useAuth } from "@context/AuthContext";
 
 interface ModalProps {
   onClose: () => void;
@@ -23,6 +24,7 @@ interface ModalProps {
 
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [registerData, setRegisterData] = useState({
     email: "",
     nameUser: "",
@@ -93,6 +95,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
       );
 
       if (response.status === 201) {
+        const { id, token } = response.data;
+        login(id, token);
         onClose();
         toast.success("Usuario registrado!", {
           description: "Te has registrado correctamente.",

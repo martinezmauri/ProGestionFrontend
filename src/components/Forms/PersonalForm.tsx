@@ -1,14 +1,14 @@
-import FechaHoraHeader from "@components/Header/FechaHoraHeader";
 import { EmployeeRol } from "@enum/EmployeeRol";
 import { IEmployee } from "@interfaces/IEmployee";
 import { IService } from "@interfaces/IService";
 import { Button } from "@ui/button";
-import { Ban, Briefcase } from "lucide-react";
+import { Ban, Briefcase, Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { BusinessHoursForm } from "./BusinessHoursForm";
 import { createEmployee, updateEmployee } from "@api/getEmployees";
 import { useAuth } from "@context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   onPersonalCreated: () => void;
@@ -70,6 +70,7 @@ export const PersonalForm = ({
   const [form, setForm] = useState<IEmployee>(empty);
   const roles = Object.values(EmployeeRol);
   const { businessId } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (employee) {
@@ -77,7 +78,7 @@ export const PersonalForm = ({
         name: employee.name,
         email: employee.email,
         role: employee.role,
-        servicesIds: employee.servicesIds,
+        servicesIds: employee.servicesIds ?? [],
         employeeHours: employee.employeeHours,
       });
     }
@@ -137,7 +138,6 @@ export const PersonalForm = ({
   };
   return (
     <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FechaHoraHeader />
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
@@ -246,7 +246,9 @@ export const PersonalForm = ({
                           <input
                             type="checkbox"
                             id={`servicio-${servicio.id}`}
-                            checked={form.servicesIds.includes(servicio.id)}
+                            checked={
+                              form.servicesIds?.includes(servicio.id) ?? false
+                            }
                             onChange={(e) =>
                               setForm({
                                 ...form,
@@ -275,6 +277,13 @@ export const PersonalForm = ({
                         </div>
                       ) : null
                     )}
+                    <Button
+                      className="bg-purple-500 hover:bg-purple-600 text-white"
+                      onClick={() => navigate("/services")}
+                    >
+                      <Plus />
+                      Crear
+                    </Button>
                   </div>
 
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">

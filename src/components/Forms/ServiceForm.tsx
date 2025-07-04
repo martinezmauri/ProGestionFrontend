@@ -49,7 +49,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
   };
 
   const [form, setForm] = useState<IService>(empty);
-  const { businessId } = useAuth();
+  const { businessId, userInfo } = useAuth();
 
   useEffect(() => {
     if (service) {
@@ -67,6 +67,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
         icon: <Ban />,
       });
     }
+
     if (!businessId) {
       toast.error("No se pudo identificar el negocio del usuario.");
       return;
@@ -102,7 +103,6 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
 
   return (
     <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FechaHoraHeader />
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">

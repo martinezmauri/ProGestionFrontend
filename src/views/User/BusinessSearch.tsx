@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
-import { ArrowLeft, Building, Calendar, MapPin, Search } from "lucide-react";
+import { Building, Calendar, MapPin, Search } from "lucide-react";
 import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import getBusiness from "@api/getBusiness";

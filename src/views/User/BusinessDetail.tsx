@@ -1,13 +1,9 @@
 import { getBusinessById, PropsBusiness } from "@api/getBusiness";
-import ServicesGrid from "@components/Dropdowns/ServicesGrid";
-import { GridFooter } from "@components/Footer/GridFooter";
-import Grid from "@components/Grid/Grid";
 import HorariosCard from "@components/Horarios/HorariosCard";
 import HorarioCierreHoy from "@components/Horarios/HorariosCierreHoy";
-import { NavbarUser } from "@components/Navbars/NavbarUser";
 import availableSchedule from "@helpers/availableSchedule";
 import useLoadDataGrid from "@hooks/useLoadDataGrid";
-import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
+import { Avatar, AvatarFallback } from "@ui/avatar";
 import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
@@ -19,7 +15,6 @@ import {
   Clock,
   MapPin,
   Navigation,
-  Phone,
   Star,
   Users,
 } from "lucide-react";

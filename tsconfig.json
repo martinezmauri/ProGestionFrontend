@@ -20,6 +20,8 @@
       "@ui/*": ["./src/ui/*"],
       "@views/*": ["./src/views/*"],
       "@context/*": ["./src/context/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   }
 }

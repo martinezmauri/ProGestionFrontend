@@ -247,15 +247,16 @@ export const PersonalForm = ({
                             type="checkbox"
                             id={`servicio-${servicio.id}`}
                             checked={
-                              form.servicesIds?.includes(servicio.id) ?? false
+                              form.servicesIds?.includes(Number(servicio.id)) ??
+                              false
                             }
                             onChange={(e) =>
                               setForm({
                                 ...form,
                                 servicesIds: e.target.checked
-                                  ? [...form.servicesIds, servicio.id!]
+                                  ? [...form.servicesIds, Number(servicio.id!)]
                                   : form.servicesIds.filter(
-                                      (id) => id !== servicio.id
+                                      (id) => id !== Number(servicio.id)
                                     ),
                               })
                             }

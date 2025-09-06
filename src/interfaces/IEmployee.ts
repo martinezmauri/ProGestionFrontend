@@ -2,11 +2,12 @@ import { EmployeeRol } from "@enum/EmployeeRol";
 import { IWorkSchedule } from "./IWorkSchedule";
 
 export interface IEmployee {
-  id?: number;
+  id?: number | null;
   name: string;
   email: string;
   role: EmployeeRol;
-  businessId?: string;
+  profile_picture?: string;
+  businessId?: string | null;
   servicesIds: number[];
   employeeHours: IWorkSchedule[];
 }

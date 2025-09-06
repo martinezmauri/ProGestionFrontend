@@ -1,4 +1,4 @@
-import { DaysWithCheckbox } from "@components/Dropdowns/DaysWithCheckbox";
+import { EmployeeRol } from "@enum/EmployeeRol";
 import { Rol } from "@enum/UserRol";
 import { WeekDays } from "@enum/WeekDays";
 import useHandlePersonalView from "@hooks/useHandlePersonalView";
@@ -54,10 +54,12 @@ export const PersonalEditForm = () => {
   const [employee, setEmployee] = useState<IEmployee>({
     id: null,
     name: "",
-    profilePicture: "",
-    serviceIds: [],
+    email: "",
+    profile_picture: "",
+    servicesIds: [],
     businessId: null,
-    rol: Rol.Employee,
+    role: EmployeeRol.MANAGER,
+    employeeHours: [],
   });
   const [imageUrl, setImageUrl] = useState<string>("");
 
@@ -87,20 +89,22 @@ export const PersonalEditForm = () => {
   };
 
   useEffect(() => {
-    if (employee.profilePicture) {
-      setImageUrl(employee.profilePicture);
+    if (employee.profile_picture) {
+      setImageUrl(employee.profile_picture);
     } else {
       setImageUrl("/assets/user-logo.png");
     }
-  }, [employee.profilePicture]);
+  }, [employee.profile_picture]);
 
   const handleCheckboxChange = (id: string) => {
     setEmployee((prevEmployee) => {
-      const isSelected = prevEmployee.serviceIds.includes(id);
+      const isSelected = prevEmployee.servicesIds.includes(Number(id));
 
       const updatedServiceIds = isSelected
-        ? prevEmployee.serviceIds.filter((serviceId) => serviceId !== id)
-        : [...prevEmployee.serviceIds, id];
+        ? prevEmployee.servicesIds.filter(
+            (serviceId) => serviceId !== Number(id)
+          )
+        : [...prevEmployee.servicesIds, Number(id)];
 
       return {
         ...prevEmployee,
@@ -116,7 +120,7 @@ export const PersonalEditForm = () => {
       setImageUrl(URL.createObjectURL(selectedFile));
       setEmployee({
         ...employee,
-        profilePicture: URL.createObjectURL(selectedFile),
+        profile_picture: URL.createObjectURL(selectedFile),
       });
     }
   };
@@ -184,8 +188,12 @@ export const PersonalEditForm = () => {
                       <input
                         type="checkbox"
                         value={service.id}
-                        onChange={() => handleCheckboxChange(service.id)}
-                        checked={employee.serviceIds.includes(service.id)}
+                        onChange={() =>
+                          handleCheckboxChange(String(service.id ?? ""))
+                        }
+                        checked={employee.servicesIds.includes(
+                          Number(service.id)
+                        )}
                       />
                       {service.name}
                     </label>
@@ -195,7 +203,7 @@ export const PersonalEditForm = () => {
             </div>
             <div>
               <Select
-                value={employee.rol}
+                value={employee.role}
                 onValueChange={(value: Rol) =>
                   setEmployee((prev) => ({ ...prev, rol: value }))
                 }

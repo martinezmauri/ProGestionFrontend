@@ -80,7 +80,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
           toast.warning("No hay cambios para actualizar.");
           return;
         }
-        await updateService(service.id, cleanedData);
+        await updateService(Number(service.id), cleanedData);
         toast.success("Servicio actualizado correctamente");
         onServiceCreated();
         onClose();

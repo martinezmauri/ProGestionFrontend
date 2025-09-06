@@ -5,7 +5,7 @@ import { NavbarClient } from "../../components/Navbars/NavbarClient";
 export const Plans = () => {
   return (
     <>
-      <NavbarClient />
+      {/* <NavbarClient /> */}
       <PlansClient />
     </>
   );

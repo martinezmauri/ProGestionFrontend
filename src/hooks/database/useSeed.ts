@@ -5,7 +5,7 @@ import categories from "@helpers/DataBase/category.json";
 import business from "@helpers/DataBase/business.json";
 import services from "@helpers/DataBase/service.json";
 import employees from "@helpers/DataBase/employee.json";
-import businessSchedule from "@helpers/Database/businessSchedule.json";
+import businessSchedule from "../../helpers/DataBase/businessSchedule.json";
 import employeeSchedule from "@helpers/DataBase/employeeSchedule.json";
 import axios from "axios";
 

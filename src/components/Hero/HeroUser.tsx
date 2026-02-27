@@ -175,16 +175,7 @@ export const HeroUser = ({ formRef }: Props) => {
                 )}
               </div>
               <div className="space-y-1">
-                <Select
-                  onValueChange={(value) =>
-                    handleChange(
-                      {
-                        target: { value },
-                      } as React.ChangeEvent<HTMLInputElement>,
-                      "category"
-                    )
-                  }
-                >
+                <Select>
                   <SelectTrigger
                     className={`bg-white w-full rounded-md ${
                       errors.category ? "border-red-500" : "border-gray-200"
@@ -192,14 +183,21 @@ export const HeroUser = ({ formRef }: Props) => {
                   >
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
+
                   <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.name}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    {Array.isArray(categories) && categories.length > 0 ? (
+                      categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        No hay categorías disponibles
+                      </div>
+                    )}
                   </SelectContent>
-                </Select>
+                </Select>
                 {errors.category && (
                   <p className="text-sm text-red-500">
                     La categoría es obligatoria.
@@ -220,16 +218,7 @@ export const HeroUser = ({ formRef }: Props) => {
                   Categorías populares
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {categories.slice(0, 5).map((category, index) => (
-                    <Button
-                      key={category.id ?? index}
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full border-gray-200 text-gray-700 hover:border-sky-500 hover:text-sky-700 cursor-pointer"
-                    >
-                      {category.name}
-                    </Button>
-                  ))}
+                 
                 </div>
               </div>
             )}

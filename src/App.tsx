@@ -13,6 +13,7 @@ import { Support } from "@views/Client/Support";
 import BusinessDetail from "@views/User/BusinessDetail";
 import { Personal } from "@views/Client/Personal";
 import NotFound from "@components/NotFound/NotFound";
+import ProtectedRoute from "@components/ProtectedRoute";
 
 function App() {
   return (
@@ -24,12 +25,14 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/business/:id" element={<BusinessDetail />} />
         <Route path="/search" element={<BusinessSearch />} />
-        <Route element={<SidebarLayout />}>
-          <Route path="/register-business" element={<RegistersBusiness />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/dashboard" element={<HomeClient />} />
-          <Route path="/personal" element={<Personal />} />
-          <Route path="/services" element={<ServiceView />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<SidebarLayout />}>
+            <Route path="/register-business" element={<RegistersBusiness />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/dashboard" element={<HomeClient />} />
+            <Route path="/personal" element={<Personal />} />
+            <Route path="/services" element={<ServiceView />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

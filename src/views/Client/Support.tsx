@@ -17,11 +17,11 @@ export const Support = () => {
             </div>
             <div className="text-white">
               <h5 className="text-[1.5em] font-semibold">Email</h5>
-              <p>progestion@gmail.com</p>
+              <p>omtime@gmail.com</p>
               <h5 className="text-[1.5em] font-semibold">Whatsapp</h5>
               <p>+54 223323452</p>
               <h5 className="text-[1.5em] font-semibold">Instagram</h5>
-              <p>@Progestion</p>
+              <p>@OMTime</p>
             </div>
           </div>
         </Card>

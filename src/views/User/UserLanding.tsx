@@ -1,8 +1,13 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import { HeroUser } from "@components/Hero/HeroUser";
-import { Featured } from "@components/About/Featured";
-import { FooterMega } from "@components/Footer/FooterMega";
+import {
+  FeaturedEstablishments,
+  HowItWorks,
+  CTABusiness,
+  FAQ,
+  LandingFooter,
+} from "@components/Landing/LandingSections";
 
 export const UserLanding = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -10,22 +15,11 @@ export const UserLanding = () => {
     <div className="bg-[#F2FAFF] w-full h-full">
       <NavbarUser />
       <HeroUser formRef={formRef} />
-      <Featured
-        scrollToForm={() => {
-          if (formRef.current) {
-            formRef.current.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-
-            formRef.current.classList.add("animate-ring");
-            setTimeout(() => {
-              formRef.current?.classList.remove("animate-ring");
-            }, 1500);
-          }
-        }}
-      />
-      <FooterMega />
+      <FeaturedEstablishments />
+      <HowItWorks />
+      <CTABusiness />
+      <FAQ />
+      <LandingFooter />
     </div>
   );
 };

@@ -6,7 +6,7 @@ export const FooterSimple = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <h1 className="text-orange-500 font-bold text-xl">ProGestion</h1>
+            <h1 className="text-orange-500 font-bold text-xl">OMTime</h1>
           </div>
           <div className="flex space-x-6">
             <a href="#" className="text-gray-600 hover:text-gray-900 text-sm">
@@ -22,7 +22,7 @@ export const FooterSimple = () => {
         </div>
         <div className="border-t border-gray-200 mt-6 pt-6 text-center md:text-left">
           <p className="text-gray-600 text-sm">
-            © 2024 ProGestion. Todos los derechos reservados.
+            © 2026 OMTime. Todos los derechos reservados.
           </p>
         </div>
       </div>

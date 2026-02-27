@@ -19,7 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/client" element={<ClientLanding />} />
+        <Route path="/para-negocios" element={<ClientLanding />} />
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />

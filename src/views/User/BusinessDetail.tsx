@@ -53,7 +53,7 @@ const BusinessDetail = () => {
           <ArrowLeft className="w-4 h-4 mr-1" />
           <span className="text-sm">Volver a resultados</span>
         </Link>
-        <h1 className="text-orange-500 font-bold text-xl">ProGestion</h1>
+        <h1 className="text-orange-500 font-bold text-xl">OMTime</h1>
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
@@ -138,11 +138,10 @@ const BusinessDetail = () => {
                           : "outline"
                       }
                       onClick={() => setSelectedService(servicio.name)}
-                      className={`h-auto p-4 flex flex-col items-start ${
-                        servicio.name === selectedService
+                      className={`h-auto p-4 flex flex-col items-start ${servicio.name === selectedService
                           ? "bg-orange-500 hover:bg-orange-600 text-white"
                           : "border-gray-200 hover:border-orange-300"
-                      }`}
+                        }`}
                     >
                       <span className="font-medium">{servicio.name}</span>
                       {servicio.price && (
@@ -264,11 +263,10 @@ const BusinessDetail = () => {
                                         variant="outline"
                                         size="sm"
                                         disabled={!isAvailable}
-                                        className={`text-xs ${
-                                          isAvailable
+                                        className={`text-xs ${isAvailable
                                             ? "border-sky-200 hover:bg-sky-50 hover:border-sky-300"
                                             : "opacity-50 cursor-not-allowed"
-                                        }`}
+                                          }`}
                                       >
                                         {hora}
                                       </Button>

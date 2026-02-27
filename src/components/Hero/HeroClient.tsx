@@ -39,7 +39,7 @@ export const HeroClient = () => {
             <img
               className="w-[100%]"
               src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745446087/lnh40csjj725fa1m3aec.png"
-              alt="Vista de un iPad y un teléfono mostrando ProGestion"
+              alt="Vista de un iPad y un teléfono mostrando OMTime"
             />
           </section>
         </div>

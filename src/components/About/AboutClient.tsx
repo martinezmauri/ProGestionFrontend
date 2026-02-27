@@ -10,7 +10,7 @@ export const AboutClient = () => {
             Todo lo que necesitas para gestionar tu negocio
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            ProGestion te ofrece todas las herramientas para optimizar la
+            OMTime te ofrece todas las herramientas para optimizar la
             gestión de turnos y mejorar la experiencia de tus clientes.
           </p>
         </div>
@@ -110,7 +110,7 @@ export const AboutClient = () => {
             ¿Listo para optimizar tu negocio?
           </h2>
           <p className="text-sky-100 max-w-2xl mx-auto mb-8 text-lg">
-            Únete a miles de negocios que ya confían en ProGestion para la
+            Únete a miles de negocios que ya confían en OMTime para la
             gestión de sus turnos.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">

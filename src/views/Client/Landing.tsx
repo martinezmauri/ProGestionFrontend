@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { NavbarClient } from "@components/Navbars/NavbarClient";
-import { WhatsAppButton } from "@components/WhatsApp/WhatsAppButton";
 import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
-import { HeroClient } from "@components/Hero/HeroClient";
-import { AboutClient } from "@components/About/AboutClient";
-import { FooterMega } from "@components/Footer/FooterMega";
+import {
+  ClientHero,
+  ClientFeatures,
+  ClientFreeTrial,
+  ClientAdvantages,
+  ClientReviews,
+  ClientFAQ,
+  ClientFooter,
+} from "@components/Landing/ClientLandingSections";
 
 export const ClientLanding = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
@@ -22,12 +27,17 @@ export const ClientLanding = () => {
     setIsOpenRegister(true);
   };
   const handleCloseRegister = () => setIsOpenRegister(false);
+
   return (
     <div className="w-full h-full bg-[#F2FAFF]">
       <NavbarClient onOpenLogin={handleOpenLogin} />
-      <HeroClient />
-      <AboutClient />
-      <FooterMega />
+      <ClientHero />
+      <ClientFeatures />
+      <ClientFreeTrial />
+      <ClientAdvantages />
+      <ClientReviews />
+      <ClientFAQ />
+      <ClientFooter />
       {isOpenLogin && (
         <FormLogin
           onClose={handleCloseLogin}

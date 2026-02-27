@@ -13,8 +13,8 @@ export const NavbarClient = ({ onOpenLogin }: props) => {
     <header className="container mx-auto px-4 py-4 flex items-center justify-between">
       {/* Título izquierda */}
       <div className="flex items-center">
-        <Link to={"/client"} className="text-[#f96e2a] text-[2.3em] font-bold">
-          ProGestion
+        <Link to={"/para-negocios"} className="text-[#f96e2a] text-[2.3em] font-bold">
+          OMTime
         </Link>
       </div>
 

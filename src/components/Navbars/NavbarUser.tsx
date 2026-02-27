@@ -28,7 +28,7 @@ export const NavbarUser = () => {
       {/* Lado izquierdo */}
       <div className="flex items-center gap-6">
         <Link to={"/"} className="text-[#f96e2a] text-[2.3em] font-bold">
-          ProGestion
+          OMTime
         </Link>
       </div>
 
@@ -36,9 +36,9 @@ export const NavbarUser = () => {
       <div className="flex items-center gap-5">
         <Link
           className="bg-white border border-[#0284C7] text-[#0284C7] font-medium px-6 py-2 rounded-md hover:bg-[#E0F2FE] transition-colors"
-          to={"/client"}
+          to={"/para-negocios"}
         >
-          Contratá ProGestion
+          OMTime para negocios
         </Link>
 
         {isAuthenticated ? (

@@ -21,7 +21,7 @@ export const HomeClient = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-10 p-4 flex justify-between items-center">
         <div className="flex items-center">
           <Menu className="w-6 h-6 mr-3 text-sky-600" />
-          <h1 className="text-orange-500 font-bold text-xl">ProGestion</h1>
+          <h1 className="text-orange-500 font-bold text-xl">OMTime</h1>
         </div>
         <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
           <span className="text-white font-bold">P</span>
@@ -32,7 +32,7 @@ export const HomeClient = () => {
       <main className="flex-1 p-4 md:p-8 overflow-auto pt-16 md:pt-8">
         <div className="max-w-7xl mx-auto">
           <header className="hidden md:block mb-8">
-            <h1 className="text-orange-500 font-bold text-2xl">ProGestion</h1>
+            <h1 className="text-orange-500 font-bold text-2xl">OMTime</h1>
           </header>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

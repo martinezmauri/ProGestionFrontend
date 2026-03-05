@@ -6,6 +6,8 @@ import { Button } from "@ui/button";
 import axios from "axios";
 import { toast } from "sonner";
 import { useAuth } from "@context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 interface ModalProps {
   onClose: () => void;
@@ -17,6 +19,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loginWithRedirect } = useAuth0();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -53,6 +56,15 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
           icon: <CheckCircle2 className="h-4 w-4" />,
           duration: 1000,
         });
+
+        const decoded: any = jwtDecode(token);
+        setTimeout(() => {
+          if (decoded.businessId) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding/plans");
+          }
+        }, 100);
       }
     } catch (error: any) {
       const message =
@@ -105,9 +117,8 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
               type="email"
               id="email"
               name="email"
-              className={`w-full px-3 py-2 border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="tu@email.com"
               onChange={(e) => handleChange(e, "email")}
               value={loginData.email}
@@ -127,9 +138,8 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
               type="password"
               name="password"
               id="password"
-              className={`w-full px-3 py-2 border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="••••••••"
               onChange={(e) => handleChange(e, "password")}
               value={loginData.password}

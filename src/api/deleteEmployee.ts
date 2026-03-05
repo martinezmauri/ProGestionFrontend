@@ -1,9 +1,9 @@
-import axios from "axios";
+import api from "./axiosInstance";
 
 const deleteEmployee = async (employeeId: string): Promise<number> => {
   try {
-    const response = await axios.delete(
-      `http://localhost:8080/api/v0/employee/deleteById/${employeeId}`
+    const response = await api.delete(
+      `${import.meta.env.VITE_API_URL}/employee/deleteById/${employeeId}`
     );
 
     return response.status;

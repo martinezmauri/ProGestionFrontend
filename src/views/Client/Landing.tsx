@@ -29,7 +29,7 @@ export const ClientLanding = () => {
   const handleCloseRegister = () => setIsOpenRegister(false);
 
   return (
-    <div className="w-full h-full bg-[#F2FAFF]">
+    <div className="w-full min-h-screen bg-white">
       <NavbarClient onOpenLogin={handleOpenLogin} />
       <ClientHero />
       <ClientFeatures />

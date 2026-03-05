@@ -29,6 +29,7 @@ interface AuthContextProps {
   setBusinessId: (id: string | null) => void;
   userInfo: UserInfo | null;
   businessId: string | null;
+  hasSubscription: boolean | null;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -59,12 +60,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+
+  const checkSubscription = async (currentToken: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/subscriptions/my`, {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+      if (response.status === 200) {
+        setHasSubscription(true);
+      } else {
+        setHasSubscription(false);
+      }
+    } catch {
+      setHasSubscription(false);
+    }
+  };
 
   const logout = useCallback(() => {
     setToken(null);
     setUserId(null);
     setUserInfo(null);
     setBusinessId(null);
+    setHasSubscription(null);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   }, []);
 
@@ -83,6 +101,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const decoded = jwtDecode<DecodedToken>(storedToken);
           setUserInfo(decoded as UserInfo);
           setBusinessId((decoded.businessId as string) ?? null);
+          checkSubscription(storedToken).finally(() => setIsLoading(false));
+          return; // Skip setting isLoading below
         }
       } catch (err) {
         console.error("Error al cargar los datos de autenticación:", err);
@@ -100,6 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const decoded = jwtDecode<DecodedToken>(newToken);
       setUserInfo(decoded as UserInfo);
       setBusinessId((decoded.businessId as string) ?? null);
+      checkSubscription(newToken);
     } catch (err) {
       console.error("Error al decodificar el token:", err);
     }
@@ -117,6 +138,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         userInfo,
         setBusinessId,
         businessId,
+        hasSubscription,
       }}
     >
       {children}

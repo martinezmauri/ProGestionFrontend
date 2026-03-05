@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import { useLocation } from "react-router-dom";
 import { SearchDetail } from "@components/Details/SearchDetail";
-import axios from "axios";
+import api from "@api/axiosInstance";
 import { Input } from "@ui/input";
 import {
   Select,
@@ -41,10 +41,21 @@ export const BusinessSearch = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getBusiness();
-      console.log(data);
-
-      setResult(data ?? []);
+      try {
+        const response = await api.get(
+          `${import.meta.env.VITE_API_URL}/business/search`,
+          {
+            params: {
+              name: searchBusiness.nameEstablishment,
+              category: searchBusiness.category,
+              city: searchBusiness.location,
+            },
+          }
+        );
+        setResult(response.data ?? []);
+      } catch (error) {
+        console.error("Error al cargar negocios iniciales", error);
+      }
     };
     fetchData();
   }, []);
@@ -52,7 +63,7 @@ export const BusinessSearch = () => {
   const handleOnClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${import.meta.env.VITE_API_URL}/business/search`,
         {
           params: {

@@ -1,5 +1,5 @@
 import { ICategory } from "@interfaces/ICategory";
-import axios from "axios";
+import api from "@api/axiosInstance";
 import { useEffect, useState } from "react";
 
 const useLoadCategories = () => {
@@ -10,10 +10,10 @@ const useLoadCategories = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/category`
+      const response = await api.get(
+        `${import.meta.env.VITE_API_URL}/category/findAll`
       );
-      setCategories(response.data ?? []);
+      setCategories(response.data.content || response.data || []);
     } catch (error) {
       console.error("Error interno");
     } finally {

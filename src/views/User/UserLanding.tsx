@@ -12,7 +12,7 @@ import {
 export const UserLanding = () => {
   const formRef = useRef<HTMLFormElement>(null);
   return (
-    <div className="bg-[#F2FAFF] w-full h-full">
+    <div className="bg-white w-full min-h-screen">
       <NavbarUser />
       <HeroUser formRef={formRef} />
       <FeaturedEstablishments />

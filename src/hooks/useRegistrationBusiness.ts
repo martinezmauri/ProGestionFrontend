@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IRegisterBusiness } from "../interfaces/IRegisterBusiness";
-import axios from "axios";
+import api from "@api/axiosInstance";
 
 export const useRegistrationBusiness = () => {
   const [loading, setLoading] = useState(false);
@@ -23,8 +23,8 @@ export const useRegistrationBusiness = () => {
         ...newBusinessData,
         businessHours: businessHoursFormatted,
       };
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/business`,
+      const response = await api.post(
+        `${import.meta.env.VITE_API_URL}/business/save`,
         payload
       );
       console.log(response);

@@ -13,9 +13,9 @@ import {
 } from "lucide-react";
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
-import { Rol } from "@enum/UserRol";
 import { toast } from "sonner";
 import { useAuth } from "@context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 interface ModalProps {
   onClose: () => void;
@@ -101,8 +101,17 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
         toast.success("Usuario registrado!", {
           description: "Te has registrado correctamente.",
           icon: <CheckCircle2 className="h-4 w-4" />,
-          duration: 3000,
+          duration: 1000,
         });
+
+        const decoded: any = jwtDecode(token);
+        setTimeout(() => {
+          if (decoded.businessId) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding/plans");
+          }
+        }, 100);
       }
     } catch (error: any) {
       const message =
@@ -147,9 +156,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             <input
               type="email"
               id="register-email"
-              className={`w-full px-3 py-2 border ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="tu@email.com"
               value={registerData.email}
               onChange={(e) => handleChange(e, "email")}
@@ -169,9 +177,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             <input
               type="text"
               id="register-name"
-              className={`w-full px-3 py-2 border ${
-                errors.nameUser ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.nameUser ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="Tu nombre completo"
               value={registerData.nameUser}
               onChange={(e) => handleChange(e, "nameUser")}
@@ -191,9 +198,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             <input
               type="tel"
               id="register-phone"
-              className={`w-full px-3 py-2 border ${
-                errors.phone ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.phone ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="+54 11 1234-5678"
               value={registerData.phone}
               onChange={(e) => handleChange(e, "phone")}
@@ -215,9 +221,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             <input
               type="password"
               id="register-password"
-              className={`w-full px-3 py-2 border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="••••••••"
               value={registerData.password}
               onChange={(e) => handleChange(e, "password")}
@@ -239,9 +244,8 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
             <input
               type="password"
               id="register-confirm-password"
-              className={`w-full px-3 py-2 border ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-300"
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
+              className={`w-full px-3 py-2 border ${errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500`}
               placeholder="••••••••"
               value={registerData.confirmPassword}
               onChange={(e) => handleChange(e, "confirmPassword")}

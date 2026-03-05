@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "./axiosInstance";
 import { IEmployee } from "../interfaces/IEmployee";
 
 const getEmployeeById = async (id: number): Promise<IEmployee | null> => {
   try {
-    const response = await axios.get(
-      `http://localhost:8080/api/v0/employee/find/${id}`
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/employee/find/${id}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener el empleado.");

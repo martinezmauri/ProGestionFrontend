@@ -12,12 +12,20 @@ import { getServiceByUserId } from "@api/getServices";
 import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import AppSidebar from "@components/Sidebar/AppSidebar";
+import { getMySubscription, ISubscription } from "@api/getSubscription";
+
+const TIER_LIMITS = {
+  BASIC: 1,
+  PROFESSIONAL: 5,
+  ENTERPRISE: 9999,
+};
 
 export const Personal = () => {
   const [empleados, setEmpleados] = useState<IEmployeeResponse[]>([]);
   const [services, setServices] = useState<IService[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
+  const [subscription, setSubscription] = useState<ISubscription | null>(null);
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
     null
   );
@@ -39,12 +47,21 @@ export const Personal = () => {
     setLoading(false);
   };
 
+  const loadSubscription = async () => {
+    const sub = await getMySubscription();
+    setSubscription(sub);
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       loadEmployees();
       loadServices();
+      loadSubscription();
     }
   }, [isAuthenticated]);
+
+  const maxEmployees = subscription ? TIER_LIMITS[subscription.tier] : 0;
+  const isLimitReached = empleados.length >= maxEmployees;
 
   return (
     <div className="flex min-h-screen w-full">
@@ -61,15 +78,21 @@ export const Personal = () => {
               <span className="text-lg font-semibold">
                 Listado de Empleados
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-2">
                 <Button
                   className="bg-gradient-to-r from-orange-500 to-orange-400 text-white cursor-pointer"
                   variant="outline"
                   onClick={() => setOpenModal(true)}
+                  disabled={isLimitReached}
                 >
                   <Plus className="h-4 w-4" />
                   Agregar Empleado
                 </Button>
+                {subscription && (
+                  <span className="text-sm text-gray-500">
+                    Plan {subscription.tier}: {empleados.length} / {maxEmployees} empleados
+                  </span>
+                )}
               </div>
             </CardHeader>
             <CardContent className="space-y-4">

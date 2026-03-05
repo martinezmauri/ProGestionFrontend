@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "./axiosInstance";
 import { IService, IServiceUpdate } from "../interfaces/IService";
 
 export const getService = async (): Promise<IService[]> => {
   try {
-    const response = await axios.get(
-      "http://localhost:8080/api/v0/service/findAll"
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/service/findAll`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");
@@ -20,7 +20,7 @@ export const getServiceByUserId = async (
   userId: number
 ): Promise<IService[]> => {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       `${import.meta.env.VITE_API_URL}/service/user/${userId}`
     );
     if (response.status !== 200) {
@@ -37,7 +37,7 @@ export const getServiceByBusinessId = async (
   businessId: number
 ): Promise<IService[]> => {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       `${import.meta.env.VITE_API_URL}/service/business/${businessId}`
     );
     if (response.status !== 200) {
@@ -52,7 +52,7 @@ export const getServiceByBusinessId = async (
 
 export const createService = async (service: IService) => {
   try {
-    const response = await axios.post(
+    const response = await api.post(
       `${import.meta.env.VITE_API_URL}/service`,
       service
     );
@@ -72,7 +72,7 @@ export const updateService = async (
   service: Partial<IService>
 ) => {
   try {
-    const response = await axios.patch(
+    const response = await api.patch(
       `${import.meta.env.VITE_API_URL}/service/${serviceId}`,
       service
     );

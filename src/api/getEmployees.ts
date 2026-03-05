@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "./axiosInstance";
 import {
   IEmployee,
   IEmployeeCreate,
@@ -9,8 +9,8 @@ export const getEmployeesByBusinessId = async (
   id: number
 ): Promise<IEmployeeResponse[] | null> => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/employee/${id}`
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/employee/findAll/?businessId=${id}`
     );
     console.log(response.data);
 
@@ -28,7 +28,7 @@ export const getEmployeesByUserId = async (
   id: number
 ): Promise<IEmployeeResponse[] | null> => {
   try {
-    const response = await axios.get(
+    const response = await api.get(
       `${import.meta.env.VITE_API_URL}/employee/user/${id}`
     );
 
@@ -58,8 +58,8 @@ export const createEmployee = async (payload: IEmployee) => {
     })),
   };
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/employee`,
+    const response = await api.post(
+      `${import.meta.env.VITE_API_URL}/employee/save`,
       normalizedPayload
     );
 
@@ -80,8 +80,8 @@ export const updateEmployee = async (
   try {
     console.log(employee);
 
-    const response = await axios.patch(
-      `${import.meta.env.VITE_API_URL}/employee/${id}`,
+    const response = await api.patch(
+      `${import.meta.env.VITE_API_URL}/employee/update/${id}`,
       employee
     );
     console.log("response", response);

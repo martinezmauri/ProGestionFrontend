@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import category from "../../helpers/category.json";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 import { Input } from "../../ui/input";
 import {
   Select,
@@ -12,11 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
-import { Button } from "../../ui/button";
 import { toast } from "sonner";
-import { ICategory } from "../../interfaces/ICategory";
 import { Card, CardContent } from "@ui/card";
 import useLoadCategories from "@hooks/useLoadCategories";
+import { useAuth } from "@context/AuthContext";
+import { Search, Scissors, Calendar, CheckCircle, ArrowRight, MapPin } from "lucide-react";
 
 interface ISearch {
   id: number;
@@ -42,8 +40,15 @@ interface Props {
   formRef: React.RefObject<HTMLFormElement>;
 }
 
+const steps = [
+  { icon: Search, text: "Busca el establecimiento por ubicación o nombre" },
+  { icon: Scissors, text: "Selecciona el servicio que necesitas" },
+  { icon: Calendar, text: "Elige la fecha y hora que prefieras" },
+  { icon: CheckCircle, text: "¡Listo! Recibirás una confirmación de tu turno" },
+];
+
 export const HeroUser = ({ formRef }: Props) => {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useAuth();
   const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",
@@ -110,121 +115,139 @@ export const HeroUser = ({ formRef }: Props) => {
 
   return (
     <motion.main
-      className="grid  md:grid-cols-2 gap-y-10 md:gap-x-30 px-6 md:px-10 py-16 md:py-20 bg-[#F2FAFF]"
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      className="relative overflow-hidden bg-gradient-to-b from-sky-50/80 to-white/90 px-5 py-10 md:px-8 md:py-16"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      {/* Izquierda */}
-      <div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-orange-500 mb-6 leading-tight">
-          Sacá tu turno de manera fácil y rápida
-        </h1>
-        <p className="text-gray-600 mb-8 text-lg">
-          Seleccioná tu ubicación y elegí el establecimiento que más te
-          convenga!
-        </p>
-        <div className="space-y-4 md:pr-12">
-          {[
-            "Busca el establecimiento por ubicación o nombre",
-            "Selecciona el servicio que necesitas",
-            "Elige la fecha y hora que prefieras",
-            "¡Listo! Recibirás una confirmación de tu turno",
-          ].map((text, i) => (
-            <div key={i} className="flex items-center space-x-2 text-gray-700">
-              <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-                <span className="font-bold text-orange-500">{i + 1}</span>
-              </div>
-              <p>{text}</p>
-            </div>
-          ))}
-        </div>
+      {/* Blurred background image */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <img
+          src="/hero-calendar.png"
+          alt="Fondo de calendario"
+          className="w-full h-full object-cover opacity-15 blur-[8px]"
+        />
       </div>
 
-      {/* Derecha */}
-      <form className="max-w-xl" ref={formRef}>
-        <Card className="border-0 shadow-lg overflow-hidden bg-white/80 backdrop-blur-sm">
-          <CardContent className="px-6">
-            <h1 className="text-xl font-semibold text-gray-800 mb-6">
-              Encuentra tu próximo turno
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
+        {/* Left - Hero Content */}
+        <div className="flex-1 space-y-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight">
+              Sacá tu turno de
+              <br />
+              manera
+              <br />
+              <span className="text-orange-500 italic">fácil y rápida</span>
             </h1>
-            <div className="space-y-4">
-              <Input
-                className="bg-white border-gray-200 focus:border-sky-500 border rounded-md"
-                type="text"
-                id="establishment"
-                value={searchBusiness.nameEstablishment}
-                onChange={(event) => handleChange(event, "nameEstablishment")}
-                placeholder="Nombre del establecimiento"
-              />
-              <div className="space-y-1">
+          </div>
+
+          <p className="text-slate-500 text-[17px] leading-relaxed max-w-lg">
+            Seleccioná tu ubicación y elegí el establecimiento que más te
+            convenga. Optimiza tu tiempo con nuestra plataforma.
+          </p>
+
+          <div className="space-y-4">
+            {steps.map((step, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
+                  <step.icon className="w-4 h-4 text-orange-500" />
+                </div>
+                <p className="text-slate-600 text-[15px]">{step.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right - Search Card */}
+        <form className="w-full max-w-[440px] md:w-[440px] flex-shrink-0 mx-auto" ref={formRef}>
+          <Card className="border-0 shadow-[0_8px_40px_rgba(15,23,42,0.08)] overflow-hidden bg-white rounded-2xl">
+            <CardContent className="p-8 space-y-5">
+              <div>
+                <h2 className="text-[22px] font-bold text-slate-800">
+                  Encuentra tu próximo turno
+                </h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Busca, reserva y gestiona en segundos.
+                </p>
+              </div>
+
+              <div className="space-y-4">
                 <Input
-                  className={`bg-white border rounded-md ${
-                    errors.location ? "border-red-500" : "border-gray-200"
-                  } focus:border-sky-500`}
+                  className="bg-slate-50 border-slate-200 focus:border-sky-500 rounded-xl h-12 px-4"
                   type="text"
-                  id="location"
-                  value={searchBusiness.location}
-                  onChange={(event) => handleChange(event, "location")}
-                  placeholder="Selecciona tu localidad"
+                  id="establishment"
+                  value={searchBusiness.nameEstablishment}
+                  onChange={(event) => handleChange(event, "nameEstablishment")}
+                  placeholder="Nombre del establecimiento"
                 />
-                {errors.location && (
-                  <p className="text-sm text-red-500">
-                    La localidad es obligatoria.
-                  </p>
-                )}
-              </div>
-              <div className="space-y-1">
-                <Select>
-                  <SelectTrigger
-                    className={`bg-white w-full rounded-md ${
-                      errors.category ? "border-red-500" : "border-gray-200"
-                    } focus:border-sky-500`}
+
+                <div className="space-y-1">
+                  <Input
+                    className={`bg-slate-50 rounded-xl h-12 px-4 ${errors.location ? "border-red-500" : "border-slate-200"
+                      } focus:border-sky-500`}
+                    type="text"
+                    id="location"
+                    value={searchBusiness.location}
+                    onChange={(event) => handleChange(event, "location")}
+                    placeholder="Selecciona tu localidad"
+                  />
+                  {errors.location && (
+                    <p className="text-sm text-red-500">
+                      La localidad es obligatoria.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Select
+                    onValueChange={(value) =>
+                      setSearchBusiness((prev) => ({
+                        ...prev,
+                        category: value,
+                      }))
+                    }
                   >
-                    <SelectValue placeholder="Selecciona una categoría" />
-                  </SelectTrigger>
+                    <SelectTrigger
+                      className={`bg-slate-50 w-full rounded-xl h-12 ${errors.category ? "border-red-500" : "border-slate-200"
+                        } focus:border-sky-500`}
+                    >
+                      <SelectValue placeholder="Selecciona una categoría" />
+                    </SelectTrigger>
 
-                  <SelectContent>
-                    {Array.isArray(categories) && categories.length > 0 ? (
-                      categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.name}>
-                          {cat.name}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        No hay categorías disponibles
-                      </div>
-                    )}
-                  </SelectContent>
-                </Select>
-                {errors.category && (
-                  <p className="text-sm text-red-500">
-                    La categoría es obligatoria.
-                  </p>
-                )}
-              </div>
-            </div>
-            <Button
-              className="rounded-md text-lg w-full p-4 font-bold bg-[#0284C7] mt-4 cursor-pointer hover:bg-sky-700"
-              onClick={handleOnSubmit}
-            >
-              Buscar
-            </Button>
-
-            {categories.length > 0 && (
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
-                  Categorías populares
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                 
+                    <SelectContent>
+                      {Array.isArray(categories) && categories.length > 0 ? (
+                        categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.name}>
+                            {cat.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          No hay categorías disponibles
+                        </div>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && (
+                    <p className="text-sm text-red-500">
+                      La categoría es obligatoria.
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </form>
+
+              <button
+                className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-4 rounded-xl text-base flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                onClick={handleOnSubmit}
+              >
+                Buscar turnos
+                <ArrowRight className="w-[18px] h-[18px]" />
+              </button>
+            </CardContent>
+          </Card>
+        </form>
+      </div>
     </motion.main>
   );
 };

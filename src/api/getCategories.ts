@@ -1,15 +1,15 @@
 import { ICategory } from "@interfaces/ICategory";
-import axios from "axios";
+import api from "./axiosInstance";
 
 const getCategories = async (): Promise<ICategory[]> => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/category`
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/category/findAll`
     );
     if (response.status !== 200) {
-      throw new Error("Error al obtener los servicios.");
+      throw new Error("Error al obtener las categorías.");
     }
-    return response.data;
+    return response.data.content || response.data;
   } catch (error) {
     console.error(error);
     return [];

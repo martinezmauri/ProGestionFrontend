@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "./axiosInstance";
 
 interface IAddress {
   street: string;
@@ -48,11 +48,11 @@ export interface PropsBusiness {
 
 const getBusiness = async (): Promise<PropsBusiness[]> => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/business`
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/business/findAll`
     );
 
-    return response.data;
+    return response.data.content || response.data;
   } catch (error) {
     console.error(error);
     return [];
@@ -63,8 +63,8 @@ export const getBusinessById = async (
   id: string
 ): Promise<PropsBusiness | undefined> => {
   try {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/business/${id}`
+    const response = await api.get(
+      `${import.meta.env.VITE_API_URL}/business/findShort/${id}`
     );
     return response.data;
   } catch (error) {

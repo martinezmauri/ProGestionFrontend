@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+
 import { IService } from "../../interfaces/IService";
 import { Dashboard } from "../Sidebar/Dashboard";
 import { useAuth } from "@context/AuthContext";
@@ -10,6 +10,8 @@ import FechaHoraHeader from "@components/Header/FechaHoraHeader";
 import { Button } from "@ui/button";
 import { Textarea } from "@ui/textarea";
 import { createService, updateService } from "@api/getServices";
+import { getEmployeesByUserId } from "@api/getEmployees";
+import { IEmployeeResponse } from "@interfaces/IEmployee";
 
 interface Props {
   onServiceCreated: () => void;
@@ -49,11 +51,26 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
   };
 
   const [form, setForm] = useState<IService>(empty);
-  const { businessId, userInfo } = useAuth();
+  const [employees, setEmployees] = useState<IEmployeeResponse[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const { businessId, userId } = useAuth();
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      if (userId) {
+        const data = await getEmployeesByUserId(Number(userId));
+        setEmployees(data || []);
+      }
+    };
+    fetchEmployees();
+  }, [userId]);
 
   useEffect(() => {
     if (service) {
       setForm(service);
+      if (service.employee) {
+        setSelectedEmployees(service.employee.map(e => e.id));
+      }
     }
   }, [service]);
 
@@ -76,6 +93,8 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
     try {
       if (service && service.id) {
         const cleanedData = cleanUpdatePayload(form);
+        // Note: Adding employee relations to update is complex without a specific endpoint 
+        // Assuming backend handles relations via a different endpoint or payload structure currently
         if (Object.keys(cleanedData).length === 0) {
           toast.warning("No hay cambios para actualizar.");
           return;
@@ -85,12 +104,12 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
         onServiceCreated();
         onClose();
       } else {
-        console.log(form);
-
         await createService({
           ...form,
           businessId: String(businessId),
-        });
+          // Backend needs to support receiving employeeIds on service creation
+          employeeIds: selectedEmployees.map(Number)
+        } as any); // Cast as any because IService might need to be updated to accept employeeIds
         toast.success("Servicio creado correctamente");
         onServiceCreated();
         onClose();
@@ -196,6 +215,43 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         placeholder="Ej: Descripcion del servicio"
                       />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Empleados que realizan este servicio
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 bg-gray-50 p-4 rounded-md border border-gray-200 max-h-48 overflow-y-auto">
+                      {employees.length === 0 ? (
+                        <p className="text-sm text-gray-500">No hay empleados registrados.</p>
+                      ) : (
+                        employees.map((emp) => (
+                          <div key={emp.id} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`emp-${emp.id}`}
+                              checked={selectedEmployees.includes(String(emp.id))}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedEmployees((prev) => [...prev, String(emp.id)]);
+                                } else {
+                                  setSelectedEmployees((prev) =>
+                                    prev.filter((id) => id !== String(emp.id))
+                                  );
+                                }
+                              }}
+                              className="w-4 h-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                            />
+                            <label
+                              htmlFor={`emp-${emp.id}`}
+                              className="text-sm text-gray-700"
+                            >
+                              {emp.name}
+                            </label>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>

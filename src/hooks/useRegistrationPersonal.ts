@@ -1,7 +1,7 @@
 import { Rol } from "@enum/UserRol";
 import { IEmployee } from "@interfaces/IEmployee";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
-import axios from "axios";
+import api from "@api/axiosInstance";
 import { useState } from "react";
 
 export const useRegistrationPersonal = () => {
@@ -13,8 +13,8 @@ export const useRegistrationPersonal = () => {
     setLoading(true);
     if (bodyObject.id === null) {
       try {
-        await axios.post(
-          "http://localhost:8080/api/v0/employee/save",
+        await api.post(
+          `${import.meta.env.VITE_API_URL}/employee/save`,
           bodyObject
         );
         setSuccess(true);
@@ -34,8 +34,8 @@ export const useRegistrationPersonal = () => {
   const registerHoursPersonal = async (workSchedule: IWorkSchedule[]) => {
     setLoading(true);
     try {
-      await axios.post(
-        "http://localhost:8080/api/v0/employees/1/hours",
+      await api.post(
+        `${import.meta.env.VITE_API_URL}/employees/1/hours`,
         workSchedule
       );
       setSuccess(true);

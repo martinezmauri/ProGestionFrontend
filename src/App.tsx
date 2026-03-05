@@ -14,6 +14,9 @@ import BusinessDetail from "@views/User/BusinessDetail";
 import { Personal } from "@views/Client/Personal";
 import NotFound from "@components/NotFound/NotFound";
 import ProtectedRoute from "@components/ProtectedRoute";
+import { OnboardingLayout } from "@layout/OnboardingLayout";
+import { SelectPlan } from "@views/Client/SelectPlan";
+import { AppointmentGrid } from "@views/Client/AppointmentGrid";
 
 function App() {
   return (
@@ -26,12 +29,17 @@ function App() {
         <Route path="/business/:id" element={<BusinessDetail />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route element={<ProtectedRoute />}>
+          <Route element={<OnboardingLayout />}>
+            <Route path="/onboarding/plans" element={<SelectPlan />} />
+            <Route path="/onboarding/business" element={<RegistersBusiness />} />
+            {/* Note: In Phase 2, Business, Hours, Personal and Services will also move here or be refactored */}
+          </Route>
           <Route element={<SidebarLayout />}>
-            <Route path="/register-business" element={<RegistersBusiness />} />
             <Route path="/support" element={<Support />} />
             <Route path="/dashboard" element={<HomeClient />} />
             <Route path="/personal" element={<Personal />} />
             <Route path="/services" element={<ServiceView />} />
+            <Route path="/grilla-turnos" element={<AppointmentGrid />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

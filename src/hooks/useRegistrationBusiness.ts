@@ -13,15 +13,26 @@ export const useRegistrationBusiness = () => {
       const businessHoursFormatted = newBusinessData.businessHours
         .filter((h) => h.active)
         .map((h) => ({
-          day_of_week: h.day_of_week,
-          opening_morning_time: h.opening_morning_time,
-          closing_morning_time: h.closing_morning_time,
-          opening_evening_time: h.opening_evening_time,
-          closing_evening_time: h.closing_evening_time,
+          dayOfWeek: h.day_of_week.toUpperCase(),
+          openingMorningTime: h.opening_morning_time,
+          closingMorningTime: h.closing_morning_time,
+          openingEveningTime: h.opening_evening_time,
+          closingEveningTime: h.closing_evening_time,
         }));
       const payload = {
-        ...newBusinessData,
+        name: newBusinessData.name,
+        description: newBusinessData.description,
+        phoneNumber: newBusinessData.phone_number,
+        logo: newBusinessData.logo,
+        category: { id: newBusinessData.categoryId },
         businessHours: businessHoursFormatted,
+        address: {
+          street: newBusinessData.address.street,
+          streetNumber: newBusinessData.address.street_number,
+          city: newBusinessData.address.city,
+          province: newBusinessData.address.province,
+          country: newBusinessData.address.country
+        }
       };
       const response = await api.post(
         `${import.meta.env.VITE_API_URL}/business/save`,

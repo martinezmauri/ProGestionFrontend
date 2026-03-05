@@ -33,6 +33,7 @@ export const useAppointmentGrid = (initialServiceId?: number, initialDate?: Date
         setLoading(true);
         setError(null);
         try {
+            const dateIso = format(date, "yyyy-MM-dd");
             const response = await api.get(
                 `${import.meta.env.VITE_API_URL}/appointments/grid`,
                 {

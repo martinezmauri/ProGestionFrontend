@@ -20,7 +20,10 @@ interface Props {
   onEdit?: (service: IService) => void;
 }
 
-export const ServicesTable = ({ services, loading, onEdit }: Props) => {
+export const ServicesTable = ({ services = [], loading, onEdit }: Props) => {
+  // Ensure services is always an array to prevent crashes
+  const safeServices = Array.isArray(services) ? services : [];
+
   if (loading) {
     return (
       <div className="space-y-2">
@@ -30,7 +33,7 @@ export const ServicesTable = ({ services, loading, onEdit }: Props) => {
       </div>
     );
   }
-  if (services.length === 0) {
+  if (safeServices.length === 0) {
     return (
       <div className="text-center py-10">No hay servicios registrados aún.</div>
     );
@@ -48,7 +51,7 @@ export const ServicesTable = ({ services, loading, onEdit }: Props) => {
       </TableHeader>
 
       <TableBody>
-        {services.map((s, index) => {
+        {safeServices.map((s, index) => {
           return (
             <TableRow
               key={index}
@@ -87,7 +90,7 @@ export const ServicesTable = ({ services, loading, onEdit }: Props) => {
       <TableFooter>
         <TableRow>
           <TableCell colSpan={4}>Total de servicios</TableCell>
-          <TableCell className="text-right">{services.length}</TableCell>
+          <TableCell className="text-right">{safeServices.length}</TableCell>
         </TableRow>
       </TableFooter>
 

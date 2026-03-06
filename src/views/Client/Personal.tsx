@@ -13,6 +13,8 @@ import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import AppSidebar from "@components/Sidebar/AppSidebar";
 import { getMySubscription, ISubscription } from "@api/getSubscription";
+import { EmployeeRol } from "@enum/EmployeeRol";
+import { MOCK_EMPLOYEES, MOCK_SERVICES } from "../../mocks/mockData";
 
 const TIER_LIMITS = {
   BASIC: 1,
@@ -27,33 +29,73 @@ export const Personal = () => {
   const [openModal, setOpenModal] = useState(false);
   const [subscription, setSubscription] = useState<ISubscription | null>(null);
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
-    null
+    null,
   );
   const { userId, isAuthenticated } = useAuth();
 
   const loadEmployees = async () => {
     if (!userId) return;
     setLoading(true);
-    const data = await getEmployeesByUserId(Number(userId));
-    setEmpleados(data ?? []);
+    try {
+      const data = await getEmployeesByUserId(Number(userId));
+      if (data && data.length > 0) {
+        setEmpleados(data);
+      } else if (import.meta.env.DEV) {
+        setEmpleados(MOCK_EMPLOYEES);
+      } else {
+        setEmpleados([]);
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) setEmpleados(MOCK_EMPLOYEES);
+    }
     setLoading(false);
   };
 
   const loadServices = async () => {
     if (!userId) return;
     setLoading(true);
-    const data = await getServiceByUserId(Number(userId));
-    setServices(data ?? []);
+    try {
+      const data = await getServiceByUserId(Number(userId));
+      if (data && data.length > 0) {
+        setServices(data);
+      } else if (import.meta.env.DEV) {
+        setServices(MOCK_SERVICES);
+      } else {
+        setServices([]);
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) setServices(MOCK_SERVICES);
+    }
     setLoading(false);
   };
 
   const loadSubscription = async () => {
-    const sub = await getMySubscription();
-    setSubscription(sub);
+    try {
+      const sub = await getMySubscription();
+      if (sub) {
+        setSubscription(sub);
+      } else if (import.meta.env.DEV) {
+        setSubscription({
+          tier: "PROFESSIONAL",
+          id: "dev-sub",
+          status: "active",
+          userId: "dev-user",
+        } as any);
+      }
+    } catch {
+      if (import.meta.env.DEV) {
+        setSubscription({
+          tier: "PROFESSIONAL",
+          id: "dev-sub",
+          status: "active",
+          userId: "dev-user",
+        } as any);
+      }
+    }
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated || import.meta.env.DEV) {
       loadEmployees();
       loadServices();
       loadSubscription();
@@ -90,7 +132,8 @@ export const Personal = () => {
                 </Button>
                 {subscription && (
                   <span className="text-sm text-gray-500">
-                    Plan {subscription.tier}: {empleados.length} / {maxEmployees} empleados
+                    Plan {subscription.tier}: {empleados.length} /{" "}
+                    {maxEmployees} empleados
                   </span>
                 )}
               </div>

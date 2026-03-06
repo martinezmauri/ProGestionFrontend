@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
@@ -64,9 +70,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const checkSubscription = async (currentToken: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/subscriptions/my`, {
-        headers: { Authorization: `Bearer ${currentToken}` }
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/subscriptions/my`,
+        {
+          headers: { Authorization: `Bearer ${currentToken}` },
+        },
+      );
       if (response.status === 200) {
         setHasSubscription(true);
       } else {
@@ -115,7 +124,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = (id: string, newToken: string) => {
     setToken(newToken);
     setUserId(id);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ id, token: newToken }));
+    localStorage.setItem(
+      LOCAL_STORAGE_KEY,
+      JSON.stringify({ id, token: newToken }),
+    );
     try {
       const decoded = jwtDecode<DecodedToken>(newToken);
       setUserInfo(decoded as UserInfo);
@@ -126,19 +138,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  // Mock data for development mode if not authenticated
+  const devMockData =
+    import.meta.env.DEV && !token
+      ? {
+          isAuthenticated: true,
+          token: "mock-dev-token",
+          userId: "dev-user-id",
+          userInfo: {
+            id: "dev-user-id",
+            email: "dev@example.com",
+            rol: "admin",
+            avatar_url: "https://github.com/shadcn.png",
+          },
+          businessId: "dev-business-id",
+        }
+      : {};
+
   return (
     <AuthContext.Provider
       value={{
-        token,
-        userId,
+        token: token ?? (devMockData.token || null),
+        userId: userId ?? (devMockData.userId || null),
         login,
         logout,
-        isAuthenticated: !!token,
+        isAuthenticated: token ? true : devMockData.isAuthenticated || false,
         isLoading,
-        userInfo,
+        userInfo: userInfo ?? (devMockData.userInfo || null),
         setBusinessId,
-        businessId,
-        hasSubscription,
+        businessId: businessId ?? (devMockData.businessId || null),
+        hasSubscription: hasSubscription ?? (import.meta.env.DEV ? true : null),
       }}
     >
       {children}

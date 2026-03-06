@@ -10,22 +10,12 @@ export const useRegistrationBusiness = () => {
     setLoading(true);
 
     try {
-      const businessHoursFormatted = newBusinessData.businessHours
-        .filter((h) => h.active)
-        .map((h) => ({
-          dayOfWeek: h.day_of_week.toUpperCase(),
-          openingMorningTime: h.opening_morning_time,
-          closingMorningTime: h.closing_morning_time,
-          openingEveningTime: h.opening_evening_time,
-          closingEveningTime: h.closing_evening_time,
-        }));
       const payload = {
         name: newBusinessData.name,
         description: newBusinessData.description,
         phoneNumber: newBusinessData.phone_number,
         logo: newBusinessData.logo,
         category: { id: newBusinessData.categoryId },
-        businessHours: businessHoursFormatted,
         address: {
           street: newBusinessData.address.street,
           streetNumber: newBusinessData.address.street_number,

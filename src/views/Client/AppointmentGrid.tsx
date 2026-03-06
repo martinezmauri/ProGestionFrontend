@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AppSidebar from "@components/Sidebar/AppSidebar";
 import { Button } from "@ui/button";
 import { useAppointmentGrid } from "@hooks/useAppointmentGrid";
+import { useBusinessHours } from "@hooks/useBusinessHours";
 import { useAuth } from "@context/AuthContext";
 import { IService } from "@interfaces/IService";
 import { getServiceByBusinessId } from "@api/getServices";
@@ -9,7 +10,14 @@ import { createAppointment } from "@api/getAppointments";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  User,
+  CalendarDays,
+} from "lucide-react";
 import { MOCK_SERVICES, MOCK_GRID_DATA } from "../../mocks/mockData";
 import {
   TimeColumn,
@@ -18,11 +26,26 @@ import {
   GridCell,
   CurrentTimeIndicator,
 } from "./components/GridComponents";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
+import { Input } from "@ui/input";
+import { Label } from "@ui/label";
+import { Card, CardContent, CardHeader } from "@ui/card";
+import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
+import { IWorkSchedule } from "@interfaces/IWorkSchedule";
+import { AppHeader } from "@components/Header/AppHeader";
+import { FooterSimple } from "@components/Footer/FooterSimple";
 
 export const AppointmentGrid = () => {
   const { businessId, isAuthenticated, userId: authUserId } = useAuth();
   const [services, setServices] = useState<IService[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
 
   const {
     gridData: hookGridData,
@@ -35,6 +58,13 @@ export const AppointmentGrid = () => {
     refreshGrid,
   } = useAppointmentGrid();
 
+  const {
+    hasHours,
+    loading: hoursLoading,
+    fetchBusinessHours,
+    saveBusinessHours,
+  } = useBusinessHours(businessId);
+
   // Use hook data or fallback to mock in DEV
   const gridData =
     hookGridData || (import.meta.env.DEV ? MOCK_GRID_DATA : null);
@@ -44,12 +74,17 @@ export const AppointmentGrid = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Check business hours on mount
+  useEffect(() => {
+    if (businessId && isAuthenticated) {
+      fetchBusinessHours();
+    }
+  }, [businessId, isAuthenticated]);
+
   useEffect(() => {
     const fetchServices = async () => {
-      // Use numeric ID for mock to avoid NaN
       const bId = businessId || (import.meta.env.DEV ? "1" : null);
-
-      if (bId) {
+      if (bId && isAuthenticated && (hasHours || import.meta.env.DEV)) {
         try {
           const data = await getServiceByBusinessId(Number(bId));
           const safeData = Array.isArray(data) ? data : [];
@@ -75,7 +110,13 @@ export const AppointmentGrid = () => {
       }
     };
     fetchServices();
-  }, [businessId, isAuthenticated, setSelectedServiceId, selectedServiceId]);
+  }, [
+    businessId,
+    isAuthenticated,
+    hasHours,
+    setSelectedServiceId,
+    selectedServiceId,
+  ]);
 
   const handleDateChange = (days: number) => {
     const newDate = new Date(selectedDate);
@@ -117,6 +158,22 @@ export const AppointmentGrid = () => {
       refreshGrid();
     } catch (err) {
       toast.error("Error al crear el turno");
+    }
+  };
+
+  const handleSaveHours = async () => {
+    const activeHours = setupHours.filter((h) => h.active);
+    if (activeHours.length === 0) {
+      toast.error("Debes configurar al menos un día de atención.");
+      return;
+    }
+    try {
+      await saveBusinessHours(setupHours);
+      toast.success("¡Horarios configurados exitosamente!", {
+        description: "Tu grilla de turnos está lista para usar.",
+      });
+    } catch {
+      toast.error("Error al guardar los horarios.");
     }
   };
 
@@ -174,13 +231,65 @@ export const AppointmentGrid = () => {
     "19:30",
   ];
 
+  // First-time setup: show hours configuration wizard
+  if (hasHours === false && !import.meta.env.DEV) {
+    return (
+      <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden">
+        <AppSidebar />
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 p-6 md:p-10 space-y-6 max-w-4xl mx-auto w-full overflow-y-auto">
+            <AppHeader title="Grilla de Turnos" />
+            <Card className="border-0 shadow-lg overflow-hidden relative">
+              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-orange-500/10 rounded-full blur-2xl"></div>
+              <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-10 relative z-10">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <CalendarDays className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                    ¡Bienvenido al Gestor de Turnos!
+                  </h2>
+                </div>
+                <p className="text-orange-50 text-lg max-w-2xl leading-relaxed">
+                  Para empezar a gestionar turnos, necesitamos saber los
+                  horarios de atención de tu negocio. Configura los días y
+                  horarios en los que tu negocio está abierto.
+                </p>
+              </CardHeader>
+            </Card>
+            <BusinessHoursForm
+              businessHours={setupHours}
+              setBusinessHours={setSetupHours}
+              handleFinalSubmit={handleSaveHours}
+              title="Configura tus Horarios de Atención"
+              showSubmitButton={true}
+            />
+          </div>
+          <FooterSimple />
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state while checking hours
+  if ((hasHours === null || hoursLoading) && !import.meta.env.DEV) {
+    return (
+      <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden items-center justify-center">
+        <RefreshCw className="w-8 h-8 text-orange-500 animate-spin mb-3" />
+        <p className="text-gray-600 font-medium ml-3">
+          Cargando configuración...
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden">
       <AppSidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="flex-1 p-8 flex flex-col max-w-[1600px] mx-auto w-full overflow-hidden">
           {/* Header Section */}
-          <div className="flex justify-between items-center mb-6 shrink-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0">
             <div className="flex items-center gap-4">
               <div className="flex items-center bg-[#F1F5F9] rounded-2xl p-1 shadow-sm border border-[#E2E8F0]">
                 <Button
@@ -216,21 +325,34 @@ export const AppointmentGrid = () => {
               </h1>
             </div>
 
-            <div className="flex items-center gap-8 text-[#64748B] font-medium">
-              <button className="flex items-center gap-2 text-[#059669]">
-                <span className="text-sm font-bold border-b-2 border-[#059669] pb-1">
-                  Agenda
-                </span>
-              </button>
-              <button className="flex items-center gap-2 hover:text-[#374151] transition-colors">
-                <span className="text-sm">Servicios</span>
-              </button>
-              <button className="flex items-center gap-2 hover:text-[#374151] transition-colors">
-                <span className="text-sm">Personal</span>
-              </button>
-              <button className="flex items-center gap-2 hover:text-[#374151] transition-colors">
-                <span className="text-sm">Configuración</span>
-              </button>
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="flex-1 sm:w-64">
+                <Select
+                  value={selectedServiceId ? String(selectedServiceId) : ""}
+                  onValueChange={(val) => setSelectedServiceId(Number(val))}
+                >
+                  <SelectTrigger className="w-full bg-white rounded-xl border-[#E2E8F0]">
+                    <SelectValue placeholder="Selecciona un servicio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((s) => (
+                      <SelectItem key={s.id} value={String(s.id)}>
+                        {s.name} ({s.duration} min)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={refreshGrid}
+                disabled={loading || !selectedServiceId}
+                variant="outline"
+                className="rounded-xl border-[#E2E8F0]"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                />
+              </Button>
             </div>
           </div>
 
@@ -296,15 +418,27 @@ export const AppointmentGrid = () => {
                           key={emp.employeeId}
                           className="w-[300px] relative border-r border-[#E2E8F0] bg-white last:border-r-0"
                         >
-                          {slots.map((time) => (
-                            <GridCell
-                              key={time}
-                              time={time}
-                              onAdd={() =>
-                                handleCellClick(emp.employeeId, time)
-                              }
-                            />
-                          ))}
+                          {slots.map((time) => {
+                            const slotData = emp.timeSlots.find((s: any) =>
+                              s.startTime.startsWith(time),
+                            );
+                            const isAvailable = slotData?.available;
+                            const isBooked = slotData?.appointmentId != null;
+
+                            return (
+                              <GridCell
+                                key={time}
+                                time={time}
+                                onAdd={() =>
+                                  isAvailable && !isBooked
+                                    ? handleCellClick(emp.employeeId, time)
+                                    : null
+                                }
+                                isAvailable={isAvailable}
+                                isBooked={isBooked}
+                              />
+                            );
+                          })}
 
                           {appointments.map((appt, idx) => (
                             <AppointmentBlock

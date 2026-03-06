@@ -1,11 +1,5 @@
 import api from "./axiosInstance";
-
-interface IAddress {
-  street: string;
-  city: string;
-  province?: string;
-  country?: string;
-}
+import { IAddress } from "../interfaces/IAddress";
 
 interface Service {
   id: string;

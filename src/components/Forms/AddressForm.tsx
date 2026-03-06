@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "../../ui/input";
 import { IAddress } from "../../interfaces/IAddress";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
-import { ArrowDown, MapPin } from "lucide-react";
+import { CheckCircle, MapPin } from "lucide-react";
 import { Label } from "@ui/label";
 import { Button } from "@ui/button";
 
@@ -74,9 +74,8 @@ export const AddressForm = ({
                     type="text"
                     id="ciudad"
                     placeholder="Ej: Buenos Aires"
-                    className={`mt-1 ${
-                      errors.city ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 ${errors.city ? "border-red-500" : "border-gray-200"
+                      }`}
                   />
                   {errors.city && (
                     <p className="text-sm text-red-500">
@@ -101,9 +100,8 @@ export const AddressForm = ({
                     }}
                     id="provincia"
                     placeholder="Ej: CABA"
-                    className={`mt-1 ${
-                      errors.province ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 ${errors.province ? "border-red-500" : "border-gray-200"
+                      }`}
                   />
                   {errors.province && (
                     <p className="text-sm text-red-500">
@@ -129,9 +127,8 @@ export const AddressForm = ({
                     }}
                     id="pais"
                     placeholder="Ej: Argentina"
-                    className={`mt-1 ${
-                      errors.country ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 ${errors.country ? "border-red-500" : "border-gray-200"
+                      }`}
                   />
                   {errors.country && (
                     <p className="text-sm text-red-500">
@@ -156,9 +153,8 @@ export const AddressForm = ({
                     }}
                     id="calle"
                     placeholder="Ej: Av. San Martin"
-                    className={`mt-1 ${
-                      errors.street ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 ${errors.street ? "border-red-500" : "border-gray-200"
+                      }`}
                   />
                   {errors.street && (
                     <p className="text-sm text-red-500">
@@ -184,9 +180,8 @@ export const AddressForm = ({
                   type="number"
                   id="altura"
                   placeholder="Ej: 210"
-                  className={`mt-1 ${
-                    errors.street_number ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`mt-1 ${errors.street_number ? "border-red-500" : "border-gray-200"
+                    }`}
                 />
                 {errors.street_number && (
                   <p className="text-sm text-red-500">
@@ -211,8 +206,8 @@ export const AddressForm = ({
                 onClick={handleScroll}
                 className="bg-orange-500 hover:bg-orange-600"
               >
-                Continuar con horarios
-                <ArrowDown className="w-4 h-4 ml-2" />
+                Registrar Negocio
+                <CheckCircle className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </form>

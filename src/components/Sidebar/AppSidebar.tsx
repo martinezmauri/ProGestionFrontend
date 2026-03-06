@@ -2,114 +2,102 @@ import {
   BarChart3,
   Briefcase,
   Calendar,
-  Menu,
   Settings,
   Users,
+  LogOut,
+  LayoutDashboard
 } from "lucide-react";
-import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@context/AuthContext";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter,
 } from "@ui/sidebar";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { cn } from "@lib/utils";
 
 const navItems = [
-  { to: "/personal", icon: <Users className="w-5 h-5" />, label: "Personal" },
-  {
-    to: "/services",
-    icon: <Calendar className="w-5 h-5" />,
-    label: "Servicios",
-  },
-  { to: "/turnos", icon: <Calendar className="w-5 h-5" />, label: "Turnos" },
-  {
-    to: "/empresa",
-    icon: <Briefcase className="w-5 h-5" />,
-    label: "Empresa",
-  },
-  {
-    to: "/configuracion",
-    icon: <Settings className="w-5 h-5" />,
-    label: "Configuración",
-  },
+  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/personal", icon: Users, label: "Personal" },
+  { to: "/services", icon: Briefcase, label: "Servicios" },
+  { to: "/grilla-turnos", icon: Calendar, label: "Turnos" },
+  { to: "/empresa", icon: Briefcase, label: "Empresa" },
+  { to: "/estadisticas", icon: BarChart3, label: "Estadísticas" },
+  { to: "/configuracion", icon: Settings, label: "Configuración" },
 ];
 
-const bottomItems = [
-  {
-    to: "/estadisticas",
-    icon: <BarChart3 className="w-5 h-5" />,
-    label: "Estadísticas",
-  },
-  { to: "/menu", icon: <Menu className="w-5 h-5" />, label: "Menú" },
-];
 export default function AppSidebar() {
-  /* Tiene problemas ya que si crece en altura el bottomItems se va muy abajo. Los logos deben ser mas grandes,
-  y los iconos tambien. */
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
-    <Sidebar collapsible="none" className="w-20 text-white hidden md:flex">
-      <SidebarContent className="flex flex-col bg-sky-600 justify-between items-center h-full py-4">
-        <SidebarGroup className="flex flex-col items-center w-full">
-          {/* Logo redondo */}
-          <SidebarGroupLabel
-            className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold mb-6 cursor-pointer"
-            onClick={() => navigate("/dashboard")}
-          >
-            P
-          </SidebarGroupLabel>
+    <Sidebar className="border-r border-sky-100 bg-white/95 backdrop-blur-xl shadow-sm z-40">
+      <SidebarHeader className="p-4 flex flex-row items-center gap-3 border-b border-sky-50 pb-6 pt-6">
+        <div
+          className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center font-bold text-white shadow-md cursor-pointer hover:shadow-lg transition-all hover:-translate-y-0.5"
+          onClick={() => navigate("/dashboard")}
+        >
+          O
+        </div>
+        <div className="flex flex-col">
+          <span className="text-xl font-extrabold text-slate-800 leading-tight">OMTime</span>
+          <span className="text-xs font-semibold tracking-wider text-sky-600 uppercase">Gestor</span>
+        </div>
+      </SidebarHeader>
 
-          {/* Menú principal */}
-          <SidebarGroupContent className="flex flex-col gap-4 items-center">
-            <SidebarMenu className="flex flex-col gap-4 items-center">
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton
-                    className={cn(
-                      "flex items-center justify-center p-3 w-12 h-12 rounded-lg hover:bg-sky-700 transition-colors",
-                      location.pathname === item.to && "bg-sky-700"
-                    )}
-                    asChild
-                  >
-                    <Link to={item.to} title={item.label}>
-                      {item.icon}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+      <SidebarContent className="px-3 py-6">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-2">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.to || (location.pathname === "/turnos" && item.to === "/grilla-turnos");
+                return (
+                  <SidebarMenuItem key={item.label}>
+                    <SidebarMenuButton
+                      className={`h-11 rounded-lg transition-all duration-200 ${isActive
+                          ? "bg-sky-50 text-sky-700 font-semibold shadow-sm"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        }`}
+                      asChild
+                      tooltip={item.label}
+                    >
+                      <Link to={item.to} className="flex items-center gap-3 px-3">
+                        <item.icon className={`w-5 h-5 ${isActive ? "text-sky-600" : "text-slate-400"}`} />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        {/* Menú inferior */}
-        <div className="flex flex-col gap-4 items-center">
-          <SidebarMenu className="flex flex-col gap-4 items-center">
-            {bottomItems.map((item) => (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  className={cn(
-                    "flex items-center justify-center p-3 w-12 h-12 rounded-lg hover:bg-sky-700 transition-colors",
-                    location.pathname === item.to && "bg-sky-700"
-                  )}
-                  asChild
-                >
-                  <Link to={item.to} title={item.label}>
-                    {item.icon}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </div>
       </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-sky-50 pb-6">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className="h-11 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors w-full flex items-center gap-3 px-3"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-5 h-5 text-red-500" />
+              <span className="font-medium">Cerrar Sesión</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

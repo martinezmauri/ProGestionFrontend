@@ -70,7 +70,7 @@ export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
               </TableCell>
               <TableCell>{t.role ?? "No tiene rol"}</TableCell>
               <TableCell>
-                {t.services.length > 0
+                {t.services && t.services.length > 0
                   ? t.services.map((s) => s.name).join(", ")
                   : "Sin servicios asignados"}
               </TableCell>

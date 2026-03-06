@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useRegistrationBusiness } from "@hooks/useRegistrationBusiness";
 import { useNavigate } from "react-router-dom";
-import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { AddressForm } from "@components/Forms/AddressForm";
 import { BusinessForm } from "@components/Forms/BusinessForm";
 import { IAddress } from "@interfaces/IAddress";
 import { toast } from "sonner";
-import { AppHeader } from "@components/Header/AppHeader";
 import StepIndicator from "@components/StepIndicator/StepIndicator";
 import { IBusiness } from "@interfaces/IBusiness";
-import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
 import { useAuth } from "@context/AuthContext";
-import { Building2, MapPin, Clock } from "lucide-react";
+import { Building2, MapPin } from "lucide-react";
 
 export const RegistersBusiness = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [businessHours, setBusinessHours] = useState<IWorkSchedule[]>([]);
   const [businessData, setBusinessData] = useState<IBusiness>({
     name: "",
     description: "",
@@ -42,7 +38,7 @@ export const RegistersBusiness = () => {
   }, [userId]);
 
   const handleNextStep = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, 3));
+    setCurrentStep((prev) => Math.min(prev + 1, 2));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -58,13 +54,12 @@ export const RegistersBusiness = () => {
     }
     const response = await registerBusiness({
       ...businessData,
-      businessHours: businessHours.filter((d) => d.active),
       address: addressData,
     });
 
     if (response?.data?.token && response?.data?.business) {
       toast.success("¡Negocio creado exitosamente!", {
-        description: `Se ha configurado ${businessData.name}`,
+        description: `Se ha configurado ${businessData.name}. Ahora puedes configurar los horarios desde el módulo de Turnos.`,
       });
 
       login(userId, response.data.token);
@@ -79,7 +74,6 @@ export const RegistersBusiness = () => {
   const steps = [
     { title: "Empresa", icon: Building2 },
     { title: "Ubicación", icon: MapPin },
-    { title: "Horarios", icon: Clock },
   ];
 
   return (
@@ -137,23 +131,13 @@ export const RegistersBusiness = () => {
             <AddressForm
               addressData={addressData}
               setAddressData={setAddressData}
-              onContinue={handleNextStep}
-            />
-          </div>
-        )}
-
-        {currentStep === 3 && (
-          <div className="animate-in slide-in-from-right-4 fade-in duration-300">
-            <BusinessHoursForm
-              businessHours={businessHours}
-              setBusinessHours={setBusinessHours}
-              handleFinalSubmit={handleFinalSubmit}
+              onContinue={handleFinalSubmit}
             />
           </div>
         )}
       </div>
 
-      {/* Back button wrapper (forward navigation handled inside forms) */}
+      {/* Back button wrapper */}
       {currentStep > 1 && (
         <div className="mt-6 flex justify-start">
           <button

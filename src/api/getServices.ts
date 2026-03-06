@@ -38,7 +38,7 @@ export const getServiceByBusinessId = async (
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/service/business/${businessId}`
+      `${import.meta.env.VITE_API_URL}/service/findAll/?businessId=${businessId}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");

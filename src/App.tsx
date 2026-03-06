@@ -17,6 +17,9 @@ import ProtectedRoute from "@components/ProtectedRoute";
 import { OnboardingLayout } from "@layout/OnboardingLayout";
 import { SelectPlan } from "@views/Client/SelectPlan";
 import { AppointmentGrid } from "@views/Client/AppointmentGrid";
+import { BusinessSettings } from "@views/Client/BusinessSettings";
+import { UserSettings } from "@views/Client/UserSettings";
+import { Statistics } from "@views/Client/Statistics";
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
             <Route path="/personal" element={<Personal />} />
             <Route path="/services" element={<ServiceView />} />
             <Route path="/grilla-turnos" element={<AppointmentGrid />} />
+            <Route path="/empresa" element={<BusinessSettings />} />
+            <Route path="/configuracion" element={<UserSettings />} />
+            <Route path="/estadisticas" element={<Statistics />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

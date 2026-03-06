@@ -1,6 +1,4 @@
 import { IAddress } from "./IAddress";
-import { IBusiness } from "./IBusiness";
-import { IWorkSchedule } from "./IWorkSchedule";
 
 export interface IRegisterBusiness {
   name: string;
@@ -10,5 +8,4 @@ export interface IRegisterBusiness {
   userId: string;
   categoryId: string;
   address: IAddress;
-  businessHours: IWorkSchedule[];
 }

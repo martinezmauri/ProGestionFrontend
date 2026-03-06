@@ -106,18 +106,46 @@ export const AppointmentBlock = ({
 interface GridCellProps {
   time: string;
   onAdd?: () => void;
+  isAvailable?: boolean;
+  isBooked?: boolean;
 }
 
-export const GridCell = ({ time, onAdd }: GridCellProps) => (
+export const GridCell = ({
+  time,
+  onAdd,
+  isAvailable = true,
+  isBooked = false,
+}: GridCellProps) => (
   <div
-    className="h-20 border-b border-[#F1F5F9] transition-colors relative group bg-white hover:bg-[#F8FAFC]"
-    onClick={onAdd}
+    className={cn(
+      "h-20 border-b border-[#F1F5F9] transition-colors relative group",
+      !isAvailable
+        ? "bg-gray-50/50 cursor-not-allowed"
+        : isBooked
+          ? "bg-[#FFF7ED] cursor-default"
+          : "bg-white hover:bg-[#F8FAFC] cursor-pointer",
+    )}
+    onClick={isAvailable && !isBooked ? onAdd : undefined}
   >
-    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+    <div
+      className={cn(
+        "absolute inset-0 flex items-center justify-center transition-opacity pointer-events-none",
+        isAvailable && !isBooked
+          ? "opacity-0 group-hover:opacity-100"
+          : "opacity-0",
+      )}
+    >
       <div className="w-8 h-8 rounded-full bg-[#E6F4EA] flex items-center justify-center">
         <PlusCircle className="w-4 h-4 text-[#059669]" />
       </div>
     </div>
+    {isBooked && (
+      <div className="absolute inset-0 flex items-center justify-center bg-orange-50/30">
+        <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest opacity-40">
+          Ocupado
+        </span>
+      </div>
+    )}
   </div>
 );
 

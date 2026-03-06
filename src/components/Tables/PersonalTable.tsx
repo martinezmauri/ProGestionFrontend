@@ -25,7 +25,10 @@ interface Props {
   onEdit?: (employee: IEmployeeResponse) => void;
 }
 
-export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
+export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
+  // Ensure employees is always an array to prevent crashes
+  const safeEmployees = Array.isArray(employees) ? employees : [];
+
   if (loading) {
     return (
       <div className="space-y-2">
@@ -36,7 +39,7 @@ export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
     );
   }
 
-  if (employees.length === 0) {
+  if (safeEmployees.length === 0) {
     return (
       <div className="text-center py-10">No hay empleados registrados aún.</div>
     );
@@ -53,7 +56,7 @@ export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
       </TableHeader>
 
       <TableBody>
-        {employees.map((t, index) => {
+        {safeEmployees.map((t, index) => {
           return (
             <TableRow
               key={index}
@@ -99,7 +102,7 @@ export const PersonalTable = ({ employees, loading, onEdit }: Props) => {
       <TableFooter>
         <TableRow>
           <TableCell colSpan={3}>Total de empleados</TableCell>
-          <TableCell className="text-right">{employees.length}</TableCell>
+          <TableCell className="text-right">{safeEmployees.length}</TableCell>
         </TableRow>
       </TableFooter>
 

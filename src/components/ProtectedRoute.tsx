@@ -11,6 +11,11 @@ const ProtectedRoute = () => {
 
   if (isLoading) return null;
 
+  // Bypass authentication in development mode
+  if (import.meta.env.DEV) {
+    return <Outlet />;
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }

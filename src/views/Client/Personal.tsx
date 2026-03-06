@@ -39,7 +39,8 @@ export const Personal = () => {
     setLoading(true);
     try {
       const data = await getEmployeesByBusinessId(Number(bId));
-      if (data && data.length > 0) {
+      // Check if data is a valid array and not an HTML string or null
+      if (Array.isArray(data) && data.length > 0) {
         setEmpleados(data);
       } else if (import.meta.env.DEV) {
         setEmpleados(MOCK_EMPLOYEES);
@@ -48,6 +49,7 @@ export const Personal = () => {
       }
     } catch (error) {
       if (import.meta.env.DEV) setEmpleados(MOCK_EMPLOYEES);
+      else setEmpleados([]);
     }
     setLoading(false);
   };
@@ -58,7 +60,8 @@ export const Personal = () => {
     setLoading(true);
     try {
       const data = await getServiceByBusinessId(Number(bId));
-      if (data && data.length > 0) {
+      // Check if data is a valid array and not an HTML string or null
+      if (Array.isArray(data) && data.length > 0) {
         setServices(data);
       } else if (import.meta.env.DEV) {
         setServices(MOCK_SERVICES);
@@ -67,6 +70,7 @@ export const Personal = () => {
       }
     } catch (error) {
       if (import.meta.env.DEV) setServices(MOCK_SERVICES);
+      else setServices([]);
     }
     setLoading(false);
   };
@@ -74,24 +78,29 @@ export const Personal = () => {
   const loadSubscription = async () => {
     try {
       const sub = await getMySubscription();
-      if (sub) {
+      // Verify sub is a valid object and has the tier property
+      if (sub && typeof sub === "object" && "tier" in sub) {
         setSubscription(sub);
       } else if (import.meta.env.DEV) {
         setSubscription({
           tier: "PROFESSIONAL",
-          id: "dev-sub",
-          status: "active",
-          userId: "dev-user",
-        } as any);
+          id: 1, // Changed to number to match interface
+          status: "ACTIVE", // Changed to uppercase to match interface
+          startDate: new Date().toISOString(),
+          endDate: null,
+          userId: 1,
+        });
       }
     } catch {
       if (import.meta.env.DEV) {
         setSubscription({
           tier: "PROFESSIONAL",
-          id: "dev-sub",
-          status: "active",
-          userId: "dev-user",
-        } as any);
+          id: 1,
+          status: "ACTIVE",
+          startDate: new Date().toISOString(),
+          endDate: null,
+          userId: 1,
+        });
       }
     }
   };

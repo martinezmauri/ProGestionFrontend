@@ -17,7 +17,7 @@ export const getService = async (): Promise<IService[]> => {
 };
 
 export const getServiceByUserId = async (
-  userId: number
+  userId: string
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
@@ -34,11 +34,11 @@ export const getServiceByUserId = async (
 };
 
 export const getServiceByBusinessId = async (
-  businessId: number
+  businessId: string
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/service/findAll/?businessId=${businessId}`
+      `${import.meta.env.VITE_API_URL}/service/findAll?businessId=${businessId}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");
@@ -53,7 +53,7 @@ export const getServiceByBusinessId = async (
 export const createService = async (service: IService) => {
   try {
     const response = await api.post(
-      `${import.meta.env.VITE_API_URL}/service`,
+      `${import.meta.env.VITE_API_URL}/service/save`,
       service
     );
 
@@ -72,8 +72,8 @@ export const updateService = async (
   service: Partial<IService>
 ) => {
   try {
-    const response = await api.patch(
-      `${import.meta.env.VITE_API_URL}/service/${serviceId}`,
+    const response = await api.put(
+      `${import.meta.env.VITE_API_URL}/service/update/${serviceId}`,
       service
     );
 
@@ -84,5 +84,21 @@ export const updateService = async (
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+export const deleteService = async (serviceId: number) => {
+  try {
+    const response = await api.delete(
+      `${import.meta.env.VITE_API_URL}/service/delete/${serviceId}`
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Error al eliminar el servicio.");
+    }
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };

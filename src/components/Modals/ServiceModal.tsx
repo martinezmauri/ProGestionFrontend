@@ -19,7 +19,7 @@ export const ServiceModal = ({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="!max-w-[90vw] sm:!max-w-[800px] !w-full"
+        className="!max-w-[90vw] sm:!max-w-[800px] !w-full overflow-y-auto max-h-[90vh] p-6"
         aria-describedby={undefined}
       >
         <DialogHeader>

@@ -53,7 +53,11 @@ export const UserMenu = () => {
             </li>
             <li
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2 text-red-500"
-              onClick={() => logout()}
+              onClick={() => {
+                logout();
+                setOpen(false);
+                navigate("/");
+              }}
             >
               <LogOut className="w-4 h-4" />
               Salir

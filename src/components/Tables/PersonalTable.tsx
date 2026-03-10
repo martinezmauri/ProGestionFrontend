@@ -16,8 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@ui/table";
-import { Pencil } from "lucide-react";
-import React from "react";
+import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 interface Props {
   employees: IEmployeeResponse[];
@@ -26,8 +26,19 @@ interface Props {
 }
 
 export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Ensure employees is always an array to prevent crashes
   const safeEmployees = Array.isArray(employees) ? employees : [];
+
+  // Pagination logic
+  const totalPages = Math.ceil(safeEmployees.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = safeEmployees.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   if (loading) {
     return (
@@ -56,10 +67,10 @@ export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
       </TableHeader>
 
       <TableBody>
-        {safeEmployees.map((t, index) => {
+        {currentItems.map((t, index) => {
           return (
             <TableRow
-              key={index}
+              key={t.id || index}
               className="odd:bg-muted/40 hover:bg-muted transition-colors"
             >
               <TableCell className="font-medium flex items-center gap-2">
@@ -101,8 +112,42 @@ export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
 
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={3}>Total de empleados</TableCell>
-          <TableCell className="text-right">{safeEmployees.length}</TableCell>
+          <TableCell colSpan={4}>
+            <div className="flex items-center justify-between w-full">
+              <span className="text-sm text-slate-500">
+                Mostrando {Math.min(startIndex + 1, safeEmployees.length)} -{" "}
+                {Math.min(startIndex + itemsPerPage, safeEmployees.length)} de{" "}
+                {safeEmployees.length} empleados
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm font-medium px-2">
+                  Página {currentPage} de {Math.max(totalPages, 1)}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </TableCell>
         </TableRow>
       </TableFooter>
 

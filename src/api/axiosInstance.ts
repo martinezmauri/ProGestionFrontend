@@ -18,10 +18,15 @@ api.interceptors.request.use((config) => {
             const { token } = JSON.parse(stored);
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
+            } else {
+                console.warn("Token no encontrado en localStorage aunque auth_data existe.");
             }
         } catch {
             // Si el parse falla, no adjuntar header
+            console.error("Error al parsear auth_data de localStorage");
         }
+    } else {
+        console.warn("auth_data no existe en localStorage. El usuario no está autenticado.");
     }
     return config;
 });

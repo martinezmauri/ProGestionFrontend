@@ -69,9 +69,8 @@ export const BusinessForm = ({
                   setErrors({ ...errors, name: false });
                   setRegisterData({ ...registerData, name: e.target.value });
                 }}
-                className={`mt-1 border rounded-md ${
-                  errors.name ? "border-red-500" : "border-gray-200"
-                }`}
+                className={`mt-1 border rounded-md ${errors.name ? "border-red-500" : "border-gray-200"
+                  }`}
                 id="nombre"
                 placeholder="Ej: Peluquería Estilo"
               />
@@ -97,9 +96,8 @@ export const BusinessForm = ({
                   }}
                   id="phone"
                   placeholder="Ej: 2634253243"
-                  className={`mt-1 border rounded-md ${
-                    errors.phone_number ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`mt-1 border rounded-md ${errors.phone_number ? "border-red-500" : "border-gray-200"
+                    }`}
                 />
                 {errors.phone_number && (
                   <p className="text-sm text-red-500">
@@ -113,6 +111,7 @@ export const BusinessForm = ({
                   Categoría
                 </Label>
                 <Select
+                  value={registerData.categoryId || undefined}
                   onValueChange={(value) => {
                     setErrors({ ...errors, categoryId: false });
                     setRegisterData({
@@ -122,9 +121,8 @@ export const BusinessForm = ({
                   }}
                 >
                   <SelectTrigger
-                    className={`mt-1 border rounded-md w-full ${
-                      errors.categoryId ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 border rounded-md w-full ${errors.categoryId ? "border-red-500" : "border-gray-200"
+                      }`}
                   >
                     <SelectValue placeholder="Seleccionar categoría" />
                   </SelectTrigger>

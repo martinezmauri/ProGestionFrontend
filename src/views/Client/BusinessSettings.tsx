@@ -43,11 +43,11 @@ export const BusinessSettings = () => {
             if (data) {
                 setBusinessData({
                     name: data.name || "",
-                    description: "", // DTO is short, description might be missing from findShort, assuming blank if not returned
-                    phone_number: data.phone_number || "",
+                    description: (data as any).description || "",
+                    phone_number: data.phone_number || (data as any).phoneNumber || "",
                     logo: data.logo || "",
                     userId: "",
-                    categoryId: data.category?.id || "",
+                    categoryId: data.category ? String(data.category.id) : "",
                 });
 
                 if (data.address) {
@@ -124,8 +124,8 @@ export const BusinessSettings = () => {
                     {step === 1 && (
                         <div className="animate-in slide-in-from-left-4 duration-300">
                             <BusinessForm
-                                registerData={businessData}
-                                setRegisterData={setBusinessData}
+                                registerData={businessData as any}
+                                setRegisterData={setBusinessData as any}
                                 onContinue={handleSavePrimary}
                             />
                         </div>

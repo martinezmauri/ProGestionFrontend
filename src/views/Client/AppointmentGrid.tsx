@@ -86,7 +86,7 @@ export const AppointmentGrid = () => {
       const bId = businessId || (import.meta.env.DEV ? "1" : null);
       if (bId && isAuthenticated && (hasHours || import.meta.env.DEV)) {
         try {
-          const data = await getServiceByBusinessId(Number(bId));
+          const data = await getServiceByBusinessId(String(bId));
           const safeData = Array.isArray(data) ? data : [];
 
           let servicesToUse = safeData;
@@ -162,7 +162,7 @@ export const AppointmentGrid = () => {
   };
 
   const handleSaveHours = async () => {
-    const activeHours = setupHours.filter((h) => h.active);
+    const activeHours = setupHours.filter((h) => h.isWorkingDay);
     if (activeHours.length === 0) {
       toast.error("Debes configurar al menos un día de atención.");
       return;

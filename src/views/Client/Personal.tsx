@@ -13,7 +13,6 @@ import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import { getMySubscription, ISubscription } from "@api/getSubscription";
 import { EmployeeRol } from "@enum/EmployeeRol";
-import { MOCK_EMPLOYEES, MOCK_SERVICES } from "../../mocks/mockData";
 import AppSidebar from "@components/Sidebar/AppSidebar";
 
 const TIER_LIMITS = {
@@ -27,6 +26,7 @@ export const Personal = () => {
   const [services, setServices] = useState<IService[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [subscription, setSubscription] = useState<ISubscription | null>(null);
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
     null,
@@ -36,20 +36,15 @@ export const Personal = () => {
   const loadEmployees = async () => {
     const bId = businessId || (import.meta.env.DEV ? "1" : null);
     if (!bId) return;
-    setLoading(true);
     try {
-      const data = await getEmployeesByBusinessId(Number(bId));
-      // Check if data is a valid array and not an HTML string or null
+      const data = await getEmployeesByBusinessId(bId);
       if (Array.isArray(data) && data.length > 0) {
         setEmpleados(data);
-      } else if (import.meta.env.DEV) {
-        setEmpleados(MOCK_EMPLOYEES);
       } else {
         setEmpleados([]);
       }
     } catch (error) {
-      if (import.meta.env.DEV) setEmpleados(MOCK_EMPLOYEES);
-      else setEmpleados([]);
+      setEmpleados([]);
     }
     setLoading(false);
   };
@@ -57,22 +52,16 @@ export const Personal = () => {
   const loadServices = async () => {
     const bId = businessId || (import.meta.env.DEV ? "1" : null);
     if (!bId) return;
-    setLoading(true);
     try {
-      const data = await getServiceByBusinessId(Number(bId));
-      // Check if data is a valid array and not an HTML string or null
+      const data = await getServiceByBusinessId(bId);
       if (Array.isArray(data) && data.length > 0) {
         setServices(data);
-      } else if (import.meta.env.DEV) {
-        setServices(MOCK_SERVICES);
       } else {
         setServices([]);
       }
     } catch (error) {
-      if (import.meta.env.DEV) setServices(MOCK_SERVICES);
-      else setServices([]);
+      setServices([]);
     }
-    setLoading(false);
   };
 
   const loadSubscription = async () => {
@@ -116,6 +105,15 @@ export const Personal = () => {
   const maxEmployees = subscription ? TIER_LIMITS[subscription.tier] : 0;
   const isLimitReached = empleados.length >= maxEmployees;
 
+  const filteredEmployees = empleados.filter((e) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      e.name.toLowerCase().includes(term) ||
+      (e.role && e.role.toLowerCase().includes(term))
+    );
+  });
+
   return (
     <div className="flex min-h-screen w-full bg-[#FFFFFF]">
       <AppSidebar />
@@ -126,21 +124,31 @@ export const Personal = () => {
             Gestiona tu equipo de trabajo.
           </p>
           <Card className="w-full border border-gray-100 shadow-sm mt-6 rounded-2xl overflow-hidden">
-            <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 pb-6 border-b border-gray-100 px-6 py-6">
+            <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-100 px-6 py-6">
               <span className="text-xl font-bold text-slate-800">
                 Listado de Empleados
               </span>
-              <div className="flex flex-col sm:items-end gap-2">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <input
+                  type="text"
+                  placeholder="Buscar empleado..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                />
                 <Button
-                  className="bg-orange-500 hover:bg-orange-600 shadow-md text-white cursor-pointer px-6 rounded-xl"
-                  onClick={() => setOpenModal(true)}
+                  className="bg-orange-500 hover:bg-orange-600 shadow-md text-white cursor-pointer px-6 rounded-xl w-full sm:w-auto shrink-0"
+                  onClick={() => {
+                    setSelectedPersonal(null);
+                    setOpenModal(true);
+                  }}
                   disabled={isLimitReached}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Empleado
                 </Button>
                 {subscription && (
-                  <span className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                  <span className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full whitespace-nowrap hidden sm:inline-flex">
                     Plan {subscription.tier}: {empleados.length} /{" "}
                     {maxEmployees}
                   </span>
@@ -150,7 +158,7 @@ export const Personal = () => {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <PersonalTable
-                  employees={empleados}
+                  employees={filteredEmployees}
                   loading={loading}
                   onEdit={(employee) => {
                     const mapped: IEmployee = {

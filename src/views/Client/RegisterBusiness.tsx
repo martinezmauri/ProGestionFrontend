@@ -64,7 +64,7 @@ export const RegistersBusiness = () => {
 
       login(userId, response.data.token);
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/onboarding/business-hours");
       }, 500);
     } else {
       toast.error("No se pudo registrar el negocio.");

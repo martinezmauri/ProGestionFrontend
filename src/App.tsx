@@ -5,6 +5,7 @@ import { UserLanding } from "@views/User/UserLanding";
 import { Plans } from "@views/Client/Plans";
 import { About } from "@views/Client/About";
 import { RegistersBusiness } from "@views/Client/RegisterBusiness";
+import { BusinessHoursSetup } from "@views/Client/BusinessHoursSetup";
 import { HomeClient } from "@views/Client/Home";
 import { BusinessSearch } from "@views/User/BusinessSearch";
 import { ServiceView } from "@views/Client/ServiceView";
@@ -35,6 +36,7 @@ function App() {
           <Route element={<OnboardingLayout />}>
             <Route path="/onboarding/plans" element={<SelectPlan />} />
             <Route path="/onboarding/business" element={<RegistersBusiness />} />
+            <Route path="/onboarding/business-hours" element={<BusinessHoursSetup />} />
             {/* Note: In Phase 2, Business, Hours, Personal and Services will also move here or be refactored */}
           </Route>
           <Route element={<SidebarLayout />}>

@@ -125,7 +125,7 @@ export const PersonalForm = ({
         await createEmployee({
           ...form,
           businessId: String(businessId),
-          employeeHours: form.employeeHours.filter((d) => d.active),
+          employeeHours: form.employeeHours.filter((d) => d.isWorkingDay),
         });
         toast.success("Empleado creado correctamente");
         onPersonalCreated();
@@ -137,7 +137,7 @@ export const PersonalForm = ({
     }
   };
   return (
-    <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
@@ -231,60 +231,99 @@ export const PersonalForm = ({
                   </h3>
                 </div>
                 <div className="border border-gray-200 rounded-b-lg p-6 space-y-4">
-                  <p className="text-gray-600 text-sm">
-                    Selecciona todos los servicios que este empleado puede
-                    realizar
-                  </p>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <p className="text-gray-600 text-sm">
+                      Selecciona todos los servicios que este empleado puede
+                      realizar
+                    </p>
+                    {services.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                        onClick={() => navigate("/services")}
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Nuevo
+                      </Button>
+                    )}
+                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {services.map((servicio) =>
-                      servicio.id !== undefined ? (
-                        <div
-                          key={servicio.id}
-                          className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            id={`servicio-${servicio.id}`}
-                            checked={
-                              form.servicesIds?.includes(Number(servicio.id)) ??
-                              false
-                            }
-                            onChange={(e) =>
-                              setForm({
-                                ...form,
-                                servicesIds: e.target.checked
-                                  ? [...form.servicesIds, Number(servicio.id!)]
-                                  : form.servicesIds.filter(
+                  <div className="flex flex-col gap-4">
+                    {services.length > 0 ? (
+                      services.map((servicio) =>
+                        servicio.id !== undefined ? (
+                          <div
+                            key={servicio.id}
+                            className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              id={`servicio-${servicio.id}`}
+                              checked={
+                                form.servicesIds?.includes(
+                                  Number(servicio.id)
+                                ) ?? false
+                              }
+                              onChange={(e) =>
+                                setForm({
+                                  ...form,
+                                  servicesIds: e.target.checked
+                                    ? [
+                                      ...form.servicesIds,
+                                      Number(servicio.id!),
+                                    ]
+                                    : form.servicesIds.filter(
                                       (id) => id !== Number(servicio.id)
                                     ),
-                              })
-                            }
-                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                          />
-                          <div className="flex-1">
-                            <label
-                              htmlFor={`servicio-${servicio.id}`}
-                              className="text-sm font-medium text-gray-700 cursor-pointer block"
-                            >
-                              {servicio.name}
-                            </label>
-                            <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
-                              <span>{servicio.price}</span>
-                              <span>•</span>
-                              <span>{servicio.duration}</span>
+                                })
+                              }
+                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            />
+                            <div className="flex-1">
+                              <label
+                                htmlFor={`servicio-${servicio.id}`}
+                                className="text-sm font-medium text-gray-700 cursor-pointer block"
+                              >
+                                {servicio.name}
+                                {servicio.category && (
+                                  <span className="ml-2 inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                                    {servicio.category}
+                                  </span>
+                                )}
+                              </label>
+                              <div className="flex items-center space-x-2 text-xs text-gray-500 mt-1">
+                                {servicio.price && (
+                                  <span>${servicio.price}</span>
+                                )}
+                                {servicio.price && servicio.duration && (
+                                  <span>•</span>
+                                )}
+                                {servicio.duration && (
+                                  <span>{servicio.duration} min</span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ) : null
+                        ) : null
+                      )
+                    ) : (
+                      <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-6 bg-gray-50 border border-gray-200 rounded-lg">
+                        <p className="text-gray-500 text-sm mb-3">
+                          Aún no has creado ningún servicio.
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700"
+                          onClick={() => navigate("/services")}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Crear mi primer servicio
+                        </Button>
+                      </div>
                     )}
-                    <Button
-                      className="bg-purple-500 hover:bg-purple-600 text-white"
-                      onClick={() => navigate("/services")}
-                    >
-                      <Plus />
-                      Crear
-                    </Button>
                   </div>
 
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mt-4">

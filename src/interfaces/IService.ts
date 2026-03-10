@@ -4,7 +4,9 @@ export interface IService {
   duration: number;
   description: string;
   price: number;
-  employee?: { id: string; name: string }[];
+  category?: string;
+  isActive?: boolean;
+  employeeIds?: number[];
   businessId?: string;
 }
 
@@ -13,4 +15,7 @@ export interface IServiceUpdate {
   duration?: number;
   description?: string;
   price?: number;
+  category?: string;
+  isActive?: boolean;
+  employeeIds?: number[];
 }

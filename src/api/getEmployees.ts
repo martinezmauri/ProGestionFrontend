@@ -6,57 +6,40 @@ import {
 } from "../interfaces/IEmployee";
 
 export const getEmployeesByBusinessId = async (
-  id: number
+  id: string
 ): Promise<IEmployeeResponse[] | null> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/employee/findAll/?businessId=${id}`
+      `${import.meta.env.VITE_API_URL}/employee/findAll?businessId=${id}`
     );
     console.log(response.data);
 
     if (response.status !== 200) {
       throw new Error("Error al obtener el empleado.");
     }
-    return response.data;
+
+    // Map backend keys to frontend UI
+    const mappedData = response.data.map((emp: any) => ({
+      ...emp,
+      employeeHours: emp.workSchedules || [],
+    }));
+
+    return mappedData;
   } catch (error) {
     console.error(error);
     return null;
   }
 };
 
-export const getEmployeesByUserId = async (
-  id: number
-): Promise<IEmployeeResponse[] | null> => {
-  try {
-    const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/employee/user/${id}`
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Error al obtener el empleado.");
-    }
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
 
 export const createEmployee = async (payload: IEmployee) => {
   const normalizedPayload = {
     ...payload,
-    employeeHours: payload.employeeHours.map((h) => ({
-      ...h,
-      opening_morning_time:
-        h.opening_morning_time === "" ? null : h.opening_morning_time,
-      closing_morning_time:
-        h.closing_morning_time === "" ? null : h.closing_morning_time,
-      opening_evening_time:
-        h.opening_evening_time === "" ? null : h.opening_evening_time,
-      closing_evening_time:
-        h.closing_evening_time === "" ? null : h.closing_evening_time,
-    })),
+    serviceIds: payload.servicesIds,
+    workSchedules: payload.employeeHours,
   };
+  delete (normalizedPayload as any).servicesIds;
+  delete (normalizedPayload as any).employeeHours;
   try {
     const response = await api.post(
       `${import.meta.env.VITE_API_URL}/employee/save`,
@@ -78,11 +61,21 @@ export const updateEmployee = async (
   employee: Partial<IEmployee>
 ) => {
   try {
-    console.log(employee);
+    const payloadToSend: any = { ...employee };
+    if (employee.servicesIds !== undefined) {
+      payloadToSend.serviceIds = employee.servicesIds;
+      delete payloadToSend.servicesIds;
+    }
+    if (employee.employeeHours !== undefined) {
+      payloadToSend.workSchedules = employee.employeeHours;
+      delete payloadToSend.employeeHours;
+    }
+
+    console.log("Sending update:", payloadToSend);
 
     const response = await api.patch(
       `${import.meta.env.VITE_API_URL}/employee/update/${id}`,
-      employee
+      payloadToSend
     );
     console.log("response", response);
 

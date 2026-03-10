@@ -138,36 +138,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Mock data for development mode if not authenticated
-  const devMockData =
-    import.meta.env.DEV && !token
-      ? {
-          isAuthenticated: true,
-          token: "mock-dev-token",
-          userId: "dev-user-id",
-          userInfo: {
-            id: "dev-user-id",
-            email: "dev@example.com",
-            rol: "admin",
-            avatar_url: "https://github.com/shadcn.png",
-          },
-          businessId: "dev-business-id",
-        }
-      : {};
-
   return (
     <AuthContext.Provider
       value={{
-        token: token ?? (devMockData.token || null),
-        userId: userId ?? (devMockData.userId || null),
+        token,
+        userId,
         login,
         logout,
-        isAuthenticated: token ? true : devMockData.isAuthenticated || false,
+        isAuthenticated: !!token,
         isLoading,
-        userInfo: userInfo ?? (devMockData.userInfo || null),
+        userInfo,
         setBusinessId,
-        businessId: businessId ?? (devMockData.businessId || null),
-        hasSubscription: hasSubscription ?? (import.meta.env.DEV ? true : null),
+        businessId,
+        hasSubscription,
       }}
     >
       {children}

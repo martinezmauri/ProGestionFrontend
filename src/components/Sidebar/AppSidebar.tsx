@@ -25,7 +25,7 @@ const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/personal", icon: Users, label: "Personal" },
   { to: "/services", icon: Briefcase, label: "Servicios" },
-  { to: "/grilla-turnos", icon: Calendar, label: "Turnos" },
+  { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { to: "/empresa", icon: Briefcase, label: "Empresa" },
   { to: "/estadisticas", icon: BarChart3, label: "Estadísticas" },
   { to: "/configuracion", icon: Settings, label: "Configuración" },
@@ -66,8 +66,8 @@ export default function AppSidebar() {
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton
                       className={`h-11 rounded-lg transition-all duration-200 ${isActive
-                          ? "bg-sky-50 text-sky-700 font-semibold shadow-sm"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-sky-50 text-sky-700 font-semibold shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                         }`}
                       asChild
                       tooltip={item.label}

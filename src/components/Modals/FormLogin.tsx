@@ -12,8 +12,9 @@ import { jwtDecode } from "jwt-decode";
 interface ModalProps {
   onClose: () => void;
   onOpenRegister: () => void;
+  redirectOnSuccess?: boolean;
 }
-export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
+export const FormLogin = ({ onClose, onOpenRegister, redirectOnSuccess = true }: ModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -58,11 +59,24 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
         });
 
         const decoded: any = jwtDecode(token);
+        const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
+        
         setTimeout(() => {
-          if (decoded.businessId) {
-            navigate("/dashboard");
-          } else {
-            navigate("/onboarding/plans");
+          if (redirectOnSuccess) {
+            if (redirectUrl) {
+              sessionStorage.removeItem("redirectAfterLogin");
+              navigate(redirectUrl);
+            } else if (decoded.businessId) {
+              navigate("/dashboard");
+            } else {
+              // Si ya está en una página pública, no redirigir a "/"
+              const currentPath = window.location.pathname;
+              if (currentPath === "/" || currentPath.startsWith("/search") || currentPath.startsWith("/b/")) {
+                // Stay here
+              } else {
+                navigate("/");
+              }
+            }
           }
         }, 100);
       }

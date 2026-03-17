@@ -21,6 +21,8 @@ import { AppointmentGrid } from "@views/Client/AppointmentGrid";
 import { BusinessSettings } from "@views/Client/BusinessSettings";
 import { UserSettings } from "@views/Client/UserSettings";
 import { Statistics } from "@views/Client/Statistics";
+import { AgendaMaster } from "@views/Client/AgendaMaster";
+import BusinessRoute from "@components/BusinessRoute";
 
 function App() {
   return (
@@ -30,24 +32,30 @@ function App() {
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
         <Route path="/about" element={<About />} />
-        <Route path="/business/:id" element={<BusinessDetail />} />
+        <Route path="/b/:id" element={<BusinessDetail />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route element={<ProtectedRoute />}>
-          <Route element={<OnboardingLayout />}>
-            <Route path="/onboarding/plans" element={<SelectPlan />} />
-            <Route path="/onboarding/business" element={<RegistersBusiness />} />
-            <Route path="/onboarding/business-hours" element={<BusinessHoursSetup />} />
-            {/* Note: In Phase 2, Business, Hours, Personal and Services will also move here or be refactored */}
+          <Route element={<BusinessRoute />}>
+            <Route element={<OnboardingLayout />}>
+              <Route path="/onboarding/plans" element={<SelectPlan />} />
+              <Route path="/onboarding/business" element={<RegistersBusiness />} />
+              <Route path="/onboarding/business-hours" element={<BusinessHoursSetup />} />
+            </Route>
           </Route>
+
           <Route element={<SidebarLayout />}>
             <Route path="/support" element={<Support />} />
-            <Route path="/dashboard" element={<HomeClient />} />
-            <Route path="/personal" element={<Personal />} />
-            <Route path="/services" element={<ServiceView />} />
             <Route path="/grilla-turnos" element={<AppointmentGrid />} />
-            <Route path="/empresa" element={<BusinessSettings />} />
-            <Route path="/configuracion" element={<UserSettings />} />
-            <Route path="/estadisticas" element={<Statistics />} />
+
+            <Route element={<BusinessRoute />}>
+              <Route path="/dashboard" element={<HomeClient />} />
+              <Route path="/personal" element={<Personal />} />
+              <Route path="/services" element={<ServiceView />} />
+              <Route path="/dashboard/agenda" element={<AgendaMaster />} />
+              <Route path="/empresa" element={<BusinessSettings />} />
+              <Route path="/configuracion" element={<UserSettings />} />
+              <Route path="/estadisticas" element={<Statistics />} />
+            </Route>
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

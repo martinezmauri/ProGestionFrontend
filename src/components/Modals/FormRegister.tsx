@@ -20,9 +20,10 @@ import { jwtDecode } from "jwt-decode";
 interface ModalProps {
   onClose: () => void;
   onOpenLogin: () => void;
+  redirectOnSuccess?: boolean;
 }
 
-export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
+export const FormRegister = ({ onClose, onOpenLogin, redirectOnSuccess = true }: ModalProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [registerData, setRegisterData] = useState({
@@ -105,11 +106,23 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
         });
 
         const decoded: any = jwtDecode(token);
+        const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
+
         setTimeout(() => {
-          if (decoded.businessId) {
-            navigate("/dashboard");
-          } else {
-            navigate("/onboarding/plans");
+          if (redirectOnSuccess) {
+            if (redirectUrl) {
+              sessionStorage.removeItem("redirectAfterLogin");
+              navigate(redirectUrl);
+            } else if (decoded.businessId) {
+              navigate("/dashboard");
+            } else {
+              const currentPath = window.location.pathname;
+              if (currentPath === "/" || currentPath.startsWith("/search") || currentPath.startsWith("/b/")) {
+                // Stay
+              } else {
+                navigate("/");
+              }
+            }
           }
         }, 100);
       }

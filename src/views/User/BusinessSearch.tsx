@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavbarUser } from "@components/Navbars/NavbarUser";
 import { useLocation } from "react-router-dom";
-import { SearchDetail } from "@components/Details/SearchDetail";
+import { SearchDetail, IBusinessShort } from "@components/Details/SearchDetail";
 import api from "@api/axiosInstance";
 import { Input } from "@ui/input";
 import {
@@ -14,7 +14,6 @@ import {
 import { Building, Calendar, MapPin, Search } from "lucide-react";
 import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
-import getBusiness from "@api/getBusiness";
 import useLoadCategories from "@hooks/useLoadCategories";
 
 export const BusinessSearch = () => {
@@ -26,7 +25,7 @@ export const BusinessSearch = () => {
   };
   const { categories, loading } = useLoadCategories();
   const resultSearch = location.state?.resultSearch || [];
-  const [result, setResult] = useState(resultSearch);
+  const [result, setResult] = useState<IBusinessShort[]>(resultSearch);
   const [searchBusiness, setSearchBusiness] = useState(stateSearchBusiness);
 
   const handleChange = (
@@ -74,7 +73,7 @@ export const BusinessSearch = () => {
         }
       );
 
-      setSearchBusiness(response.data);
+      setResult(response.data ?? []);
     } catch (error) {
       console.error("Error al realizar la busqueda.", error);
     }

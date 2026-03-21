@@ -206,7 +206,7 @@ export const AddressForm = ({
                 onClick={handleScroll}
                 className="bg-orange-500 hover:bg-orange-600"
               >
-                Registrar Negocio
+                Guardar información
                 <CheckCircle className="w-4 h-4 ml-2" />
               </Button>
             </div>

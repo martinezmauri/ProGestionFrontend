@@ -19,7 +19,7 @@ export const BusinessSettings = () => {
     const [businessData, setBusinessData] = useState<IBusiness>({
         name: "",
         description: "",
-        phone_number: "",
+        phoneNumber: "",
         logo: "",
         userId: "",
         categoryId: "",
@@ -44,7 +44,7 @@ export const BusinessSettings = () => {
                 setBusinessData({
                     name: data.name || "",
                     description: (data as any).description || "",
-                    phone_number: data.phone_number || (data as any).phoneNumber || "",
+                    phoneNumber: data.phoneNumber || "",
                     logo: data.logo || "",
                     userId: "",
                     categoryId: data.category ? String(data.category.id) : "",
@@ -86,7 +86,7 @@ export const BusinessSettings = () => {
             const payload: UpdateBusinessPayload = {
                 name: businessData.name,
                 description: businessData.description,
-                phoneNumber: businessData.phone_number,
+                phoneNumber: businessData.phoneNumber,
                 logo: businessData.logo,
                 categoryId: businessData.categoryId,
                 address: addressData

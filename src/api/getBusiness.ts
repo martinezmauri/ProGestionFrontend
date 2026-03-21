@@ -31,7 +31,7 @@ export interface PropsBusiness {
   id: string;
   name: string;
   logo: string;
-  phone_number: string;
+  phoneNumber: string;
   address: IAddress;
   open: boolean;
   services: Service[];

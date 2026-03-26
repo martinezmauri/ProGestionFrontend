@@ -22,7 +22,7 @@ export const RegistersBusiness = () => {
     categoryId: "",
   });
   const [addressData, setAddressData] = useState<IAddress>({
-    street_number: 0,
+    streetNumber: "",
     province: "",
     country: "",
     street: "",

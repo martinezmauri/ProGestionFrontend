@@ -24,7 +24,7 @@ interface ISearch {
   logo: string;
   address: {
     id: number;
-    street_number: number;
+    streetNumber: string;
     province: string;
     country: string;
     street: string;

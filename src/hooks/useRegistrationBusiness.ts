@@ -18,7 +18,7 @@ export const useRegistrationBusiness = () => {
         category: { id: newBusinessData.categoryId },
         address: {
           street: newBusinessData.address.street,
-          streetNumber: newBusinessData.address.street_number,
+          streetNumber: newBusinessData.address.streetNumber,
           city: newBusinessData.address.city,
           province: newBusinessData.address.province,
           country: newBusinessData.address.country

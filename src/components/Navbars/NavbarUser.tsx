@@ -4,13 +4,13 @@ import { FormLogin } from "@components/Modals/FormLogin";
 import { FormRegister } from "@components/Modals/FormRegister";
 import { useAuth } from "@context/AuthContext";
 import { UserMenu } from "./UserMenu";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Store } from "lucide-react";
 
 export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, businessId } = useAuth();
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);
@@ -32,60 +32,62 @@ export const NavbarUser = () => {
         <span className="text-slate-800 text-2xl font-extrabold tracking-tight">Time</span>
       </Link>
 
-      {/* Right side (Desktop) */}
-      <div className="hidden lg:flex items-center gap-4">
+      {/* Right side — always visible */}
+      <div className="flex items-center gap-2 md:gap-4">
+        {/* Software para negocios — siempre visible */}
         <Link
-          to="/para-negocios"
-          className="border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold px-5 py-2 rounded-xl transition-colors cursor-pointer text-[14px]"
+          to="/para-negocios/planes"
+          className="border-2 border-sky-500 text-sky-600 hover:bg-sky-50 font-semibold px-3 md:px-5 py-2 rounded-xl transition-colors text-[13px] md:text-[14px] whitespace-nowrap"
         >
-          OMTime para negocios
+          <span className="hidden sm:inline">Software para negocios</span>
+          <span className="sm:hidden">Para negocios</span>
         </Link>
+
+        {/* Mi Negocio — solo si tiene negocio */}
+        {isAuthenticated && businessId && (
+          <Link
+            to="/dashboard"
+            className="hidden md:flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-[14px] transition-colors"
+          >
+            <Store className="w-4 h-4" />
+            Mi Negocio
+          </Link>
+        )}
 
         {isAuthenticated ? (
           <UserMenu />
         ) : (
           <button
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 md:px-6 py-2 md:py-2.5 rounded-xl transition-colors cursor-pointer text-[13px] md:text-[14px]"
             onClick={handleOpenLogin}
           >
             Iniciar Sesión
           </button>
         )}
+
+        {/* Hamburger — solo mobile */}
+        <button
+          className="md:hidden text-slate-600 ml-1"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
       </div>
 
-      {/* Hambuger Button (Mobile) */}
-      <button
-        className="lg:hidden text-slate-600"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      >
-        {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-      </button>
+      {/* Hamburger Button — handled inside the right-side div above */}
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile dropdown — extra links when hamburger is open */}
       {isMobileMenuOpen && (
-        <div className="absolute top-[100%] left-0 w-full bg-white border-b border-gray-100 shadow-lg flex flex-col p-6 gap-4 lg:hidden">
-          <Link
-            to="/para-negocios"
-            className="border-2 border-sky-500 text-sky-600 text-center hover:bg-sky-50 font-semibold px-5 py-3 rounded-xl transition-colors cursor-pointer text-[15px] w-full"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            OMTime para negocios
-          </Link>
-          <div className="h-px bg-slate-100 my-1 w-full" />
-          {isAuthenticated ? (
-            <div className="w-full flex justify-center">
-              <UserMenu />
-            </div>
-          ) : (
-            <button
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer w-full text-[15px]"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                handleOpenLogin();
-              }}
+        <div className="absolute top-[100%] left-0 w-full bg-white border-b border-gray-100 shadow-lg flex flex-col p-4 gap-3 md:hidden">
+          {isAuthenticated && businessId && (
+            <Link
+              to="/dashboard"
+              className="flex items-center justify-center gap-2 border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold px-5 py-3 rounded-xl transition-colors text-[15px] w-full"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              Iniciar Sesión
-            </button>
+              <Store className="w-4 h-4" />
+              Mi Negocio
+            </Link>
           )}
         </div>
       )}

@@ -20,7 +20,7 @@ export interface IBusinessShort {
   logo: string;
   address: {
     id: number;
-    street_number: number;
+    streetNumber: string;
     province: string;
     country: string;
     street: string;
@@ -155,7 +155,7 @@ export const SearchDetail = ({ business, searchInputs }: Props) => {
                     <div className="flex items-start text-slate-500 text-sm mt-2">
                       <MapPin className="h-4 w-4 mr-1.5 flex-shrink-0 mt-0.5 text-slate-400" />
                       <span className="flex-1 line-clamp-2 leading-relaxed">
-                        {place.address?.street} {place.address?.street_number}, {place.address?.city}
+                        {place.address?.street} {place.address?.streetNumber}, {place.address?.city}
                       </span>
                     </div>
                   </div>

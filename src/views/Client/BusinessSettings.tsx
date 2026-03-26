@@ -27,7 +27,7 @@ export const BusinessSettings = () => {
 
     const [addressData, setAddressData] = useState<IAddress>({
         street: "",
-        street_number: 0,
+        streetNumber: "",
         city: "",
         province: "",
         country: "",
@@ -53,7 +53,7 @@ export const BusinessSettings = () => {
                 if (data.address) {
                     setAddressData({
                         street: data.address.street || "",
-                        street_number: data.address.street_number || 0,
+                        streetNumber: data.address.streetNumber || "",
                         city: data.address.city || "",
                         province: data.address.province || "",
                         country: data.address.country || "",

@@ -9,10 +9,12 @@ import { Button } from "@ui/button";
 import { UserCircle, Save, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { updateUser, UpdateUserPayload } from "@api/updateUser";
+import api from "@api/axiosInstance";
 
 export const UserSettings = () => {
     const { userInfo, userId } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [dataLoading, setDataLoading] = useState(true);
 
     // User profile state
     const [name, setName] = useState("");
@@ -23,13 +25,21 @@ export const UserSettings = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     useEffect(() => {
-        // Here we could fetch the user data if needed from another endpoint
-        // If userInfo is available, populate the fields
-        if (userInfo) {
-            // setName("");
-            // setPhone("");
-        }
-    }, [userInfo]);
+        const fetchUser = async () => {
+            try {
+                const res = await api.get("/user/me");
+                if (res.data) {
+                    setName(res.data.name || "");
+                    setPhone(res.data.phoneNumber || "");
+                }
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+            } finally {
+                setDataLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const handleSaveProfile = async () => {
         if (!userId) return;

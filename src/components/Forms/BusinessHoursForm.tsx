@@ -130,7 +130,7 @@ export const BusinessHoursForm = ({
       </CardHeader>
 
       <CardContent className="p-6">
-        <form className="space-y-6">
+        <div className="space-y-6">
           <div className="space-y-3">
             {businessHours.map((schedule, index) => {
               const isActive = schedule.isWorkingDay || false;
@@ -300,7 +300,7 @@ export const BusinessHoursForm = ({
               </Button>
             </div>
           )}
-        </form>
+        </div>
       </CardContent>
     </Card>
   );

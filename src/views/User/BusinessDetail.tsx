@@ -116,7 +116,7 @@ const BusinessDetail = () => {
                 <div className="flex flex-wrap items-center gap-6 text-slate-100/90 font-medium">
                   <div className="flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-sky-400" />
-                    <span>{business.address.street} {business.address.street_number}, {business.address.city}</span>
+                    <span>{business.address.street} {business.address.streetNumber}, {business.address.city}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-5 h-5 text-sky-400" />
@@ -196,7 +196,7 @@ const BusinessDetail = () => {
                     <div className="space-y-4">
                       <div className="p-4 bg-slate-50 rounded-2xl">
                         <p className="text-sm font-bold text-slate-800 mb-1">Dirección exacta</p>
-                        <p className="text-slate-600 text-sm">{business.address.street} {business.address.street_number}, {business.address.city}</p>
+                        <p className="text-slate-600 text-sm">{business.address.street} {business.address.streetNumber}, {business.address.city}</p>
                       </div>
                       <Button variant="outline" className="w-full rounded-xl py-6 border-slate-200 font-bold hover:bg-sky-50 hover:text-sky-600 transition-all">
                         Ver en Google Maps

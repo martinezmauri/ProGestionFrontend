@@ -18,7 +18,7 @@ export const AddressForm = ({
   onContinue,
 }: Props) => {
   const [errors, setErrors] = useState({
-    street_number: false,
+    streetNumber: false,
     province: false,
     country: false,
     street: false,
@@ -27,7 +27,7 @@ export const AddressForm = ({
 
   const handleScroll = () => {
     const newErrors = {
-      street_number: addressData.street_number <= 0,
+      streetNumber: !addressData.streetNumber || addressData.streetNumber.trim() === "",
       province: addressData.province.trim() === "",
       country: addressData.country.trim() === "",
       street: addressData.street.trim() === "",
@@ -41,7 +41,7 @@ export const AddressForm = ({
       newErrors.country ||
       newErrors.province ||
       newErrors.street ||
-      newErrors.street_number
+      newErrors.streetNumber
     )
       return;
 
@@ -169,21 +169,21 @@ export const AddressForm = ({
                   Altura
                 </Label>
                 <Input
-                  value={addressData.street_number}
+                  value={addressData.streetNumber}
                   onChange={(e) => {
-                    setErrors({ ...errors, street_number: false });
+                    setErrors({ ...errors, streetNumber: false });
                     setAddressData({
                       ...addressData,
-                      street_number: Number(e.target.value),
+                      streetNumber: e.target.value,
                     });
                   }}
-                  type="number"
+                  type="text"
                   id="altura"
                   placeholder="Ej: 210"
-                  className={`mt-1 ${errors.street_number ? "border-red-500" : "border-gray-200"
+                  className={`mt-1 ${errors.streetNumber ? "border-red-500" : "border-gray-200"
                     }`}
                 />
-                {errors.street_number && (
+                {errors.streetNumber && (
                   <p className="text-sm text-red-500">
                     La calle es obligatoria.
                   </p>

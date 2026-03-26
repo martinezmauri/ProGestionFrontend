@@ -23,6 +23,7 @@ import { UserSettings } from "@views/Client/UserSettings";
 import { Statistics } from "@views/Client/Statistics";
 import { AgendaMaster } from "@views/Client/AgendaMaster";
 import BusinessRoute from "@components/BusinessRoute";
+import { GetBusinessPlanView } from "@views/User/GetBusinessPlanView";
 
 function App() {
   return (
@@ -35,12 +36,14 @@ function App() {
         <Route path="/b/:id" element={<BusinessDetail />} />
         <Route path="/search" element={<BusinessSearch />} />
         <Route element={<ProtectedRoute />}>
-          <Route element={<BusinessRoute />}>
-            <Route element={<OnboardingLayout />}>
-              <Route path="/onboarding/plans" element={<SelectPlan />} />
-              <Route path="/onboarding/business" element={<RegistersBusiness />} />
-              <Route path="/onboarding/business-hours" element={<BusinessHoursSetup />} />
-            </Route>
+          {/* Plan acquisition – accessible to any logged-in user, no business required */}
+          <Route path="/para-negocios/planes" element={<GetBusinessPlanView />} />
+
+          {/* Onboarding – only needs auth, no business required yet */}
+          <Route element={<OnboardingLayout />}>
+            <Route path="/onboarding/plans" element={<SelectPlan />} />
+            <Route path="/onboarding/business" element={<RegistersBusiness />} />
+            <Route path="/onboarding/business-hours" element={<BusinessHoursSetup />} />
           </Route>
 
           <Route element={<SidebarLayout />}>

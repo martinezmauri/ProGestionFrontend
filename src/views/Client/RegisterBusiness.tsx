@@ -16,7 +16,7 @@ export const RegistersBusiness = () => {
   const [businessData, setBusinessData] = useState<IBusiness>({
     name: "",
     description: "",
-    phone_number: "",
+    phoneNumber: "",
     logo: "",
     userId: "",
     categoryId: "",

@@ -10,7 +10,7 @@ export const getEmployeesByBusinessId = async (
 ): Promise<IEmployeeResponse[] | null> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/employee/findAll?businessId=${id}`
+      `/employee/findAll?businessId=${id}`
     );
     console.log(response.data);
 
@@ -42,7 +42,7 @@ export const createEmployee = async (payload: IEmployee) => {
   delete (normalizedPayload as any).employeeHours;
   try {
     const response = await api.post(
-      `${import.meta.env.VITE_API_URL}/employee/save`,
+      `/employee/save`,
       normalizedPayload
     );
 
@@ -74,7 +74,7 @@ export const updateEmployee = async (
     console.log("Sending update:", payloadToSend);
 
     const response = await api.patch(
-      `${import.meta.env.VITE_API_URL}/employee/update/${id}`,
+      `/employee/update/${id}`,
       payloadToSend
     );
     console.log("response", response);

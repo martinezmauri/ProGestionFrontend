@@ -4,7 +4,7 @@ import { IService, IServiceUpdate } from "../interfaces/IService";
 export const getService = async (): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/service/findAll`
+      `/service/findAll`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");
@@ -21,7 +21,7 @@ export const getServiceByUserId = async (
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/service/user/${userId}`
+      `/service/user/${userId}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");
@@ -38,7 +38,7 @@ export const getServiceByBusinessId = async (
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/service/findAll?businessId=${businessId}`
+      `/service/findAll?businessId=${businessId}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");
@@ -53,7 +53,7 @@ export const getServiceByBusinessId = async (
 export const createService = async (service: IService) => {
   try {
     const response = await api.post(
-      `${import.meta.env.VITE_API_URL}/service/save`,
+      `/service/save`,
       service
     );
 
@@ -73,7 +73,7 @@ export const updateService = async (
 ) => {
   try {
     const response = await api.put(
-      `${import.meta.env.VITE_API_URL}/service/update/${serviceId}`,
+      `/service/update/${serviceId}`,
       service
     );
 
@@ -90,7 +90,7 @@ export const updateService = async (
 export const deleteService = async (serviceId: number) => {
   try {
     const response = await api.delete(
-      `${import.meta.env.VITE_API_URL}/service/delete/${serviceId}`
+      `/service/delete/${serviceId}`
     );
 
     if (response.status !== 200) {

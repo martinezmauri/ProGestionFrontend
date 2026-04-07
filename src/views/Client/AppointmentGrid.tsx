@@ -1,76 +1,41 @@
-import React, { useEffect, useState } from "react";
-import AppSidebar from "@components/Sidebar/AppSidebar";
-import { Button } from "@ui/button";
-import { useAppointmentGrid } from "@hooks/useAppointmentGrid";
-import { useBusinessHours } from "@hooks/useBusinessHours";
-import { useAuth } from "@context/AuthContext";
-import { IService } from "@interfaces/IService";
-import { getServiceByBusinessId } from "@api/getServices";
-import { createAppointment } from "@api/getAppointments";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import React, { useState, useEffect, useMemo } from "react";
 import {
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
-  Clock,
-  User,
-  CalendarDays,
-  CheckCircle2,
+  Plus,
+  RefreshCw,
+  Calendar,
 } from "lucide-react";
+import { format, startOfWeek, endOfWeek } from "date-fns";
+import { es } from "date-fns/locale";
+import { Button } from "@ui/button";
+import { toast } from "sonner";
 import { cn } from "@lib/utils";
-import { MOCK_SERVICES, MOCK_GRID_DATA } from "../../mocks/mockData";
-import {
-  TimeColumn,
-  ResourceHeader,
-  AppointmentBlock,
-  GridCell,
-  CurrentTimeIndicator,
-} from "./components/GridComponents";
-import { ServiceSelector, EmployeeSelector } from "./components/WizardComponents";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ui/select";
-import { Input } from "@ui/input";
-import { Label } from "@ui/label";
-import { Card, CardContent, CardHeader } from "@ui/card";
+
+import { useAuth } from "@context/AuthContext";
+import { useWeeklyGrid } from "@hooks/useWeeklyGrid";
+import { useBusinessHours } from "@hooks/useBusinessHours";
+
+import { WeeklyGrid } from "./components/WeeklyGrid";
+import { PendingPanel } from "./components/PendingPanel";
+import { AppointmentModal, type ModalMode } from "./components/AppointmentModal";
+
+import { getServiceByBusinessId } from "@api/getServices";
+import type { IService } from "@interfaces/IService";
+import type { IAppointment } from "@interfaces/IAppointment";
+import { MOCK_SERVICES, MOCK_BUSINESS_HOURS_CONFIG } from "../../mocks/mockData";
+
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
-import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { AppHeader } from "@components/Header/AppHeader";
 import { FooterSimple } from "@components/Footer/FooterSimple";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@ui/dialog";
+import { Card, CardHeader } from "@ui/card";
+import { IWorkSchedule } from "@interfaces/IWorkSchedule";
+import { CalendarDays } from "lucide-react";
 
 export const AppointmentGrid = () => {
   const { businessId, isAuthenticated, userId: authUserId } = useAuth();
-  const [services, setServices] = useState<IService[]>([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
 
-  const {
-    gridData: hookGridData,
-    loading,
-    error,
-    currentStep,
-    setCurrentStep,
-    selectedDate,
-    setSelectedDate,
-    selectedServiceId,
-    setSelectedServiceId,
-    selectedEmployeeId,
-    setSelectedEmployeeId,
-    selectedTimeSlot,
-    setSelectedTimeSlot,
-    resetWizard,
-    refreshGrid,
-  } = useAppointmentGrid();
-
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
+  // Business hours check (first-time setup)
   const {
     hasHours,
     loading: hoursLoading,
@@ -78,104 +43,174 @@ export const AppointmentGrid = () => {
     saveBusinessHours,
   } = useBusinessHours(businessId);
 
-  // Use hook data or fallback to mock in DEV
-  const gridData =
-    hookGridData || (import.meta.env.DEV ? MOCK_GRID_DATA : null);
+  const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Check business hours on mount
   useEffect(() => {
     if (businessId && isAuthenticated) {
       fetchBusinessHours();
     }
   }, [businessId, isAuthenticated]);
 
+  // Weekly grid hook
+  const grid = useWeeklyGrid(businessId);
+
+  // Services
+  const [services, setServices] = useState<IService[]>([]);
   useEffect(() => {
     const fetchServices = async () => {
       const bId = businessId || (import.meta.env.DEV ? "1" : null);
-      if (bId && isAuthenticated && (hasHours || import.meta.env.DEV)) {
-        try {
-          const data = await getServiceByBusinessId(String(bId));
-          const safeData = Array.isArray(data) ? data : [];
-
-          let servicesToUse = safeData;
-          if (safeData.length === 0 && import.meta.env.DEV) {
-            servicesToUse = MOCK_SERVICES;
-          }
-
-          setServices(servicesToUse);
-
-          if (servicesToUse.length > 0 && !selectedServiceId) {
-            setSelectedServiceId(Number(servicesToUse[0].id));
-          }
-        } catch (err) {
-          console.error("Error fetching services:", err);
-          if (import.meta.env.DEV) {
-            setServices(MOCK_SERVICES);
-            if (!selectedServiceId)
-              setSelectedServiceId(Number(MOCK_SERVICES[0].id));
-          }
-        }
+      if (!bId) return;
+      try {
+        const data = await getServiceByBusinessId(String(bId));
+        const safe = Array.isArray(data) ? data : [];
+        setServices(safe.length > 0 ? safe : import.meta.env.DEV ? MOCK_SERVICES : []);
+      } catch {
+        if (import.meta.env.DEV) setServices(MOCK_SERVICES);
       }
     };
-    fetchServices();
-  }, [
-    businessId,
-    isAuthenticated,
-    hasHours,
-    setSelectedServiceId,
-    selectedServiceId,
-  ]);
-
-  const handleDateChange = (days: number) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + days);
-    setSelectedDate(newDate);
-  };
-
-  const handleGoToToday = () => setSelectedDate(new Date());
-
-  const handleCellClick = (employeeId: number, startTime: string) => {
-    setSelectedEmployeeId(employeeId);
-    setSelectedTimeSlot(startTime);
-    setIsConfirmModalOpen(true);
-  };
-
-  const handleConfirmAppointment = async () => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId || !isAuthenticated || !selectedServiceId || !selectedTimeSlot) {
-      if (import.meta.env.DEV)
-        toast.info("Modo desarrollo: Intentando guardar turno " + selectedTimeSlot);
-      return;
+    if (isAuthenticated && (hasHours || import.meta.env.DEV)) {
+      fetchServices();
     }
+  }, [businessId, isAuthenticated, hasHours]);
 
-    const [year, month, day] = format(selectedDate, "yyyy-MM-dd").split("-");
-    const appointmentDate = new Date(
-      Number(year),
-      Number(month) - 1,
-      Number(day)
-    );
+  // All unique time slots across the week (Dynamic based on BusinessHours)
+  const allTimeSlots = useMemo(() => {
+    const bhToUse = grid.businessHours.length > 0 ? grid.businessHours : MOCK_BUSINESS_HOURS_CONFIG;
+    const slots = new Set<string>();
+    bhToUse.forEach((day) => {
+      if (!day.isWorkingDay) return;
+      const addRange = (start: string | null, end: string | null) => {
+        if (!start || !end) return;
+        const [sh, sm] = start.split(":").map(Number);
+        const [eh, em] = end.split(":").map(Number);
+        let curr = sh * 60 + sm;
+        let endM = eh * 60 + em;
 
-    try {
-      const userId = authUserId || (import.meta.env.DEV ? "1" : "");
-      await createAppointment({
-        appointmentDate: format(appointmentDate, "yyyy-MM-dd"),
-        startTime: selectedTimeSlot,
-        businessId: Number(bId),
-        employeeId: selectedEmployeeId || 0, // 0 For First Available (Need backend support or explicit employee)
-        serviceId: selectedServiceId,
-        userId: Number(userId),
-      });
-      toast.success("Turno solicitado exitosamente. Esperando confirmación.");
-      setIsConfirmModalOpen(false);
-      resetWizard();
-      refreshGrid();
-    } catch (err) {
+        // Si el final es 00:00, lo tratamos como el final del día (1440 min)
+        if (endM === 0 || endM <= curr) {
+          endM = 1440;
+        }
+
+        while (curr < endM) {
+          const h = Math.floor(curr / 60);
+          const m = curr % 60;
+          slots.add(`${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`);
+          curr += 30;
+        }
+      };
+      addRange(day.morningStart, day.morningEnd);
+      addRange(day.afternoonStart, day.afternoonEnd);
+    });
+
+    // Si por alguna razón está vacío, mostramos un rango estándar
+    if (slots.size === 0) return Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, "0")}:00`).sort();
+
+    return Array.from(slots).sort();
+  }, [grid.businessHours]);
+
+  // ─── Modal State ───────────────────────────────────────────────────────────
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<ModalMode>("create");
+  const [modalInitial, setModalInitial] = useState<{
+    date?: string;
+    time?: string;
+    employeeId?: number;
+    appointment?: IAppointment;
+  }>({});
+
+  const handleSlotClick = (date: Date, employeeId: number, time: string) => {
+    setModalMode("create");
+    setModalInitial({
+      date: format(date, "yyyy-MM-dd"),
+      time,
+      employeeId,
+    });
+    setModalOpen(true);
+  };
+
+  const handleAppointmentClick = (appointment: IAppointment) => {
+    setModalMode("edit");
+    setModalInitial({ appointment });
+    setModalOpen(true);
+  };
+
+  const handleNewTurno = () => {
+    setModalMode("create");
+    setModalInitial({
+      date: format(new Date(), "yyyy-MM-dd"),
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = async (data: {
+    appointmentDate: string;
+    startTime: string;
+    employeeId: number;
+    serviceId: number;
+    clientName?: string;
+    clientEmail?: string;
+    clientPhone?: string;
+  }) => {
+    const bId = businessId || (import.meta.env.DEV ? "1" : null);
+    const uId = authUserId || (import.meta.env.DEV ? "1" : null);
+    if (!bId) {
+      toast.error("No se pudo identificar el negocio.");
+      return false;
+    }
+    const success = await grid.handleCreate({
+      ...data,
+      businessId: Number(bId),
+      userId: uId ? Number(uId) : undefined, // Opcional para admin
+    } as any);
+    if (success) {
+      toast.success("Turno creado exitosamente");
+    } else {
       toast.error("Error al crear el turno");
+    }
+    return success;
+  };
+
+  const handleUpdate = async (
+    id: number,
+    data: {
+      appointmentDate?: string;
+      startTime?: string;
+      employeeId?: number;
+      serviceId?: number;
+      clientName?: string;
+      clientEmail?: string;
+      clientPhone?: string;
+    }
+  ) => {
+    const success = await grid.handleUpdate(id, data);
+    if (success) {
+      toast.success("Turno actualizado");
+    } else {
+      toast.error("Error al actualizar el turno");
+    }
+    return success;
+  };
+
+  const handleDeleteFromModal = async (id: number) => {
+    await grid.handleDelete(id);
+    toast.success("Turno cancelado");
+  };
+
+  const handleApprove = async (id: number) => {
+    try {
+      await grid.handleApprove(id);
+      toast.success("Turno aprobado ✓");
+    } catch {
+      toast.error("Error al aprobar el turno");
+    }
+  };
+
+  const handleReject = async (id: number) => {
+    try {
+      await grid.handleReject(id);
+      toast.success("Turno rechazado");
+    } catch {
+      toast.error("Error al rechazar el turno");
     }
   };
 
@@ -195,391 +230,202 @@ export const AppointmentGrid = () => {
     }
   };
 
-  const groupAppointments = (slots: any[]) => {
-    const appointments: any[] = [];
-    let currentAppt: any = null;
-
-    slots.forEach((slot) => {
-      if (slot.appointmentId) {
-        if (currentAppt && currentAppt.appointmentId === slot.appointmentId) {
-          currentAppt.endTime = slot.endTime;
-          currentAppt.duration += 30;
-        } else {
-          currentAppt = {
-            appointmentId: slot.appointmentId,
-            startTime: slot.startTime.substring(0, 5),
-            endTime: slot.endTime.substring(0, 5),
-            duration: 30,
-            customerName: "Cliente " + slot.appointmentId,
-            serviceName: "Servicio " + slot.appointmentId,
-          };
-          appointments.push(currentAppt);
-        }
-      } else {
-        currentAppt = null;
-      }
-    });
-    return appointments;
-  };
-
-  const slots = [
-    "08:00",
-    "08:30",
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-    "18:00",
-    "18:30",
-    "19:00",
-    "19:30",
-  ];
-
-  // First-time setup: show hours configuration wizard
+  // ─── Render: First-time setup ──────────────────────────────────────────────
   if (hasHours === false && !import.meta.env.DEV) {
     return (
-      <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden">
-        <AppSidebar />
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex-1 p-6 md:p-10 space-y-6 max-w-4xl mx-auto w-full overflow-y-auto">
-            <AppHeader title="Grilla de Turnos" />
-            <Card className="border-0 shadow-lg overflow-hidden relative">
-              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-orange-500/10 rounded-full blur-2xl"></div>
-              <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-10 relative z-10">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <CalendarDays className="w-8 h-8 text-white" />
-                  </div>
-                  <h2 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                    ¡Bienvenido al Gestor de Turnos!
-                  </h2>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 p-6 md:p-10 space-y-6 max-w-4xl mx-auto w-full overflow-y-auto">
+          <AppHeader title="Grilla de Turnos" />
+          <Card className="border-0 shadow-lg overflow-hidden relative">
+            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-orange-500/10 rounded-full blur-2xl" />
+            <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-10 relative z-10">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <CalendarDays className="w-8 h-8 text-white" />
                 </div>
-                <p className="text-orange-50 text-lg max-w-2xl leading-relaxed">
-                  Para empezar a gestionar turnos, necesitamos saber los
-                  horarios de atención de tu negocio. Configura los días y
-                  horarios en los que tu negocio está abierto.
-                </p>
-              </CardHeader>
-            </Card>
-            <BusinessHoursForm
-              businessHours={setupHours}
-              setBusinessHours={setSetupHours}
-              handleFinalSubmit={handleSaveHours}
-              title="Configura tus Horarios de Atención"
-              showSubmitButton={true}
-            />
-          </div>
-          <FooterSimple />
+                <h2 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                  ¡Bienvenido al Gestor de Turnos!
+                </h2>
+              </div>
+              <p className="text-orange-50 text-lg max-w-2xl leading-relaxed">
+                Para empezar a gestionar turnos, necesitamos saber los horarios de atención de tu negocio.
+              </p>
+            </CardHeader>
+          </Card>
+          <BusinessHoursForm
+            businessHours={setupHours}
+            setBusinessHours={setSetupHours}
+            handleFinalSubmit={handleSaveHours}
+            title="Configura tus Horarios de Atención"
+            showSubmitButton={true}
+          />
         </div>
+        <FooterSimple />
       </div>
     );
   }
 
-  // Loading state while checking hours
+  // ─── Render: Loading hours ─────────────────────────────────────────────────
   if ((hasHours === null || hoursLoading) && !import.meta.env.DEV) {
     return (
-      <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <RefreshCw className="w-8 h-8 text-orange-500 animate-spin mb-3" />
-        <p className="text-gray-600 font-medium ml-3">
-          Cargando configuración...
-        </p>
+        <p className="text-gray-600 font-medium ml-3">Cargando configuración...</p>
       </div>
     );
   }
 
+  // Week label
+  const weekLabel = `${format(grid.currentWeekStart, "d MMM", { locale: es })} — ${format(
+    endOfWeek(grid.currentWeekStart, { weekStartsOn: 1 }),
+    "d MMM yyyy",
+    { locale: es }
+  )}`;
+
+  // ─── Render: Main Grid ─────────────────────────────────────────────────────
   return (
-    <div className="flex h-screen w-full bg-[#FFFFFF] overflow-hidden">
-      <AppSidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="flex-1 p-8 flex flex-col max-w-[1600px] mx-auto w-full overflow-hidden">
-          {/* Header Section */}
-          <div className="flex flex-col mb-8 mt-2 space-y-2">
-            <h1 className="text-3xl font-extrabold text-[#1E293B] tracking-tight">Nueva Reserva</h1>
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <span className={cn("px-3 py-1 rounded-full", currentStep >= 1 ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500")}>1. Servicio</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className={cn("px-3 py-1 rounded-full", currentStep >= 2 ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500")}>2. Profesional</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className={cn("px-3 py-1 rounded-full", currentStep >= 3 ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500")}>3. Fecha y Hora</span>
-            </div>
+    <div className="flex h-full flex-col md:flex-row bg-slate-50 relative overflow-hidden">
+      {/* ═══ Main Content ═══ */}
+      <div className="flex-1 flex flex-col p-4 md:p-6 overflow-hidden">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 shrink-0">
+          <div>
+            <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+              Grilla de Turnos
+            </h1>
+            <p className="text-slate-500 text-sm mt-0.5">
+              Gestiona la agenda semanal de tu equipo
+            </p>
           </div>
 
-          {currentStep === 1 && (
-            <div className="flex-1 overflow-y-auto pr-4 pb-20">
-              <h2 className="text-xl font-bold text-[#334155] mb-6">¿Qué servicio deseas agendar?</h2>
-              <ServiceSelector
-                services={services}
-                selectedId={selectedServiceId}
-                onSelect={(val) => {
-                  setSelectedServiceId(val);
-                }}
-              />
-              <div className="mt-8 flex justify-end">
-                <Button
-                  onClick={() => setCurrentStep(2)}
-                  disabled={!selectedServiceId}
-                  className="bg-[#059669] hover:bg-[#047857] text-white px-8 py-6 rounded-xl text-lg font-bold shadow-md w-full md:w-auto"
-                >
-                  Continuar al Paso 2
-                </Button>
-              </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Week Nav */}
+            <div className="flex items-center bg-white rounded-xl p-1 shadow-sm border border-slate-200">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700"
+                onClick={() => grid.navigateWeek(-1)}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-semibold text-sm px-3 text-slate-700 min-w-[160px] text-center capitalize">
+                {weekLabel}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700"
+                onClick={() => grid.navigateWeek(1)}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
-          )}
 
-          {currentStep === 2 && (
-            <div className="flex-1 overflow-y-auto pr-4 pb-20">
-              <div className="flex items-center gap-4 mb-6">
-                <Button variant="ghost" size="icon" onClick={() => setCurrentStep(1)} className="rounded-full bg-gray-100 hover:bg-gray-200"><ChevronLeft className="w-5 h-5" /></Button>
-                <h2 className="text-xl font-bold text-[#334155]">¿Con quién deseas atenderte?</h2>
-              </div>
+            <Button
+              variant="outline"
+              className="bg-white hover:bg-slate-50 rounded-xl h-9 text-sm font-semibold"
+              onClick={grid.goToCurrentWeek}
+            >
+              <Calendar className="h-4 w-4 mr-1.5" />
+              Hoy
+            </Button>
 
-              {/* Extract unique employees from GridData or Mock if available. In a real scenario we might need a specific endpoint for service-employees */}
-              <EmployeeSelector
-                employees={gridData?.employeeAvailabilities?.map(e => ({ id: e.employeeId, name: e.employeeName })) || []}
-                selectedId={selectedEmployeeId}
-                onSelect={(val) => {
-                  setSelectedEmployeeId(val);
-                }}
-              />
-              <div className="mt-8 flex justify-end">
-                <Button
-                  onClick={() => setCurrentStep(3)}
-                  className="bg-[#059669] hover:bg-[#047857] text-white px-8 py-6 rounded-xl text-lg font-bold shadow-md w-full md:w-auto"
-                >
-                  Continuar al Paso 3
-                </Button>
-              </div>
-            </div>
-          )}
+            <Button
+              variant="outline"
+              className="bg-white hover:bg-slate-50 rounded-xl h-9 text-sm"
+              onClick={grid.refreshAll}
+              disabled={grid.loading}
+            >
+              <RefreshCw className={cn("h-4 w-4 mr-1.5", grid.loading && "animate-spin")} />
+              Refrescar
+            </Button>
 
-          {currentStep === 3 && (
-            <div className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex items-center gap-4 mb-6 shrink-0">
-                <Button variant="ghost" size="icon" onClick={() => setCurrentStep(2)} className="rounded-full bg-gray-100 hover:bg-gray-200"><ChevronLeft className="w-5 h-5" /></Button>
-                <h2 className="text-xl font-bold text-[#334155]">Selecciona Fecha y Hora</h2>
-              </div>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-[#F1F5F9] rounded-2xl p-1 shadow-sm border border-[#E2E8F0]">
-                    <Button
-                      variant="ghost"
-                      className="h-9 px-4 rounded-xl font-bold text-[#374151] hover:bg-white"
-                      onClick={handleGoToToday}
-                    >
-                      Hoy
-                    </Button>
-                    <div className="flex border-l border-[#E2E8F0] ml-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-xl text-[#64748B]"
-                        onClick={() => handleDateChange(-1)}
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-xl text-[#64748B]"
-                        onClick={() => handleDateChange(1)}
-                      >
-                        <ChevronRight className="w-5 h-5" />
-                      </Button>
-                    </div>
-                  </div>
-                  <h1 className="text-xl font-bold text-[#374151] ml-2 capitalize">
-                    {format(selectedDate || new Date(), "EEEE d 'de' MMMM", {
-                      locale: es,
-                    })}
-                  </h1>
-                </div>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-9 text-sm font-bold shadow-md"
+              onClick={handleNewTurno}
+            >
+              <Plus className="h-4 w-4 mr-1.5" />
+              Nuevo Turno
+            </Button>
+          </div>
+        </div>
 
-                <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <Button
-                    onClick={refreshGrid}
-                    disabled={loading || !selectedServiceId}
-                    variant="outline"
-                    className="rounded-xl border-[#E2E8F0]"
-                  >
-                    <RefreshCw
-                      className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
-                    /> Refrescar
-                  </Button>
-                </div>
-              </div>
+        {/* Error */}
+        {grid.error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 flex items-center justify-between shrink-0">
+            <span>{grid.error}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={grid.refreshAll}
+              className="text-red-600 hover:text-red-700"
+            >
+              Reintentar
+            </Button>
+          </div>
+        )}
 
-              {/* Grid Area */}
-              <div className="flex-1 bg-white rounded-3xl border border-[#E2E8F0] shadow-sm relative overflow-hidden flex flex-col">
-                {loading && !gridData && (
-                  <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-                    <RefreshCw className="w-8 h-8 text-[#059669] animate-spin" />
-                  </div>
-                )}
+        {/* Grid (hidden on mobile) */}
+        <div className="flex-1 overflow-hidden hidden md:flex">
+          <WeeklyGrid
+            weekDays={grid.weekDays}
+            employees={grid.employees}
+            appointments={grid.appointments}
+            businessHours={grid.businessHours}
+            allTimeSlots={allTimeSlots}
+            isDayClosed={grid.isDayClosed}
+            getAppointmentsForSlot={grid.getAppointmentsForSlot}
+            onSlotClick={handleSlotClick}
+            onAppointmentClick={handleAppointmentClick}
+            loading={grid.loading}
+          />
+        </div>
 
-                {error && !gridData && (
-                  <div className="absolute inset-0 bg-white z-40 flex items-center justify-center p-8 text-center text-sm">
-                    <div className="max-w-md">
-                      <p className="text-red-500 font-medium mb-4">{error}</p>
-                      <Button onClick={refreshGrid} variant="outline" size="sm">
-                        Reintentar
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex-1 overflow-x-auto overflow-y-auto scrollbar-hide relative bg-[#F8FAFC]/30">
-                  <div className="flex flex-col min-w-max h-full">
-                    {/* Resource Headers Sticky Top */}
-                    <div className="flex border-b border-[#E2E8F0] sticky top-0 z-30 bg-white shrink-0">
-                      <div className="w-[100px] flex-shrink-0 bg-[#F8FAFC]" />
-                      {gridData?.employeeAvailabilities?.map((emp: any) => (
-                        <ResourceHeader
-                          key={emp.employeeId}
-                          name={emp.employeeName}
-                        />
-                      ))}
-                      {/* Fill empty space if no data */}
-                      {!gridData?.employeeAvailabilities && (
-                        <div className="flex-1 p-4 text-center text-sm text-[#94A3B8]">
-                          Cargando profesionales...
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Main Grid Floor */}
-                    <div className="flex flex-1 relative min-h-[1600px]">
-                      <TimeColumn slots={slots} />
-
-                      <CurrentTimeIndicator
-                        slots={slots}
-                        currentLocalTime={currentTime}
-                        totalGridWidth={
-                          gridData?.employeeAvailabilities?.length
-                            ? gridData.employeeAvailabilities.length * 300
-                            : 300
-                        }
-                      />
-
-                      <div className="flex min-w-max relative flex-1">
-                        {gridData?.employeeAvailabilities?.map((emp: any) => {
-                          const appointments = groupAppointments(
-                            emp.timeSlots || [],
-                          );
-                          return (
-                            <div
-                              key={emp.employeeId}
-                              className="w-[300px] relative border-r border-[#E2E8F0] bg-white last:border-r-0"
-                            >
-                              {slots.map((time) => {
-                                const slotData = emp.timeSlots.find((s: any) =>
-                                  s.startTime.startsWith(time),
-                                );
-                                const isAvailable = slotData?.available;
-                                const isBooked = slotData?.appointmentId != null;
-
-                                return (
-                                  <GridCell
-                                    key={time}
-                                    time={time}
-                                    onAdd={() =>
-                                      isAvailable && !isBooked
-                                        ? handleCellClick(emp.employeeId, time)
-                                        : null
-                                    }
-                                    isAvailable={isAvailable}
-                                    isBooked={isBooked}
-                                  />
-                                );
-                              })}
-
-                              {appointments.map((appt, idx) => (
-                                <AppointmentBlock
-                                  key={`${appt.appointmentId}-${idx}`}
-                                  appointment={appt}
-                                  slots={slots}
-                                />
-                              ))}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Mobile: Pending list only */}
+        <div className="flex-1 overflow-hidden flex md:hidden">
+          <PendingPanel
+            appointments={grid.pendingAppointments}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            actionLoading={grid.actionLoading}
+            className="w-full h-full border-l-0 border-t border-slate-200"
+          />
         </div>
       </div>
 
-      {/* Confirmation Modal */}
-      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-3xl p-6">
-          <DialogHeader className="mb-4">
-            <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mb-4 text-orange-600">
-              <CalendarDays className="w-6 h-6" />
-            </div>
-            <DialogTitle className="text-2xl font-bold text-[#1E293B]">Confirmar Reserva</DialogTitle>
-            <DialogDescription className="text-gray-500 text-base">
-              Por favor revisa los detalles de tu turno antes de solicitarlo.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="bg-[#F8FAFC] rounded-2xl p-5 space-y-4 border border-[#E2E8F0]">
-            <div className="flex justify-between items-center pb-4 border-b border-[#E2E8F0] last:border-0 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center"><Clock className="w-4 h-4 text-gray-400" /></div>
-                <div>
-                  <p className="text-sm font-bold text-[#1E293B] capitalize">{format(selectedDate || new Date(), "EEEE d 'de' MMMM", { locale: es })}</p>
-                  <p className="text-xs text-[#64748B]">a las {selectedTimeSlot} hs</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center pb-4 border-b border-[#E2E8F0] last:border-0 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-white border shadow-sm flex items-center justify-center"><User className="w-4 h-4 text-gray-400" /></div>
-                <div>
-                  <p className="text-sm font-bold text-[#1E293B]">{
-                    selectedEmployeeId
-                      ? gridData?.employeeAvailabilities?.find(e => e.employeeId === selectedEmployeeId)?.employeeName
-                      : "Cualquier Profesional"
-                  }</p>
-                  <p className="text-xs text-[#64748B]">Profesional</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center pb-0 border-b border-[#E2E8F0] last:border-0 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 border-emerald-200 shadow-sm flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-emerald-600" /></div>
-                <div>
-                  <p className="text-sm font-bold text-[#1E293B]">{services.find(s => Number(s.id) === selectedServiceId)?.name}</p>
-                  <p className="text-xs text-[#64748B]">Servicio</p>
-                </div>
-              </div>
-              <p className="font-extrabold text-[#059669]">${services.find(s => Number(s.id) === selectedServiceId)?.price}</p>
-            </div>
-          </div>
-          <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Button variant="outline" onClick={() => setIsConfirmModalOpen(false)} className="rounded-xl w-full sm:w-auto font-bold h-12">Cancelar</Button>
-            <Button onClick={handleConfirmAppointment} className="bg-[#059669] hover:bg-[#047857] text-white rounded-xl w-full sm:flex-1 font-bold h-12 shadow-md">
-              Solicitar Turno
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ═══ Pending Panel (desktop sidebar) ═══ */}
+      <div className="hidden md:flex w-80 h-full shrink-0">
+        <PendingPanel
+          appointments={grid.pendingAppointments}
+          onApprove={handleApprove}
+          onReject={handleReject}
+          actionLoading={grid.actionLoading}
+          className="w-full h-full"
+        />
+      </div>
+
+      {/* ═══ Appointment Modal ═══ */}
+      <AppointmentModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        initialData={modalInitial}
+        employees={grid.employees}
+        services={services}
+        onSave={handleSave}
+        onUpdate={handleUpdate}
+        onDelete={handleDeleteFromModal}
+        actionLoading={grid.actionLoading}
+      />
+
+      {/* Mobile FAB */}
+      <Button
+        className="md:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-xl z-30"
+        onClick={handleNewTurno}
+      >
+        <Plus className="w-6 h-6" />
+      </Button>
     </div>
   );
 };

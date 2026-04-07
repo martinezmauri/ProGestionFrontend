@@ -19,6 +19,7 @@ import api from "@api/axiosInstance";
 import { toast } from "sonner";
 import { format, addDays, startOfToday } from "date-fns";
 import { es } from "date-fns/locale";
+import { useAuth } from "@context/AuthContext";
 
 interface BookingFlowProps {
   businessId: string;
@@ -26,6 +27,7 @@ interface BookingFlowProps {
 }
 
 export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
+  const { userId } = useAuth();
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<IService[]>([]);
   const [employees, setEmployees] = useState<IEmployeeResponse[]>([]);
@@ -36,6 +38,10 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
   const [selectedEmployee, setSelectedEmployee] = useState<IEmployeeResponse | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(startOfToday());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -60,18 +66,45 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
   }, [selectedService, businessId]);
 
   useEffect(() => {
-    if (selectedEmployee && selectedDate) {
+    if (selectedEmployee && selectedDate && selectedService) {
       const fetchSlots = async () => {
         setLoading(true);
         try {
           const formattedDate = format(selectedDate, "yyyy-MM-dd");
           const response = await api.get(
-            `${import.meta.env.VITE_API_URL}/appointment/grid?employeeId=${selectedEmployee.id}&date=${formattedDate}&serviceId=${selectedService?.id}`
+            `/appointments/grid`,
+            {
+              params: {
+                serviceId: selectedService.id,
+                date: formattedDate,
+              }
+            }
           );
-          setAvailableSlots(response.data || []);
+          // The grid endpoint returns AppointmentGridDto with timeSlots and employeeAvailabilities
+          const gridData = response.data;
+          if (gridData && gridData.employeeAvailabilities) {
+            // Find the selected employee's available slots
+            const empSchedule = gridData.employeeAvailabilities.find(
+              (ea: any) => String(ea.employeeId) === String(selectedEmployee.id)
+            );
+            if (empSchedule) {
+              const slots = empSchedule.timeSlots
+                .filter((ts: any) => ts.available)
+                .map((ts: any) => {
+                  // Format "HH:mm:ss" to "HH:mm"
+                  const raw = ts.startTime;
+                  return raw.length > 5 ? raw.substring(0, 5) : raw;
+                });
+              setAvailableSlots(slots);
+            } else {
+              setAvailableSlots([]);
+            }
+          } else {
+            setAvailableSlots([]);
+          }
         } catch (error) {
           console.error("Error fetching slots", error);
-          toast.error("Error al cargar horarios disponibles");
+          toast.error("No se pudieron cargar los horarios disponibles.");
         } finally {
           setLoading(false);
         }
@@ -83,26 +116,41 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
   const handleConfirmBooking = async () => {
     if (!selectedService || !selectedEmployee || !selectedSlot) return;
     
+    // Si no hay usuario logueado, validar campos manuales
+    if (!userId && (!clientName || !clientEmail || !clientPhone)) {
+      toast.error("Por favor, completa tus datos de contacto.");
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {
-        serviceId: selectedService.id,
-        employeeId: selectedEmployee.id,
+        serviceId: Number(selectedService.id),
+        employeeId: Number(selectedEmployee.id),
+        businessId: Number(businessId),
+        userId: userId ? Number(userId) : undefined,
+        clientName: !userId ? clientName : undefined,
+        clientEmail: !userId ? clientEmail : undefined,
+        clientPhone: !userId ? clientPhone : undefined,
         appointmentDate: format(selectedDate, "yyyy-MM-dd"),
         startTime: selectedSlot,
       };
       
-      const response = await api.post(`${import.meta.env.VITE_API_URL}/appointment/save`, payload);
+      // Uses /appointment/request — creates a PENDING appointment
+      const response = await api.post(`/appointment/request`, payload);
       
       if (response.status === 201 || response.status === 200) {
-        toast.success("¡Reserva confirmada!", {
-          description: `Tu turno para ${selectedService.name} ha sido agendado.`
+        toast.success("¡Solicitud enviada!", {
+          description: `Tu turno para ${selectedService.name} fue solicitado. El negocio lo confirmará pronto.`
         });
-        setStep(4);
+        setStep(5); // Cambio de 4 a 5 por el paso intermedio
         if (onSuccess) onSuccess();
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Error al confirmar la reserva");
+      const msg = typeof error.response?.data === 'string' 
+        ? error.response.data 
+        : error.response?.data?.message || "Error al solicitar la reserva";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -234,9 +282,15 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
             <Button 
               className="w-full bg-slate-900 hover:bg-sky-600 py-6 text-lg font-bold rounded-2xl transition-all shadow-lg"
               disabled={loading}
-              onClick={handleConfirmBooking}
+              onClick={() => {
+                if (userId) {
+                  handleConfirmBooking();
+                } else {
+                  setStep(4);
+                }
+              }}
             >
-              Confirmar Reserva
+              {userId ? "Confirmar Reserva" : "Siguiente"}
             </Button>
           </div>
         )}
@@ -245,13 +299,76 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
   };
 
   const renderStep4 = () => (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" onClick={() => setStep(3)} className="p-0 h-8 w-8 rounded-full">
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <User className="w-5 h-5 text-sky-500" />
+          Tus datos de contacto
+        </h3>
+      </div>
+
+      <div className="space-y-4">
+        <p className="text-sm text-slate-500">
+          Para que el negocio pueda confirmarte el turno, por favor completa tus datos.
+        </p>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-semibold text-slate-700">Nombre Completo *</label>
+          <input
+            type="text"
+            className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 outline-none transition-all"
+            placeholder="Ej: Juan Pérez"
+            value={clientName}
+            onChange={(e) => setClientName(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-semibold text-slate-700">Email *</label>
+          <input
+            type="email"
+            className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 outline-none transition-all"
+            placeholder="juan@ejemplo.com"
+            value={clientEmail}
+            onChange={(e) => setClientEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-sm font-semibold text-slate-700">Teléfono *</label>
+          <input
+            type="text"
+            className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 outline-none transition-all"
+            placeholder="11 2345-6789"
+            value={clientPhone}
+            onChange={(e) => setClientPhone(e.target.value)}
+          />
+        </div>
+
+        <div className="pt-4">
+          <Button 
+            className="w-full bg-sky-600 hover:bg-sky-700 py-6 text-lg font-bold rounded-2xl transition-all shadow-lg"
+            disabled={loading || !clientName || !clientEmail || !clientPhone}
+            onClick={handleConfirmBooking}
+          >
+            {loading ? "Enviando..." : "Solicitar Turno"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep5 = () => (
     <div className="py-10 text-center space-y-4">
       <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
         <CheckCircle2 className="w-10 h-10 text-green-600" />
       </div>
-      <h3 className="text-2xl font-bold text-slate-800">¡Reserva Exitosa!</h3>
+      <h3 className="text-2xl font-bold text-slate-800">¡Solicitud Enviada!</h3>
       <p className="text-slate-500 max-w-xs mx-auto">
-        Tu turno ha sido confirmado. Recibirás un correo con los detalles del establecimiento.
+        Tu turno fue solicitado exitosamente. El negocio revisará tu pedido y lo confirmará pronto.
       </p>
       <div className="pt-6">
         <Button 
@@ -262,6 +379,9 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
             setSelectedService(null);
             setSelectedEmployee(null);
             setSelectedSlot(null);
+            setClientName("");
+            setClientEmail("");
+            setClientPhone("");
           }}
         >
           Hacer otra reserva
@@ -276,6 +396,7 @@ export const BookingFlow = ({ businessId, onSuccess }: BookingFlowProps) => {
       {step === 2 && renderStep2()}
       {step === 3 && renderStep3()}
       {step === 4 && renderStep4()}
+      {step === 5 && renderStep5()}
     </div>
   );
 };

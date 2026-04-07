@@ -13,7 +13,7 @@ export const useRegistrationBusiness = () => {
       const payload = {
         name: newBusinessData.name,
         description: newBusinessData.description,
-        phoneNumber: newBusinessData.phone_number,
+        phoneNumber: newBusinessData.phoneNumber,
         logo: newBusinessData.logo,
         category: { id: newBusinessData.categoryId },
         address: {
@@ -25,7 +25,7 @@ export const useRegistrationBusiness = () => {
         }
       };
       const response = await api.post(
-        `${import.meta.env.VITE_API_URL}/business/save`,
+        `/business/save`,
         payload
       );
       console.log(response);

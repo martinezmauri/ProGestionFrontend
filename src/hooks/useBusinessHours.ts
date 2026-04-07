@@ -23,7 +23,7 @@ export const useBusinessHours = (businessId?: string | null) => {
         setError(null);
         try {
             const response = await api.get(
-                `${import.meta.env.VITE_API_URL}/business/${businessId}/hours`
+                `/business/${businessId}/hours`
             );
             const data: IBusinessHoursResponse[] = response.data;
             setBusinessHours(data);
@@ -54,7 +54,7 @@ export const useBusinessHours = (businessId?: string | null) => {
                 }));
 
             const response = await api.post(
-                `${import.meta.env.VITE_API_URL}/business/${businessId}/hours`,
+                `/business/${businessId}/hours`,
                 payload
             );
             setBusinessHours(response.data);

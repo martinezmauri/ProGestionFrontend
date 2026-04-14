@@ -10,7 +10,7 @@ export const getEmployeesByBusinessId = async (
 ): Promise<IEmployeeResponse[] | null> => {
   try {
     const response = await api.get(
-      `${import.meta.env.VITE_API_URL}/employee/findAll?businessId=${id}`
+      `${import.meta.env.VITE_API_URL}/employee/public/findAll?businessId=${id}`
     );
     console.log(response.data);
 

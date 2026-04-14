@@ -1,177 +1,388 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-    Calendar, Check, X, Clock, User, ChevronLeft, ChevronRight, Filter
+    Calendar, Check, X, Clock, User, ChevronLeft, ChevronRight, Filter, Plus, Home
 } from "lucide-react";
 import { Button } from "@ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
+import { Card, CardContent } from "@ui/card";
 import { Badge } from "@ui/badge";
 import { Avatar, AvatarFallback } from "@ui/avatar";
-
-// Mock Data for the UI
-const pendingRequests = [
-    { id: 1, client: "María González", service: "Corte de Pelo", professional: "Ana García", date: "Hoy", time: "15:00", duration: "45 min" },
-    { id: 2, client: "Juan Pérez", service: "Coloración", professional: "Carlos López", date: "Mañana", time: "10:30", duration: "90 min" },
-    { id: 3, client: "Laura Martínez", service: "Manicura semi", professional: "Sofía Ruiz", date: "25 Oct", time: "16:15", duration: "30 min" },
-];
-
-const confirmedAppointments = [
-    { id: 4, client: "Roberto Sánchez", service: "Corte Clásico", professional: "Ana García", time: "09:00", duration: 45, status: "confirmed" },
-    { id: 5, client: "Elena Valdés", service: "Balayage", professional: "Carlos López", time: "11:00", duration: 120, status: "confirmed" },
-    { id: 6, client: "Martín Gómez", service: "Perfilado de Barba", professional: "Ana García", time: "13:30", duration: 30, status: "confirmed" },
-];
+import { useAgenda } from "../../hooks/useAgenda";
+import { useAuth } from "../../context/AuthContext";
+import { format, addDays, subDays, startOfWeek, isSameDay } from "date-fns";
+import { es } from "date-fns/locale";
+import { ManualAppointmentModal } from "./components/ManualAppointmentModal";
+import { AppointmentCard } from "./components/AppointmentCard";
+import { AppointmentDetailModal } from "./components/AppointmentDetailModal";
+import { IAppointment } from "../../../interfaces/IAppointment";
 
 export const AgendaMaster = () => {
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const { businessId } = useAuth();
+    const {
+        selectedDate,
+        setSelectedDate,
+        employees,
+        appointments,
+        businessHours,
+        loading,
+        isModalOpen,
+        setIsModalOpen,
+        selectedSlot,
+        handleSlotClick,
+        refreshAgenda,
+        approveAppointment,
+        rejectAppointment,
+        deleteAppointment
+    } = useAgenda(Number(businessId));
 
-    // Generate grid hours array (08:00 to 20:00)
-    const hours = Array.from({ length: 13 }, (_, i) => `${(i + 8).toString().padStart(2, '0')}:00`);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<IAppointment | null>(null);
+
+    // Generate 7 days of the week starting from Monday
+    const weekDays = useMemo(() => {
+        const start = startOfWeek(selectedDate, { weekStartsOn: 1 });
+        return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+    }, [selectedDate]);
+
+    // Generate grid hours
+    const hours = useMemo(() => {
+        let start = 8;
+        let end = 20;
+
+        if (businessHours.length > 0) {
+            const starts = businessHours
+                .filter(h => h.isWorkingDay && h.morningStart)
+                .map(h => parseInt(h.morningStart!.split(":")[0]));
+            const ends = businessHours
+                .filter(h => h.isWorkingDay && (h.afternoonEnd || h.morningEnd))
+                .map(h => {
+                    const time = h.afternoonEnd || h.morningEnd;
+                    return parseInt(time!.split(":")[0]);
+                });
+
+            if (starts.length > 0) start = Math.min(...starts);
+            if (ends.length > 0) end = Math.max(...ends) + 1;
+        }
+
+        const slots: string[] = [];
+        for (let h = start; h < end; h++) {
+            const hStr = h.toString().padStart(2, '0');
+            slots.push(`${hStr}:00`);
+            slots.push(`${hStr}:30`);
+        }
+        return slots;
+    }, [businessHours]);
+
+    const pendingRequests = appointments.filter(a => a.status === "PENDING" || a.status === "PENDING_CONFIRMATION");
+
+    const handleOpenDetail = (appt: IAppointment) => {
+        setSelectedAppointment(appt);
+        setIsDetailModalOpen(true);
+    };
 
     return (
-        <div className="flex h-full flex-col md:flex-row bg-slate-50 relative">
-            {/* Main Calendar Area */}
-            <div className="flex-1 flex flex-col p-6 overflow-hidden">
-
+        <div className="flex h-screen flex-col md:flex-row bg-slate-50 overflow-hidden">
+            <div className="flex-1 flex flex-col p-4 md:p-6 overflow-hidden md:min-w-0">
+                
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Agenda Master</h1>
-                        <p className="text-slate-500 text-sm">Gestiona todos los turnos y profesionales</p>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-orange-100 rounded-lg text-orange-600 shadow-sm border border-orange-200/50">
+                           <Home className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Agenda Semanal</h1>
+                            <p className="text-slate-500 text-xs md:text-sm font-medium">Control total sobre tus turnos y profesionales</p>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center bg-white rounded-lg p-1 shadow-sm border border-slate-200">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                                <ChevronLeft className="h-4 w-4" />
+                    <div className="flex items-center gap-2 self-end md:self-auto">
+                        <div className="flex items-center bg-white rounded-2xl p-1 shadow-sm border border-slate-200 overflow-hidden ring-1 ring-slate-100">
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-9 w-9 text-slate-500 hover:bg-slate-50 rounded-xl"
+                                onClick={() => setSelectedDate(subDays(selectedDate, 7))}
+                            >
+                                <ChevronLeft className="h-5 w-5" />
                             </Button>
-                            <span className="font-semibold text-sm px-4 text-slate-700">
-                                {currentDate.toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" })}
+                            <span className="font-bold text-xs md:text-sm px-2 md:px-4 text-slate-700 min-w-[140px] md:min-w-[200px] text-center capitalize">
+                                {format(weekDays[0], "d MMM", { locale: es })} - {format(weekDays[6], "d MMM yyyy", { locale: es })}
                             </span>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
-                                <ChevronRight className="h-4 w-4" />
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-9 w-9 text-slate-500 hover:bg-slate-50 rounded-xl"
+                                onClick={() => setSelectedDate(addDays(selectedDate, 7))}
+                            >
+                                <ChevronRight className="h-5 w-5" />
                             </Button>
                         </div>
-                        <Button variant="outline" className="bg-white hover:bg-slate-50">
-                            <Filter className="h-4 w-4 mr-2" />
-                            Filtrar
-                        </Button>
-                        <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                            <Calendar className="h-4 w-4 mr-2" />
+                        <Button 
+                            variant="outline" 
+                            className="bg-white hover:bg-slate-50 hidden sm:flex border-slate-200 shadow-sm rounded-xl font-bold h-11"
+                            onClick={() => setSelectedDate(new Date())}
+                        >
+                            <Calendar className="h-4 w-4 mr-2 text-sky-500" />
                             Hoy
                         </Button>
                     </div>
                 </div>
 
                 {/* Master Calendar Grid */}
-                <Card className="flex-1 shadow-md border-0 bg-white overflow-hidden flex flex-col">
-                    <div className="grid grid-cols-[100px_1fr_1fr] border-b border-slate-200 bg-slate-50 sticky top-0 z-10">
-                        <div className="py-4 px-2 border-r border-slate-200 text-center font-medium text-slate-500 text-sm">
-                            Horario
+                <Card className="flex-1 shadow-2xl border-0 bg-white overflow-hidden flex flex-col ring-1 ring-slate-200 rounded-[2rem] hidden md:flex">
+                    {/* Grid Header */}
+                    <div 
+                        className="grid border-b border-slate-100 bg-slate-50/50 backdrop-blur-md sticky top-0 z-20"
+                        style={{ gridTemplateColumns: `80px repeat(7, 1fr)` }}
+                    >
+                        <div className="py-5 px-2 border-r border-slate-100 text-center font-black text-slate-400 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center">
+                            Hora
                         </div>
-                        {/* Professional Columns */}
-                        <div className="py-4 border-r border-slate-200 text-center">
-                            <p className="font-bold text-slate-800">Ana García</p>
-                            <p className="text-xs text-sky-600 font-medium">Peluquería</p>
-                        </div>
-                        <div className="py-4 text-center">
-                            <p className="font-bold text-slate-800">Carlos López</p>
-                            <p className="text-xs text-sky-600 font-medium">Colorista</p>
-                        </div>
+                        {weekDays.map(day => (
+                            <div key={day.toISOString()} className={`py-4 border-r border-slate-100 text-center last:border-r-0 ${isSameDay(day, new Date()) ? "bg-sky-50/30" : ""}`}>
+                                <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1">
+                                    {format(day, "EEEE", { locale: es })}
+                                </p>
+                                <p className={`text-xl font-black ${isSameDay(day, new Date()) ? "text-sky-600" : "text-slate-800"}`}>
+                                    {format(day, "d")}
+                                </p>
+                                {businessHours.find(h => h.dayOfWeek === (day.getDay() === 0 ? 0 : day.getDay()))?.isWorkingDay === false && (
+                                    <Badge variant="secondary" className="text-[8px] h-4 py-0 bg-slate-200/50 text-slate-500 border-0 font-black">Cerrado</Badge>
+                                )}
+                            </div>
+                        ))}
                     </div>
 
-                    <div className="flex-1 overflow-y-auto relative">
+                    {/* Grid Body */}
+                    <div className="flex-1 overflow-y-auto relative scrollbar-thin scrollbar-thumb-slate-200">
+                        {loading && (
+                            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-30 transition-all">
+                                <div className="flex flex-col items-center bg-white px-8 py-6 rounded-3xl shadow-2xl border border-slate-100">
+                                    <div className="relative">
+                                         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-orange-500 opacity-20"></div>
+                                         <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-orange-600 absolute top-0 left-0"></div>
+                                    </div>
+                                    <p className="mt-4 text-xs font-black text-slate-500 uppercase tracking-widest">Sincronizando...</p>
+                                </div>
+                            </div>
+                        )}
+                        
                         {hours.map((hour) => (
-                            <div key={hour} className="grid grid-cols-[100px_1fr_1fr] group border-b border-slate-100">
-                                <div className="py-3 px-2 border-r border-slate-200 text-center text-sm font-medium text-slate-400">
-                                    {hour}
+                            <div 
+                                key={hour} 
+                                className="grid border-b border-slate-50 min-h-[90px]"
+                                style={{ gridTemplateColumns: `80px repeat(7, 1fr)` }}
+                            >
+                                <div className="py-4 px-2 border-r border-slate-50 text-center text-[11px] font-black text-slate-400 bg-slate-50/20 flex items-start justify-center">
+                                    <span className="mt-1 sticky top-20">{hour}</span>
                                 </div>
-                                {/* Grid cells */}
-                                <div className="border-r border-slate-100 relative p-1 min-h-[60px] group-hover:bg-slate-50/50 transition-colors">
-                                    {confirmedAppointments.filter(a => a.professional === "Ana García" && a.time === hour).map((appt) => (
-                                        <div key={appt.id} className="absolute left-2 right-2 top-2 bg-sky-100 border-l-4 border-sky-500 rounded p-2 shadow-sm z-10 cursor-pointer hover:bg-sky-200 transition-colors">
-                                            <p className="text-xs font-bold text-sky-900 truncate">{appt.client}</p>
-                                            <p className="text-[10px] text-sky-700 truncate">{appt.service} ({appt.duration}m)</p>
+                                
+                                {weekDays.map(day => {
+                                    const dayStr = format(day, "yyyy-MM-dd");
+                                    const dayHours = businessHours.find(h => h.dayOfWeek === (day.getDay() === 0 ? 0 : day.getDay()));
+                                    const isClosed = dayHours?.isWorkingDay === false;
+
+                                    const slotAppts = appointments.filter(a => 
+                                        a.appointmentDate === dayStr && 
+                                        a.startTime.startsWith(hour) && 
+                                        a.status !== "REJECTED" && 
+                                        a.status !== "CANCELLED"
+                                    );
+
+                                    return (
+                                        <div 
+                                            key={`${dayStr}-${hour}`} 
+                                            className={`
+                                                border-r border-slate-50 relative p-2 transition-all last:border-r-0
+                                                ${isClosed ? 'bg-slate-50/80 cursor-not-allowed' : 'hover:bg-slate-50/50 cursor-pointer group/slot'}
+                                            `}
+                                            onClick={(e) => {
+                                                if (isClosed) return;
+                                                // Only click if clicking the background or the + button
+                                                if ((e.target as HTMLElement).closest('.appt-card')) return;
+                                                handleSlotClick(hour, employees[0]?.id || 0, employees[0]?.name || "", day);
+                                            }}
+                                        >
+                                            {/* Plus Button for Multi-booking Creation */}
+                                            {!isClosed && (
+                                                <button 
+                                                    className="absolute top-1 right-1 w-6 h-6 bg-white border border-slate-200 rounded-lg shadow-sm flex items-center justify-center 
+                                                               opacity-0 group-hover/slot:opacity-100 hover:bg-sky-50 transition-all z-20 group-hover/slot:scale-110"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleSlotClick(hour, employees[0]?.id || 0, employees[0]?.name || "", day);
+                                                    }}
+                                                >
+                                                    <Plus className="w-3.5 h-3.5 text-sky-500" />
+                                                </button>
+                                            )}
+
+                                            {isClosed && hour === hours[Math.floor(hours.length/2)] && (
+                                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] rotate-[-45deg] whitespace-nowrap">Cerrado</span>
+                                                </div>
+                                            )}
+
+                                            <div className="space-y-1 relative z-10">
+                                                {slotAppts.map(appt => (
+                                                    <div key={appt.id} className="appt-card">
+                                                        <AppointmentCard 
+                                                            appointment={appt} 
+                                                            onDelete={deleteAppointment} 
+                                                            onClick={handleOpenDetail}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-                                <div className="relative p-1 min-h-[60px] group-hover:bg-slate-50/50 transition-colors">
-                                    {confirmedAppointments.filter(a => a.professional === "Carlos López" && a.time === hour).map((appt) => (
-                                        <div key={appt.id} className="absolute left-2 right-2 top-2 bg-emerald-100 border-l-4 border-emerald-500 rounded p-2 shadow-sm z-10 cursor-pointer hover:bg-emerald-200 transition-colors">
-                                            <p className="text-xs font-bold text-emerald-900 truncate">{appt.client}</p>
-                                            <p className="text-[10px] text-emerald-700 truncate">{appt.service} ({appt.duration}m)</p>
-                                        </div>
-                                    ))}
-                                </div>
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>
                 </Card>
-            </div>
 
-            {/* Pending Requests Sidebar */}
-            <div className="w-full md:w-80 bg-white border-l border-slate-200 shadow-[-4px_0_24px_-10px_rgba(0,0,0,0.05)] flex flex-col z-20 h-full">
-                <div className="p-5 border-b border-slate-100 bg-orange-50/50">
-                    <div className="flex items-center justify-between mb-1">
-                        <h2 className="font-bold text-slate-800 flex items-center">
-                            <Clock className="w-4 h-4 mr-2 text-orange-500" />
-                            Solicitudes Pendientes
-                        </h2>
-                        <Badge className="bg-orange-500 text-white font-bold">{pendingRequests.length}</Badge>
+                {/* Mobile View */}
+                <div className="md:hidden flex-1 overflow-y-auto space-y-4">
+                    <div className="bg-orange-50/50 p-5 rounded-3xl border border-orange-100 shadow-sm">
+                         <h3 className="font-black text-orange-800 text-lg flex items-center tracking-tight mb-1">
+                             <Clock className="w-5 h-5 mr-3 text-orange-500" />
+                             Peticiones
+                         </h3>
+                         <p className="text-orange-600 text-xs font-bold">{pendingRequests.length} turnos por confirmar</p>
                     </div>
-                    <p className="text-xs text-slate-500">Requieren tu aprobación</p>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {pendingRequests.map((req) => (
-                        <Card key={req.id} className="border-0 shadow-sm bg-slate-50 ring-1 ring-slate-200 overflow-hidden hover:ring-sky-300 transition-all border-l-4 border-l-orange-400">
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div className="flex items-center">
-                                        <Avatar className="h-8 w-8 mr-2 ring-2 ring-white shadow-sm">
-                                            <AvatarFallback className="bg-sky-100 text-sky-700 text-xs font-bold">
-                                                {req.client.split(' ').map(n => n[0]).join('')}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-sm font-bold text-slate-800 leading-none">{req.client}</p>
-                                            <p className="text-[11px] text-slate-500 mt-1">{req.service}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded p-2 mb-3 border border-slate-100">
-                                    <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-slate-500 flex items-center"><User className="w-3 h-3 mr-1" /> Profesional:</span>
-                                        <span className="font-semibold text-slate-700">{req.professional}</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs">
-                                        <span className="text-slate-500 flex items-center"><Calendar className="w-3 h-3 mr-1" /> Fecha/Hora:</span>
-                                        <span className="font-semibold text-sky-600">{req.date} - {req.time}</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button variant="outline" className="flex-1 h-8 text-xs bg-white text-emerald-600 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
-                                        <Check className="w-3 h-3 mr-1" />
-                                        Aprobar
-                                    </Button>
-                                    <Button variant="outline" className="flex-1 h-8 text-xs bg-white text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700">
-                                        <X className="w-3 h-3 mr-1" />
-                                        Rechazar
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-
+                    <div className="space-y-3">
+                        {pendingRequests.map((req) => (
+                            <PendingRequestItem 
+                                key={req.id} 
+                                req={req} 
+                                onApprove={approveAppointment} 
+                                onReject={rejectAppointment} 
+                            />
+                        ))}
+                    </div>
                     {pendingRequests.length === 0 && (
-                        <div className="text-center py-10">
-                            <Check className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                            <p className="text-slate-500 font-medium">No hay solicitudes pendientes</p>
-                            <p className="text-xs text-slate-400 mt-1">Has respondido a todas las peticiones.</p>
+                        <div className="text-center py-24 bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                             <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Check className="w-8 h-8 text-emerald-400" />
+                             </div>
+                             <p className="text-slate-600 font-black tracking-tight">Agenda despejada</p>
+                             <p className="text-slate-400 text-xs mt-1 px-12 leading-relaxed">No tienes solicitudes pendientes de revisión.</p>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Sidebar Desktop */}
+            <div className="hidden md:flex w-80 bg-white border-l border-slate-200 shadow-2xl flex-col z-20 h-full">
+                <div className="p-7 border-b border-slate-100 bg-slate-50/30">
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="font-black text-slate-800 flex items-center text-sm md:text-base tracking-tight">
+                            <Clock className="w-4 h-4 mr-2 text-orange-500" />
+                            Turnos Pendientes
+                        </h2>
+                        <Badge className="bg-orange-500 text-white font-black px-2 shadow-md ring-4 ring-white">{pendingRequests.length}</Badge>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Incoming Requests</p>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50/10 scrollbar-thin scrollbar-thumb-slate-100">
+                    {pendingRequests.map((req) => (
+                        <PendingRequestItem 
+                            key={req.id} 
+                            req={req} 
+                            onApprove={approveAppointment} 
+                            onReject={rejectAppointment} 
+                        />
+                    ))}
+
+                    {pendingRequests.length === 0 && (
+                        <div className="text-center py-20 px-8">
+                            <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl border border-slate-50 group">
+                                <Check className="w-10 h-10 text-emerald-400 group-hover:scale-110 transition-transform" />
+                            </div>
+                            <p className="text-slate-700 font-extrabold text-sm mb-2">¡Todo al día!</p>
+                            <p className="text-[11px] text-slate-400 font-medium leading-relaxed">No hay nuevos turnos esperando tu aprobación en este momento.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Modals */}
+            {businessId && (
+                <ManualAppointmentModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    selectedSlot={selectedSlot}
+                    businessId={Number(businessId)}
+                    onSuccess={refreshAgenda}
+                />
+            )}
+
+            <AppointmentDetailModal 
+                isOpen={isDetailModalOpen}
+                onClose={() => setIsDetailModalOpen(false)}
+                appointment={selectedAppointment}
+                onDelete={deleteAppointment}
+            />
         </div>
     );
 };
+
+const PendingRequestItem = ({ req, onApprove, onReject }: { 
+    req: any, 
+    onApprove: (id: number) => void, 
+    onReject: (id: number) => void 
+}) => (
+    <Card className="border-0 shadow-lg bg-white ring-1 ring-slate-200 overflow-hidden hover:shadow-xl transition-all border-l-[6px] border-l-orange-400 rounded-2xl group/card">
+        <CardContent className="p-5">
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center">
+                    <Avatar className="h-10 w-10 mr-3 ring-4 ring-orange-50 shadow-sm border border-orange-100">
+                        <AvatarFallback className="bg-gradient-to-br from-orange-100 to-orange-50 text-orange-700 text-xs font-black">
+                            {(req.clientName || req.userName || "U").split(' ').map((n: string) => n[0]).join('')}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-black text-slate-800 leading-none truncate max-w-[120px]">{req.clientName || req.userName}</p>
+                            {req.status === 'PENDING_CONFIRMATION' && (
+                                <Badge className="bg-rose-500 text-[8px] h-3 px-1.5 font-black animate-pulse">NUEVO</Badge>
+                            )}
+                        </div>
+                        <Badge variant="secondary" className="text-[9px] h-4 leading-none bg-sky-50 text-sky-700 border-0 py-0 font-black">{req.serviceName}</Badge>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-slate-50/80 rounded-xl p-3 mb-4 space-y-2 border border-slate-100/50">
+                <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-slate-400 flex items-center font-bold uppercase tracking-widest"><User className="w-2.5 h-2.5 mr-1" /> Profesional</span>
+                    <span className="font-black text-slate-700">{req.employeeName}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-slate-400 flex items-center font-bold uppercase tracking-widest"><Calendar className="w-2.5 h-2.5 mr-1" /> Agenda</span>
+                    <span className="font-black text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded text-[9px]">{format(new Date(req.appointmentDate), "dd MMM")} • {req.startTime}h</span>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <Button 
+                    onClick={() => onApprove(req.id)}
+                    className="flex-1 h-10 text-[10px] font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shadow-emerald-100 transition-all active:scale-95 rounded-xl"
+                >
+                    <Check className="w-3.5 h-3.5 mr-1.5" />
+                    APROBAR
+                </Button>
+                <Button 
+                    variant="outline" 
+                    onClick={() => onReject(req.id)}
+                    className="flex-1 h-10 text-[10px] font-bold text-slate-400 border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all active:scale-95 rounded-xl"
+                >
+                    <X className="w-3.5 h-3.5 mr-1.5" />
+                    RECHAZAR
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+);

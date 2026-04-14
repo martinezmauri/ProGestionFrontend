@@ -1,5 +1,6 @@
 import { PropsBusiness } from "@api/getBusiness";
 import { CardContent } from "@ui/card";
+import { mapBackendSchedule } from "@utils/scheduleMapper";
 import { useMemo } from "react";
 
 const daysOrder = [
@@ -20,34 +21,44 @@ interface DaySchedule {
 }
 
 const HorariosCard = ({ business }: { business: PropsBusiness }) => {
-  const today = useMemo(() => {
-    const d = new Date();
-    const dayName = d.toLocaleDateString("es-AR", { weekday: "long" });
-    return dayName.charAt(0).toUpperCase() + dayName.slice(1);
-  }, []);
+  const todayNum = useMemo(() => new Date().getDay(), []);
 
-  const horariosOrdenados: DaySchedule[] = daysOrder.map((day) => {
-    const horario = business.businessHours.find((h) => h.day_of_week === day);
+  const horariosOrdenados: DaySchedule[] = useMemo(() => {
+    const standardHours = mapBackendSchedule(business.businessHours || []);
+    
+    // El orden deseado es Lunes (1) a Domingo (0)
+    const order = [1, 2, 3, 4, 5, 6, 0];
+    
+    return order.map((dayNum) => {
+      const dayName = daysOrder[dayNum === 0 ? 6 : dayNum - 1];
+      const horario = standardHours.find((h) => h.dayOfWeek === dayNum);
 
-    if (!horario) return { day, isClosed: true };
+      if (!horario || !horario.isWorkingDay) {
+        return { day: dayName, dayNum, isClosed: true };
+      }
 
-    const morning =
-      horario.opening_morning_time && horario.closing_morning_time
-        ? `${horario.opening_morning_time} – ${horario.closing_morning_time}`
-        : undefined;
+      const morning =
+        horario.morningStart && horario.morningEnd
+          ? `${horario.morningStart} – ${horario.morningEnd}`
+          : undefined;
 
-    const evening =
-      horario.opening_evening_time && horario.closing_evening_time
-        ? `${horario.opening_evening_time} – ${horario.closing_evening_time}`
-        : undefined;
+      const evening =
+        horario.afternoonStart && horario.afternoonEnd
+          ? `${horario.afternoonStart} – ${horario.afternoonEnd}`
+          : undefined;
 
-    if (!morning && !evening) return { day, isClosed: true };
+      return { 
+        day: dayName, 
+        dayNum,
+        isClosed: false, 
+        morning, 
+        evening 
+      };
+    });
+  }, [business.businessHours]);
 
-    return { day, isClosed: false, morning, evening };
-  });
-
-  const DayRow = ({ schedule }: { schedule: DaySchedule }) => {
-    const isToday = schedule.day === today;
+  const DayRow = ({ schedule }: { schedule: DaySchedule & { dayNum?: number } }) => {
+    const isToday = schedule.dayNum === todayNum;
     return (
       <div
         className={`flex items-start justify-between gap-4 px-3 py-2.5 rounded-lg transition-colors ${

@@ -3,7 +3,7 @@ import { IAddress } from "./IAddress";
 export interface IRegisterBusiness {
   name: string;
   description: string;
-  phone_number: string;
+  phoneNumber: string;
   logo: string;
   userId: string;
   categoryId: string;

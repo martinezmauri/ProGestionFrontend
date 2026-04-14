@@ -13,6 +13,7 @@ interface Employee {
   name: string;
   role: string;
   services: Service[];
+  workSchedules?: import("../interfaces/IWorkSchedule").IWorkSchedule[];
 }
 interface BusinessHours {
   id: string;

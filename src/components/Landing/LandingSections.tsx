@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "@api/axiosInstance";
 import { PropsBusiness } from "@api/getBusiness";
+import { Skeleton } from "@ui/skeleton";
 
 /* ─── FAQ Data ─── */
 const faqData = [
@@ -70,10 +71,12 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 /* ─── Section: Featured Establishments ─── */
 const FeaturedEstablishments = () => {
     const [businesses, setBusinesses] = useState<PropsBusiness[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadBusinesses = async () => {
+            setIsLoading(true);
             try {
                 const response = await api.get(`${import.meta.env.VITE_API_URL}/business/search`);
                 if (Array.isArray(response.data)) {
@@ -81,29 +84,18 @@ const FeaturedEstablishments = () => {
                 }
             } catch (err) {
                 console.warn("No se pudieron cargar los negocios destacados:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
         loadBusinesses();
     }, []);
 
-    const placeholders = [
-        { name: "Peluquería Style", category: "Peluquería", location: "Palermo, Buenos Aires", color: "text-orange-500", gradientFrom: "from-sky-50", gradientTo: "to-orange-50" },
-        { name: "Centro Dental Sonrisa", category: "Odontología", location: "Recoleta, Buenos Aires", color: "text-sky-600", gradientFrom: "from-green-50", gradientTo: "to-sky-50" },
-        { name: "Spa & Bienestar Relax", category: "Spa", location: "Belgrano, Buenos Aires", color: "text-purple-500", gradientFrom: "from-orange-50", gradientTo: "to-pink-50" },
+    const gradients = [
+        { color: "text-orange-500", gradientFrom: "from-sky-50", gradientTo: "to-orange-50" },
+        { color: "text-sky-600", gradientFrom: "from-green-50", gradientTo: "to-sky-50" },
+        { color: "text-purple-500", gradientFrom: "from-orange-50", gradientTo: "to-pink-50" },
     ];
-
-    const items = businesses.length > 0
-        ? businesses.map((b, i) => ({
-            id: b.id,
-            name: b.name,
-            category: b.category?.name || "Sin categoría",
-            location: b.address ? `${b.address.city || ""}${b.address.province ? `, ${b.address.province}` : ""}` : "Sin ubicación",
-            logo: b.logo,
-            color: placeholders[i % 3].color,
-            gradientFrom: placeholders[i % 3].gradientFrom,
-            gradientTo: placeholders[i % 3].gradientTo,
-        }))
-        : placeholders.map((p, i) => ({ id: String(i), ...p, logo: null }));
 
     return (
         <section className="py-16 md:py-20 bg-white">
@@ -118,51 +110,86 @@ const FeaturedEstablishments = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    {items.map((place, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.15, duration: 0.5 }}
-                        >
-                            <div
-                                className="rounded-2xl overflow-hidden border border-slate-100 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-xl transition-all duration-300 group cursor-pointer bg-white"
-                                onClick={() => navigate(`/b/${place.id}`)}
-                            >
-                                <div className={`h-40 bg-gradient-to-br ${place.gradientFrom} ${place.gradientTo} flex items-center justify-center relative`}>
-                                    {place.logo ? (
-                                        <img src={place.logo} alt={place.name} className="h-[72px] w-[72px] object-contain rounded-full shadow-sm" />
-                                    ) : (
-                                        <div className="w-[72px] h-[72px] rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] flex items-center justify-center">
-                                            <span className={`text-3xl font-bold ${place.color}`}>
-                                                {place.name.charAt(0)}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="p-5 space-y-3">
-                                    <h3 className="font-bold text-lg text-slate-800 group-hover:text-orange-500 transition-colors">
-                                        {place.name}
-                                    </h3>
-                                    <div className="flex items-center text-slate-400 text-sm gap-1.5">
-                                        <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                                        {place.location}
+                    {isLoading ? (
+                        /* Skeleton Loader */
+                        [1, 2, 3].map((n) => (
+                            <div key={n} className="rounded-2xl border border-slate-100 overflow-hidden bg-white shadow-sm flex flex-col h-full">
+                                <Skeleton className="h-40 w-full rounded-none" />
+                                <div className="p-5 space-y-4 flex-1">
+                                    <Skeleton className="h-6 w-3/4" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                    <div className="mt-auto pt-2">
+                                        <Skeleton className="h-12 w-full rounded-xl" />
                                     </div>
-                                    <button
-                                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer text-sm"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(`/b/${place.id}`);
-                                        }}
-                                    >
-                                        Reservar turno
-                                        <ArrowRight className="h-4 w-4" />
-                                    </button>
                                 </div>
                             </div>
-                        </motion.div>
-                    ))}
+                        ))
+                    ) : businesses.length > 0 ? (
+                        businesses.map((b, index) => {
+                            const style = gradients[index % 3];
+                            const location = b.address ? `${b.address.city || ""}${b.address.province ? `, ${b.address.province}` : ""}` : "Ubicación no disponible";
+                            
+                            return (
+                                <motion.div
+                                    key={b.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.15, duration: 0.5 }}
+                                    className="h-full"
+                                >
+                                    <div
+                                        className="rounded-2xl overflow-hidden border border-slate-100 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-xl transition-all duration-300 group cursor-pointer bg-white h-full flex flex-col"
+                                        onClick={() => navigate(`/b/${b.id}`)}
+                                    >
+                                        <div className={`h-40 bg-gradient-to-br ${style.gradientFrom} ${style.gradientTo} flex items-center justify-center relative shrink-0`}>
+                                            {b.logo ? (
+                                                <img src={b.logo} alt={b.name} className="h-[72px] w-[72px] object-contain rounded-full shadow-sm bg-white" />
+                                            ) : (
+                                                <div className="w-[72px] h-[72px] rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] flex items-center justify-center">
+                                                    <span className={`text-3xl font-bold ${style.color}`}>
+                                                        {b.name.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="p-5 flex flex-col flex-1 justify-between gap-4">
+                                            <div className="space-y-2">
+                                                <h3 className="font-bold text-lg text-slate-800 group-hover:text-orange-500 transition-colors line-clamp-1">
+                                                    {b.name}
+                                                </h3>
+                                                <div className="flex items-center text-slate-400 text-sm gap-1.5">
+                                                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                                                    <span className="line-clamp-1">{location}</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer text-sm shadow-sm group-hover:shadow-md active:scale-[0.98]"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/b/${b.id}`);
+                                                }}
+                                            >
+                                                Reservar turno
+                                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })
+                    ) : (
+                        /* Empty State */
+                        <div className="col-span-full py-16 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200 flex flex-col items-center justify-center">
+                           <div className="bg-white p-4 rounded-full shadow-sm mb-4">
+                             <Calendar className="h-8 w-8 text-slate-300" />
+                           </div>
+                           <p className="text-slate-600 font-bold text-lg">No hay negocios disponibles</p>
+                           <p className="text-slate-400 text-sm max-w-[280px] mt-1 italic">
+                             Estamos trabajando para traer nuevos establecimientos destacados muy pronto.
+                           </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

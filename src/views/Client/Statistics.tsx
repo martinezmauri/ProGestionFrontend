@@ -9,7 +9,10 @@ import { getServiceByBusinessId } from "@api/getServices";
 import { RefreshCw } from "lucide-react";
 
 export const Statistics = () => {
-    const { businessId, isAuthenticated } = useAuth();
+    const { session } = useAuth();
+    const isAuthenticated = !!session;
+    // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+    const businessId: string | null = null;
     const [loading, setLoading] = useState(true);
 
     const [totalEmployees, setTotalEmployees] = useState(0);

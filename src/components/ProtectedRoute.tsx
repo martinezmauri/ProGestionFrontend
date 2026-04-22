@@ -7,16 +7,16 @@ import { useAuth } from "@context/AuthContext";
  * Muestra nada mientras se verifica el estado de autenticación (evita flash).
  */
 const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { session, loading } = useAuth();
 
-  if (isLoading) return null;
+  if (loading) return null;
 
   // Bypass authentication in development mode
   if (import.meta.env.DEV) {
     return <Outlet />;
   }
 
-  if (!isAuthenticated) {
+  if (!session) {
     return <Navigate to="/" replace />;
   }
 

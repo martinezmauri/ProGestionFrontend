@@ -10,7 +10,8 @@ export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
 
   const handleOpenLogin = () => {
     setIsOpenRegister(false);

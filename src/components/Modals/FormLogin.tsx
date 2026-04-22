@@ -1,13 +1,8 @@
 import { useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, X } from "lucide-react";
-import { Input } from "@ui/input";
-import { Button } from "@ui/button";
-import axios from "axios";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 
 interface ModalProps {
   onClose: () => void;
@@ -17,8 +12,7 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { loginWithRedirect } = useAuth0();
-  const { login } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (
@@ -42,45 +36,25 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
     if (newErrors.email || newErrors.password) return;
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/signIn`,
-        loginData
-      );
-      if (response.status === 200) {
-        const { id, token } = response.data;
-
-        login(id, token);
-        onClose();
-        toast.success("Bienvenido!", {
-          description: "Has iniciado sesión correctamente.",
-          icon: <CheckCircle2 className="h-4 w-4" />,
-          duration: 1000,
-        });
-
-        const decoded: any = jwtDecode(token);
-        setTimeout(() => {
-          if (decoded.businessId) {
-            navigate("/dashboard");
-          } else {
-            navigate("/onboarding/plans");
-          }
-        }, 100);
-      }
+      await signIn(loginData.email, loginData.password);
+      onClose();
+      toast.success("Bienvenido!", {
+        description: "Has iniciado sesión correctamente.",
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        duration: 1000,
+      });
+      // TODO(SMS-28): navigate to /dashboard if userProfile has businessId once available
+      setTimeout(() => {
+        navigate("/onboarding/plans");
+      }, 100);
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "Ocurrió un error inesperado";
+      const message = error?.message || "Ocurrió un error inesperado";
       toast.error(message, { duration: 3000 });
     }
   };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prevState) => !prevState);
-  };
-
-  const handleRedirectLogin = (redirect: string) => {
-    loginWithRedirect({
-      authorizationParams: { connection: redirect },
-    });
   };
 
   return (
@@ -167,52 +141,6 @@ export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
           </button>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
-                O continúa con
-              </span>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <button
-              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              onClick={() => handleRedirectLogin("facebook")}
-            >
-              <img
-                className="w-9"
-                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445649/qrubt0avnlt3w3gz48kn.png"
-                alt="Logo de facebook"
-              />
-            </button>
-
-            <button
-              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              onClick={() => handleRedirectLogin("apple")}
-            >
-              <img
-                className="w-7"
-                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445629/oanftqh36xcvujdeoodr.png"
-                alt="Logo de apple"
-              />
-            </button>
-
-            <button
-              className="flex justify-center items-center py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-              onClick={() => handleRedirectLogin("google-oauth2")}
-            >
-              <img
-                className="w-7"
-                src="https://res.cloudinary.com/dcmi9bxvv/image/upload/v1745445666/r8xibykn0lqfspnslacj.png"
-                alt="Logo de google"
-              />
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

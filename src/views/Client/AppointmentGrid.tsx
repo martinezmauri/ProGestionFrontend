@@ -42,7 +42,11 @@ import { AppHeader } from "@components/Header/AppHeader";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 
 export const AppointmentGrid = () => {
-  const { businessId, isAuthenticated, userId: authUserId } = useAuth();
+  const { session, userProfile } = useAuth();
+  const isAuthenticated = !!session;
+  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+  const businessId: string | null = null;
+  const authUserId = userProfile?.id ?? null;
   const [services, setServices] = useState<IService[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);

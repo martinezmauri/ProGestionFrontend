@@ -48,7 +48,8 @@ const steps = [
 ];
 
 export const HeroUser = ({ formRef }: Props) => {
-  const { isAuthenticated } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
   const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",

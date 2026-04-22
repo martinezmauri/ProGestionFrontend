@@ -16,7 +16,10 @@ export const ServiceView = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
   const [selectedService, setSelectedService] = useState<IService | null>(null);
-  const { businessId, isAuthenticated } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
+  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+  const businessId: string | null = null;
 
   const loadServices = async () => {
     if (!businessId) return;

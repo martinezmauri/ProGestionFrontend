@@ -1,21 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  CheckCircle2,
-  CircleUserRound,
-  Eye,
-  EyeOff,
-  LockKeyhole,
-  Mail,
-  Phone,
-  X,
-} from "lucide-react";
-import { Input } from "@ui/input";
-import { Button } from "@ui/button";
+import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@context/AuthContext";
-import { jwtDecode } from "jwt-decode";
 
 interface ModalProps {
   onClose: () => void;
@@ -24,7 +11,7 @@ interface ModalProps {
 
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signUp } = useAuth();
   const [registerData, setRegisterData] = useState({
     email: "",
     nameUser: "",
@@ -83,39 +70,19 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
       return;
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/signUp`,
-        {
-          name: registerData.nameUser,
-          password: registerData.password,
-          phone: registerData.phone,
-          email: registerData.email,
-          confirmPassword: registerData.confirmPassword,
-        }
-      );
-
-      if (response.status === 201) {
-        const { id, token } = response.data;
-        login(id, token);
-        onClose();
-        toast.success("Usuario registrado!", {
-          description: "Te has registrado correctamente.",
-          icon: <CheckCircle2 className="h-4 w-4" />,
-          duration: 1000,
-        });
-
-        const decoded: any = jwtDecode(token);
-        setTimeout(() => {
-          if (decoded.businessId) {
-            navigate("/dashboard");
-          } else {
-            navigate("/onboarding/plans");
-          }
-        }, 100);
-      }
+      await signUp(registerData.email, registerData.password);
+      onClose();
+      toast.success("Usuario registrado!", {
+        description: "Te has registrado correctamente.",
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        duration: 1000,
+      });
+      // TODO(SMS-28): navigate to /dashboard if userProfile has businessId once available
+      setTimeout(() => {
+        navigate("/onboarding/plans");
+      }, 100);
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "Ocurrió un error inesperado";
+      const message = error?.message || "Ocurrió un error inesperado";
       toast.error(message, { duration: 3000 });
     }
   };

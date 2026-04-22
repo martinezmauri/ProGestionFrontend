@@ -11,7 +11,10 @@ import { toast } from "sonner";
 import { updateUser, UpdateUserPayload } from "@api/updateUser";
 
 export const UserSettings = () => {
-    const { userInfo, userId } = useAuth();
+    const { userProfile } = useAuth();
+    // TODO(SMS-28): userInfo → userProfile; userId → userProfile?.id
+    const userInfo = userProfile;
+    const userId = userProfile?.id ?? null;
     const [loading, setLoading] = useState(false);
 
     // User profile state

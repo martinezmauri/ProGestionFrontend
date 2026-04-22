@@ -28,7 +28,9 @@ export const RegistersBusiness = () => {
     street: "",
     city: "",
   });
-  const { userId, login } = useAuth();
+  const { userProfile } = useAuth();
+  // TODO(SMS-28): userId maps to userProfile?.id — stored as number, cast to string for DTO
+  const userId = userProfile?.id != null ? String(userProfile.id) : null;
   const { registerBusiness, loading, error } = useRegistrationBusiness();
 
   useEffect(() => {
@@ -57,12 +59,11 @@ export const RegistersBusiness = () => {
       address: addressData,
     });
 
-    if (response?.data?.token && response?.data?.business) {
+    if (response?.data?.business) {
       toast.success("¡Negocio creado exitosamente!", {
         description: `Se ha configurado ${businessData.name}. Ahora puedes configurar los horarios desde el módulo de Turnos.`,
       });
 
-      login(userId, response.data.token);
       setTimeout(() => {
         navigate("/dashboard");
       }, 500);

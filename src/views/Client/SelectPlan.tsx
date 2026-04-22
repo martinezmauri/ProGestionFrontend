@@ -9,7 +9,9 @@ import { useAuth } from "@context/AuthContext";
 
 export const SelectPlan = () => {
     const navigate = useNavigate();
-    const { userId, login } = useAuth();
+    const { userProfile } = useAuth();
+    // TODO(SMS-28): userId maps to userProfile?.id
+    const userId = userProfile?.id ?? null;
     const [loading, setLoading] = useState<string | null>(null);
 
     const plans = [
@@ -52,16 +54,7 @@ export const SelectPlan = () => {
             );
 
             // Re-fetch the new token with updated claims to be an ADMIN and have access:
-            if (response.data && response.data.refreshedToken) {
-                const refreshedToken = response.data.refreshedToken;
-                // Update local storage and auth context automatically
-                localStorage.setItem("auth_data", JSON.stringify({
-                    token: refreshedToken,
-                    usuario: { id: userId, token: refreshedToken } // Depending on how context consumes it, mostly token matters
-                }));
-                // Try logging in with the context to force re-evaluation
-                if (userId) login(userId, refreshedToken);
-            }
+            // TODO(SMS-28): token refresh is handled by Supabase session — no manual re-login needed
 
             toast.success("¡Plan seleccionado! Procedemos a configurar el local.");
             navigate("/onboarding/business");

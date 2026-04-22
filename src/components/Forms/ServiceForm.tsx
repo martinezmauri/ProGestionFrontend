@@ -55,7 +55,10 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
   const [form, setForm] = useState<IService>(empty);
   const [employees, setEmployees] = useState<IEmployeeResponse[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
-  const { businessId, userId } = useAuth();
+  const { userProfile } = useAuth();
+  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+  const businessId: string | null = null;
+  const userId = userProfile?.id ?? null;
 
   useEffect(() => {
     const fetchEmployees = async () => {

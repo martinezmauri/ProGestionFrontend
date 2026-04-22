@@ -69,7 +69,9 @@ export const PersonalForm = ({
 
   const [form, setForm] = useState<IEmployee>(empty);
   const roles = Object.values(EmployeeRol);
-  const { businessId } = useAuth();
+  const { userProfile } = useAuth();
+  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+  const businessId: string | null = null;
   const navigate = useNavigate();
 
   useEffect(() => {

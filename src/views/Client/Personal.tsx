@@ -31,7 +31,10 @@ export const Personal = () => {
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
     null,
   );
-  const { businessId, isAuthenticated } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
+  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
+  const businessId: string | null = null;
 
   const loadEmployees = async () => {
     const bId = businessId || (import.meta.env.DEV ? "1" : null);

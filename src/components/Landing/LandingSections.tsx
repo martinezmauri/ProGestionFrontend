@@ -75,7 +75,7 @@ const FeaturedEstablishments = () => {
     useEffect(() => {
         const loadBusinesses = async () => {
             try {
-                const response = await api.get(`${import.meta.env.VITE_API_URL}/business/search`);
+                const response = await api.get(`/api/v1/business/search`);
                 if (Array.isArray(response.data)) {
                     setBusinesses(response.data.slice(0, 3));
                 }

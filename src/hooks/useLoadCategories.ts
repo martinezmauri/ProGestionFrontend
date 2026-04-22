@@ -11,7 +11,7 @@ const useLoadCategories = () => {
 
     try {
       const response = await api.get(
-        `${import.meta.env.VITE_API_URL}/category/findAll`
+        `/api/v1/category/findAll`
       );
       setCategories(response.data.content || response.data || []);
     } catch (error) {

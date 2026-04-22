@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@context/AuthContext";
@@ -10,7 +9,6 @@ interface ModalProps {
 }
 
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
-  const navigate = useNavigate();
   const { signUp } = useAuth();
   const [registerData, setRegisterData] = useState({
     email: "",
@@ -71,16 +69,12 @@ export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {
 
     try {
       await signUp(registerData.email, registerData.password);
-      onClose();
-      toast.success("Usuario registrado!", {
-        description: "Te has registrado correctamente.",
+      toast.success("¡Revisá tu email!", {
+        description: `Te enviamos un enlace de confirmación a ${registerData.email}. Confirmá tu cuenta antes de iniciar sesión.`,
         icon: <CheckCircle2 className="h-4 w-4" />,
-        duration: 1000,
+        duration: 8000,
       });
-      // TODO(SMS-28): navigate to /dashboard if userProfile has businessId once available
-      setTimeout(() => {
-        navigate("/onboarding/plans");
-      }, 100);
+      onClose();
     } catch (error: any) {
       const message = error?.message || "Ocurrió un error inesperado";
       toast.error(message, { duration: 3000 });

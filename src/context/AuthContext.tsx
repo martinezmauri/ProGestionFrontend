@@ -1,184 +1,83 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
-import { jwtDecode } from "jwt-decode";
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { Session } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabaseClient'
+import api from '../api/axiosInstance'
 
-interface DecodedToken {
-  id?: string;
-  email?: string;
-  rol?: string;
-  avatar_url?: string;
-  businessId?: string | null;
-  exp?: number;
-  [key: string]: unknown;
+interface UserProfile {
+  id: number
+  supabaseUid: string
+  email: string
+  name: string
+  role: string
 }
 
-interface UserInfo {
-  id: string;
-  email: string;
-  rol: string;
-  avatar_url: string;
-  businessId?: string | null;
+interface AuthContextType {
+  session: Session | null
+  userProfile: UserProfile | null
+  loading: boolean
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string) => Promise<void>
+  signOut: () => Promise<void>
 }
 
-interface AuthContextProps {
-  userId: string | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (id: string, token: string) => void;
-  logout: () => void;
-  setBusinessId: (id: string | null) => void;
-  userInfo: UserInfo | null;
-  businessId: string | null;
-  hasSubscription: boolean | null;
-}
+const AuthContext = createContext<AuthContextType | null>(null)
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
-
-const LOCAL_STORAGE_KEY = "auth_data";
-
-/**
- * Verifica si un JWT ha expirado.
- */
-const isTokenExpired = (token: string): boolean => {
-  try {
-    const decoded = jwtDecode<DecodedToken>(token);
-    if (!decoded.exp) return false;
-    // exp está en segundos, Date.now() en milisegundos
-    return decoded.exp * 1000 < Date.now();
-  } catch {
-    return true; // Si no se puede decodificar, considerar expirado
-  }
-};
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [businessId, setBusinessId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
-
-  const checkSubscription = async (currentToken: string) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/subscriptions/my`,
-        {
-          headers: { Authorization: `Bearer ${currentToken}` },
-        },
-      );
-      if (response.status === 200) {
-        setHasSubscription(true);
-      } else {
-        setHasSubscription(false);
-      }
-    } catch {
-      setHasSubscription(false);
-    }
-  };
-
-  const logout = useCallback(() => {
-    setToken(null);
-    setUserId(null);
-    setUserInfo(null);
-    setBusinessId(null);
-    setHasSubscription(null);
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-  }, []);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (stored) {
-      try {
-        const { id, token: storedToken } = JSON.parse(stored);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      if (session) syncProfile()
+    })
 
-        if (isTokenExpired(storedToken)) {
-          // Token expirado → limpiar sesión
-          logout();
-        } else {
-          setToken(storedToken);
-          setUserId(id);
-          const decoded = jwtDecode<DecodedToken>(storedToken);
-          setUserInfo(decoded as UserInfo);
-          setBusinessId((decoded.businessId as string) ?? null);
-          checkSubscription(storedToken).finally(() => setIsLoading(false));
-          return; // Skip setting isLoading below
-        }
-      } catch (err) {
-        console.error("Error al cargar los datos de autenticación:", err);
-        logout();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      if (session) {
+        syncProfile()
+      } else {
+        setUserProfile(null)
       }
-    }
-    setIsLoading(false);
-  }, [logout]);
+      setLoading(false)
+    })
 
-  const login = (id: string, newToken: string) => {
-    setToken(newToken);
-    setUserId(id);
-    localStorage.setItem(
-      LOCAL_STORAGE_KEY,
-      JSON.stringify({ id, token: newToken }),
-    );
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const syncProfile = async () => {
     try {
-      const decoded = jwtDecode<DecodedToken>(newToken);
-      setUserInfo(decoded as UserInfo);
-      setBusinessId((decoded.businessId as string) ?? null);
-      checkSubscription(newToken);
-    } catch (err) {
-      console.error("Error al decodificar el token:", err);
+      const { data } = await api.post<UserProfile>('/api/v1/auth/sync')
+      setUserProfile(data)
+    } catch (error) {
+      console.error('Error syncing profile:', error)
     }
-  };
+  }
 
-  // Mock data for development mode if not authenticated
-  const devMockData =
-    import.meta.env.DEV && !token
-      ? {
-          isAuthenticated: true,
-          token: "mock-dev-token",
-          userId: "dev-user-id",
-          userInfo: {
-            id: "dev-user-id",
-            email: "dev@example.com",
-            rol: "admin",
-            avatar_url: "https://github.com/shadcn.png",
-          },
-          businessId: "dev-business-id",
-        }
-      : {};
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) throw error
+  }
+
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password })
+    if (error) throw error
+  }
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+  }
 
   return (
-    <AuthContext.Provider
-      value={{
-        token: token ?? (devMockData.token || null),
-        userId: userId ?? (devMockData.userId || null),
-        login,
-        logout,
-        isAuthenticated: token ? true : devMockData.isAuthenticated || false,
-        isLoading,
-        userInfo: userInfo ?? (devMockData.userInfo || null),
-        setBusinessId,
-        businessId: businessId ?? (devMockData.businessId || null),
-        hasSubscription: hasSubscription ?? (import.meta.env.DEV ? true : null),
-      }}
-    >
+    <AuthContext.Provider value={{ session, userProfile, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth debe usarse dentro de un AuthProvider");
-  }
-  return context;
-};
+export function useAuth() {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
+  return ctx
+}

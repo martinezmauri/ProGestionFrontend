@@ -25,8 +25,8 @@ export const Statistics = () => {
         setLoading(true);
         try {
             const [employees, services] = await Promise.all([
-                getEmployeesByBusinessId(Number(businessId)),
-                getServiceByBusinessId(Number(businessId))
+                getEmployeesByBusinessId(businessId),
+                getServiceByBusinessId(businessId)
             ]);
 
             if (employees) setTotalEmployees(employees.length);

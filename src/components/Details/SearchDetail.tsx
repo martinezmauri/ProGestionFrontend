@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, SlidersHorizontal, Star } from "lucide-react";
+import { MapPin, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@ui/card";
 import { Button } from "@ui/button";
@@ -11,10 +11,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
-import { PropsBusiness } from "@api/getBusiness";
+
+export interface IBusinessShort {
+  id: number;
+  name: string;
+  description: string;
+  phone_number: string;
+  logo: string;
+  address: {
+    id: number;
+    streetNumber: string;
+    province: string;
+    country: string;
+    street: string;
+    city: string;
+  };
+  category: {
+    id: number;
+    name: string;
+  };
+}
 
 interface Props {
-  business: PropsBusiness[];
+  business: IBusinessShort[];
   searchInputs: {
     nameEstablishment: string;
     location: string;
@@ -26,7 +45,7 @@ export const SearchDetail = ({ business, searchInputs }: Props) => {
   const navigate = useNavigate();
 
   const handleOnClick = (id: string) => {
-    navigate(`/business/${id}`);
+    navigate(`/b/${id}`);
   };
   return (
     <div className="px-6 mt-8">
@@ -103,80 +122,55 @@ export const SearchDetail = ({ business, searchInputs }: Props) => {
             <Card
               onClick={() => handleOnClick(place.id.toString())}
               key={place.id}
-              className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 group cursor-pointer"
+              className="overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer rounded-2xl bg-white flex flex-col h-full"
             >
-              <div className="relative h-48 bg-gray-200">
-                <img
-                  src={place.logo || "/placeholder.svg"}
-                  alt={place.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 left-3">
+              <div className="relative h-48 bg-gray-50 overflow-hidden">
+                {place.logo ? (
+                  <img
+                    src={place.logo}
+                    alt={place.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 group-hover:scale-105 transition-transform duration-500">
+                    <span className="text-sm font-medium">Sin imagen</span>
+                  </div>
+                )}
+                <div className="absolute top-4 left-4">
                   <Badge
                     variant="secondary"
-                    className="bg-white/90 text-gray-700"
+                    className="bg-white/95 text-gray-700 shadow-sm font-medium px-3 py-1"
                   >
-                    {place.category.name}
+                    {place.category?.name || "Negocio"}
                   </Badge>
                 </div>
               </div>
 
-              <CardContent className="p-4">
-                <div className="space-y-3">
+              <CardContent className="p-5 flex flex-col flex-grow">
+                <div className="space-y-3 flex-grow">
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800 group-hover:text-sky-600 transition-colors">
+                    <h3 className="font-bold text-xl text-slate-800 group-hover:text-sky-600 transition-colors line-clamp-1">
                       {place.name}
                     </h3>
-                    <div className="flex items-center text-gray-500 text-sm mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="flex-1">{place.address.street}</span>
+                    <div className="flex items-start text-slate-500 text-sm mt-2">
+                      <MapPin className="h-4 w-4 mr-1.5 flex-shrink-0 mt-0.5 text-slate-400" />
+                      <span className="flex-1 line-clamp-2 leading-relaxed">
+                        {place.address?.street} {place.address?.streetNumber}, {place.address?.city}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-4 w-4"
-                            fill={
-                              i < Math.floor(4.8) /* logica para esto */
-                                ? "currentColor"
-                                : "none"
-                            }
-                          />
-                        ))}
-                      </div>
-                      <span className="ml-1 text-sm text-gray-600">4.8</span>
-                    </div>
-                  </div>
+                  {place.description && (
+                    <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                      {place.description}
+                    </p>
+                  )}
+                </div>
 
-                  <div className="flex flex-wrap gap-1">
-                    {place.services.slice(0, 3).map((service, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="text-xs bg-sky-50 text-sky-700 border-sky-200"
-                      >
-                        {service.name}
-                      </Badge>
-                    ))}
-                    {place.services.length > 3 && (
-                      <Badge
-                        variant="outline"
-                        className="text-xs bg-gray-50 text-gray-600"
-                      >
-                        +{place.services.length - 3} más
-                      </Badge>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2 pt-2">
-                    <Button className="flex-1 bg-orange-500 hover:bg-orange-600 text-sm cursor-pointer">
-                      Reservar Turno
-                    </Button>
-                  </div>
+                <div className="pt-5 mt-auto">
+                  <Button className="w-full bg-slate-900 hover:bg-sky-600 text-white font-medium shadow-sm transition-all rounded-xl h-11">
+                    Ver Perfil
+                  </Button>
                 </div>
               </CardContent>
             </Card>

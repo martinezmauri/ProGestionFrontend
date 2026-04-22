@@ -21,7 +21,7 @@ export const BusinessSettings = () => {
     const [businessData, setBusinessData] = useState<IBusiness>({
         name: "",
         description: "",
-        phone_number: "",
+        phoneNumber: "",
         logo: "",
         userId: "",
         categoryId: "",
@@ -29,7 +29,7 @@ export const BusinessSettings = () => {
 
     const [addressData, setAddressData] = useState<IAddress>({
         street: "",
-        street_number: 0,
+        streetNumber: "",
         city: "",
         province: "",
         country: "",
@@ -45,17 +45,17 @@ export const BusinessSettings = () => {
             if (data) {
                 setBusinessData({
                     name: data.name || "",
-                    description: "", // DTO is short, description might be missing from findShort, assuming blank if not returned
-                    phone_number: data.phone_number || "",
+                    description: (data as any).description || "",
+                    phoneNumber: data.phoneNumber || "",
                     logo: data.logo || "",
                     userId: "",
-                    categoryId: data.category?.id || "",
+                    categoryId: data.category ? String(data.category.id) : "",
                 });
 
                 if (data.address) {
                     setAddressData({
                         street: data.address.street || "",
-                        street_number: data.address.street_number || 0,
+                        streetNumber: data.address.streetNumber || "",
                         city: data.address.city || "",
                         province: data.address.province || "",
                         country: data.address.country || "",
@@ -88,7 +88,7 @@ export const BusinessSettings = () => {
             const payload: UpdateBusinessPayload = {
                 name: businessData.name,
                 description: businessData.description,
-                phoneNumber: businessData.phone_number,
+                phoneNumber: businessData.phoneNumber,
                 logo: businessData.logo,
                 categoryId: businessData.categoryId,
                 address: addressData
@@ -130,8 +130,8 @@ export const BusinessSettings = () => {
                     {step === 1 && (
                         <div className="animate-in slide-in-from-left-4 duration-300">
                             <BusinessForm
-                                registerData={businessData}
-                                setRegisterData={setBusinessData}
+                                registerData={businessData as any}
+                                setRegisterData={setBusinessData as any}
                                 onContinue={handleSavePrimary}
                             />
                         </div>

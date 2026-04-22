@@ -16,13 +16,13 @@ export const RegistersBusiness = () => {
   const [businessData, setBusinessData] = useState<IBusiness>({
     name: "",
     description: "",
-    phone_number: "",
+    phoneNumber: "",
     logo: "",
     userId: "",
     categoryId: "",
   });
   const [addressData, setAddressData] = useState<IAddress>({
-    street_number: 0,
+    streetNumber: "",
     province: "",
     country: "",
     street: "",
@@ -64,7 +64,7 @@ export const RegistersBusiness = () => {
       });
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/onboarding/business-hours");
       }, 500);
     } else {
       toast.error("No se pudo registrar el negocio.");

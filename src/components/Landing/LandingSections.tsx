@@ -126,7 +126,10 @@ const FeaturedEstablishments = () => {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.15, duration: 0.5 }}
                         >
-                            <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-xl transition-all duration-300 group cursor-pointer bg-white">
+                            <div
+                                className="rounded-2xl overflow-hidden border border-slate-100 shadow-[0_4px_20px_rgba(15,23,42,0.04)] hover:shadow-xl transition-all duration-300 group cursor-pointer bg-white"
+                                onClick={() => navigate(`/b/${place.id}`)}
+                            >
                                 <div className={`h-40 bg-gradient-to-br ${place.gradientFrom} ${place.gradientTo} flex items-center justify-center relative`}>
                                     {place.logo ? (
                                         <img src={place.logo} alt={place.name} className="h-[72px] w-[72px] object-contain rounded-full shadow-sm" />
@@ -148,7 +151,10 @@ const FeaturedEstablishments = () => {
                                     </div>
                                     <button
                                         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer text-sm"
-                                        onClick={() => navigate(`/business/${place.id}`)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/b/${place.id}`);
+                                        }}
                                     >
                                         Reservar turno
                                         <ArrowRight className="h-4 w-4" />

@@ -15,6 +15,7 @@ const GoogleIcon = () => (
 interface ModalProps {
   onClose: () => void;
   onOpenLogin: () => void;
+  redirectOnSuccess?: boolean;
 }
 
 export const FormRegister = ({ onClose, onOpenLogin }: ModalProps) => {

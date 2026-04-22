@@ -15,8 +15,9 @@ const GoogleIcon = () => (
 interface ModalProps {
   onClose: () => void;
   onOpenRegister: () => void;
+  redirectOnSuccess?: boolean;
 }
-export const FormLogin = ({ onClose, onOpenRegister }: ModalProps) => {
+export const FormLogin = ({ onClose, onOpenRegister, redirectOnSuccess = true }: ModalProps) => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: false, password: false });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);

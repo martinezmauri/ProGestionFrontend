@@ -30,12 +30,13 @@ export const useAppointmentGrid = (
   const [gridData, setGridData] = useState<IAppointmentGrid | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    initialDate || new Date(),
-  );
-  const [selectedServiceId, setSelectedServiceId] = useState<
-    number | undefined
-  >(initialServiceId);
+
+  // Wizard State
+  const [currentStep, setCurrentStep] = useState<number>(1); // 1: Service, 2: Employee, 3: DateTime, 4: Confirm
+  const [selectedServiceId, setSelectedServiceId] = useState<number | undefined>(initialServiceId);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null | undefined>(undefined); // null means "Cualquier profesional"
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate || new Date());
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
 
   const fetchGridData = async (serviceId: number, date: Date) => {
     setLoading(true);
@@ -69,22 +70,38 @@ export const useAppointmentGrid = (
   };
 
   useEffect(() => {
-    if (selectedServiceId && (selectedDate || initialDate)) {
+    if (selectedServiceId && (selectedDate || initialDate) && currentStep >= 3) {
       fetchGridData(
         selectedServiceId,
         selectedDate || initialDate || new Date(),
       );
     }
-  }, [selectedServiceId, selectedDate, initialDate]);
+  }, [selectedServiceId, selectedDate, initialDate, currentStep]);
+
+  const resetWizard = () => {
+    setCurrentStep(1);
+    setSelectedServiceId(undefined);
+    setSelectedEmployeeId(undefined);
+    setSelectedTimeSlot(null);
+    setSelectedDate(new Date());
+    setGridData(null);
+  }
 
   return {
     gridData,
     loading,
     error,
+    currentStep,
+    setCurrentStep,
     selectedDate,
     setSelectedDate,
     selectedServiceId,
     setSelectedServiceId,
+    selectedEmployeeId,
+    setSelectedEmployeeId,
+    selectedTimeSlot,
+    setSelectedTimeSlot,
+    resetWizard,
     refreshGrid: () => {
       if (selectedServiceId && selectedDate) {
         fetchGridData(selectedServiceId, selectedDate);

@@ -60,7 +60,7 @@ export const ClientHero = () => (
                     productividad con OMTime.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                    <Link to="/plans">
+                    <Link to="/para-negocios/planes">
                         <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 rounded-xl font-semibold text-[15px] shadow-lg shadow-orange-200 cursor-pointer flex items-center justify-center transition-colors">
                             Ver planes
                             <ArrowRight className="ml-2 h-[18px] w-[18px]" />
@@ -169,7 +169,7 @@ export const ClientFeatures = () => (
    Section 3 — Prueba Gratis (CTA)
    ═══════════════════════════════════════════ */
 export const ClientFreeTrial = () => (
-    <section className="py-16 md:py-24 bg-gradient-to-r from-orange-500 via-orange-400 to-amber-400 relative overflow-hidden">
+    <section id="planes" className="py-16 md:py-24 bg-gradient-to-r from-orange-500 via-orange-400 to-amber-400 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 right-20 w-72 h-72 rounded-full bg-white" />
             <div className="absolute -bottom-20 -left-10 w-52 h-52 rounded-full bg-white" />
@@ -191,14 +191,14 @@ export const ClientFreeTrial = () => (
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <Link
-                        to="/plans"
+                        to="/para-negocios/planes"
                         className="inline-flex justify-center items-center bg-white text-orange-500 hover:bg-orange-50 px-8 py-4 rounded-xl font-bold text-[17px] shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                         Ver planes
                         <ArrowRight className="ml-2 h-[18px] w-[18px]" />
                     </Link>
                     <Link
-                        to="/register-business"
+                        to="/para-negocios/planes"
                         className="inline-flex justify-center items-center border border-white/40 bg-white/10 text-white hover:bg-white/20 px-8 py-4 rounded-xl font-bold text-[17px] transition-all duration-300"
                     >
                         Comenzar prueba gratis

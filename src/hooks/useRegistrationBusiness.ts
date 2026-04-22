@@ -13,7 +13,7 @@ export const useRegistrationBusiness = () => {
       const payload = {
         name: newBusinessData.name,
         description: newBusinessData.description,
-        phoneNumber: newBusinessData.phone_number,
+        phoneNumber: newBusinessData.phoneNumber,
         logo: newBusinessData.logo,
         category: { id: Number(newBusinessData.categoryId) },
         address: {

@@ -1,13 +1,13 @@
-import { WeekDays } from "@enum/WeekDays";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { Button } from "@ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/card";
 import { Checkbox } from "@ui/checkbox";
 import { Input } from "@ui/input";
 import { Label } from "@ui/label";
-import { CheckCircle, Clock, CalendarDays, SeparatorHorizontal, Copy } from "lucide-react";
+import { CheckCircle, Clock, CalendarDays, Copy } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { cn } from "@lib/utils";
+import { generateInitialWeeklySchedule } from "../../utils/scheduleDefaults";
 
 interface Props {
   businessHours: IWorkSchedule[];
@@ -17,25 +17,7 @@ interface Props {
   showSubmitButton?: boolean;
 }
 
-const diasAIngles: Record<string, WeekDays> = {
-  lunes: WeekDays.Monday,
-  martes: WeekDays.Tuesday,
-  miercoles: WeekDays.Wednesday,
-  jueves: WeekDays.Thursday,
-  viernes: WeekDays.Friday,
-  sabado: WeekDays.Saturday,
-  domingo: WeekDays.Sunday,
-};
-
-const days = [
-  { day: "Lunes", key: "lunes" },
-  { day: "Martes", key: "martes" },
-  { day: "Miércoles", key: "miercoles" },
-  { day: "Jueves", key: "jueves" },
-  { day: "Viernes", key: "viernes" },
-  { day: "Sábado", key: "sabado" },
-  { day: "Domingo", key: "domingo" },
-];
+const daysLabels = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
 export const BusinessHoursForm = ({
   businessHours,
@@ -44,34 +26,24 @@ export const BusinessHoursForm = ({
   title = "Horario de Atención",
   showSubmitButton = true,
 }: Props) => {
-  const [splitHours, setSplitHours] = useState<Record<string, boolean>>({});
+  const [splitHours, setSplitHours] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     if (businessHours.length === 0) {
-      const initial: IWorkSchedule[] = days.map((d) => ({
-        day_of_week: diasAIngles[d.key],
-        opening_morning_time: "",
-        closing_morning_time: "",
-        opening_evening_time: "",
-        closing_evening_time: "",
-        active: false,
-      }));
-
-      const initialSplitState: Record<string, boolean> = {};
-      days.forEach((d) => (initialSplitState[d.key] = false));
-
+      const initial = generateInitialWeeklySchedule();
       setBusinessHours(initial);
+      const initialSplitState: Record<number, boolean> = {};
+      initial.forEach((d) => (initialSplitState[d.dayOfWeek] = false));
       setSplitHours(initialSplitState);
     } else {
-      // Recover split hours state if data already exists
-      const recoveredSplit: Record<string, boolean> = {};
-      businessHours.forEach((bh, index) => {
-        if (bh.opening_evening_time || bh.closing_evening_time) {
-          recoveredSplit[days[index].key] = true;
+      const recoveredSplit: Record<number, boolean> = {};
+      businessHours.forEach((bh) => {
+        if (bh.afternoonStart || bh.afternoonEnd) {
+          recoveredSplit[bh.dayOfWeek] = true;
         } else {
-          recoveredSplit[days[index].key] = false;
+          recoveredSplit[bh.dayOfWeek] = false;
         }
-      })
+      });
       setSplitHours(recoveredSplit);
     }
   }, []);
@@ -82,51 +54,52 @@ export const BusinessHoursForm = ({
     value: string
   ) => {
     setBusinessHours((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value || "" } : item))
+      prev.map((item, i) => (i === index ? { ...item, [field]: value || null } : item))
     );
   };
 
   const handleDayActiveChange = (index: number, checked: boolean) => {
     setBusinessHours((prev) => {
       const updated = prev.map((item, i) =>
-        i === index ? { ...item, active: checked } : item
+        i === index ? { ...item, isWorkingDay: checked } : item
       );
       return updated;
     });
   };
 
-  const handleSplitChange = (dayKey: string, checked: boolean) => {
+  const handleSplitChange = (dayOfWeek: number, checked: boolean) => {
     setSplitHours((prev) => ({
       ...prev,
-      [dayKey]: checked,
+      [dayOfWeek]: checked,
     }));
     // If we uncheck split, clear the evening hours
     if (!checked) {
-      const index = days.findIndex(d => d.key === dayKey);
+      const index = businessHours.findIndex((d) => d.dayOfWeek === dayOfWeek);
       if (index !== -1) {
-        handleHourChange(index, "opening_evening_time", "");
-        handleHourChange(index, "closing_evening_time", "");
+        handleHourChange(index, "afternoonStart", "");
+        handleHourChange(index, "afternoonEnd", "");
       }
     }
   };
 
-  const applySchedule = (sourceIndex: number, targetIndices: number[]) => {
+  const applySchedule = (sourceIndex: number, targetDaysOfWeek: number[]) => {
     const sourceSchedule = businessHours[sourceIndex];
     if (!sourceSchedule) return;
 
-    const sourceSplit = splitHours[days[sourceIndex].key] || false;
+    const sourceSplit = splitHours[sourceSchedule.dayOfWeek] || false;
 
     setBusinessHours((prev) => {
       const next = [...prev];
-      targetIndices.forEach((i) => {
-        if (i !== sourceIndex && next[i]) {
+      targetDaysOfWeek.forEach((targetDay) => {
+        const i = next.findIndex((item) => item.dayOfWeek === targetDay);
+        if (i !== -1 && i !== sourceIndex) {
           next[i] = {
             ...next[i],
-            active: sourceSchedule.active,
-            opening_morning_time: sourceSchedule.opening_morning_time,
-            closing_morning_time: sourceSchedule.closing_morning_time,
-            opening_evening_time: sourceSchedule.opening_evening_time,
-            closing_evening_time: sourceSchedule.closing_evening_time,
+            isWorkingDay: sourceSchedule.isWorkingDay,
+            morningStart: sourceSchedule.morningStart,
+            morningEnd: sourceSchedule.morningEnd,
+            afternoonStart: sourceSchedule.afternoonStart,
+            afternoonEnd: sourceSchedule.afternoonEnd,
           };
         }
       });
@@ -135,9 +108,9 @@ export const BusinessHoursForm = ({
 
     setSplitHours((prev) => {
       const next = { ...prev };
-      targetIndices.forEach((i) => {
-        if (i !== sourceIndex) {
-          next[days[i].key] = sourceSplit;
+      targetDaysOfWeek.forEach((targetDay) => {
+        if (targetDay !== sourceSchedule.dayOfWeek) {
+          next[targetDay] = sourceSplit;
         }
       });
       return next;
@@ -157,16 +130,16 @@ export const BusinessHoursForm = ({
       </CardHeader>
 
       <CardContent className="p-6">
-        <form className="space-y-6">
+        <div className="space-y-6">
           <div className="space-y-3">
-            {days.map((dayInfo, index) => {
-              const schedule = businessHours[index] || {};
-              const isActive = schedule.active || false;
-              const isSplit = splitHours[dayInfo.key] || false;
+            {businessHours.map((schedule, index) => {
+              const isActive = schedule.isWorkingDay || false;
+              const isSplit = splitHours[schedule.dayOfWeek] || false;
+              const dayName = daysLabels[schedule.dayOfWeek];
 
               return (
                 <div
-                  key={index}
+                  key={schedule.dayOfWeek}
                   className={cn(
                     "border rounded-xl p-4 transition-all duration-200",
                     isActive ? "border-orange-200 bg-orange-50/10 shadow-sm" : "border-slate-100 bg-slate-50/50 opacity-70"
@@ -175,24 +148,21 @@ export const BusinessHoursForm = ({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                       <Checkbox
-                        id={`${dayInfo.key}-active`}
+                        id={`day-${schedule.dayOfWeek}-active`}
                         checked={isActive}
-                        onCheckedChange={(checked) =>
-                          handleDayActiveChange(index, !!checked)
-                        }
+                        onCheckedChange={(checked) => handleDayActiveChange(index, !!checked)}
                         className={cn(isActive && "data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500")}
                       />
                       <Label
-                        htmlFor={`${dayInfo.key}-active`}
+                        htmlFor={`day-${schedule.dayOfWeek}-active`}
                         className={cn("text-base font-semibold cursor-pointer", isActive ? "text-slate-800" : "text-slate-400")}
                       >
-                        {dayInfo.day}
+                        {dayName}
                       </Label>
                     </div>
 
                     {isActive && (
                       <div className="flex items-center gap-2 flex-wrap justify-end">
-                        {/* Botones de copiado rápido */}
                         <div className="flex items-center bg-white border rounded-lg shadow-sm overflow-hidden">
                           <Button
                             variant="ghost"
@@ -200,7 +170,7 @@ export const BusinessHoursForm = ({
                             className="h-8 px-3 text-xs text-slate-500 hover:text-orange-600 hover:bg-orange-50 rounded-none border-r"
                             onClick={(e) => {
                               e.preventDefault();
-                              applySchedule(index, [0, 1, 2, 3, 4]); // Lunes a Viernes
+                              applySchedule(index, [1, 2, 3, 4, 5]); // Lunes a Viernes
                             }}
                             title="Copiar horario a Lunes - Viernes"
                           >
@@ -222,15 +192,13 @@ export const BusinessHoursForm = ({
 
                         <div className="flex items-center bg-white border px-3 h-8 rounded-lg shadow-sm">
                           <Checkbox
-                            id={`${dayInfo.key}-split`}
+                            id={`day-${schedule.dayOfWeek}-split`}
                             checked={isSplit}
-                            onCheckedChange={(checked) =>
-                              handleSplitChange(dayInfo.key, !!checked)
-                            }
+                            onCheckedChange={(checked) => handleSplitChange(schedule.dayOfWeek, !!checked)}
                             className="w-3.5 h-3.5"
                           />
                           <Label
-                            htmlFor={`${dayInfo.key}-split`}
+                            htmlFor={`day-${schedule.dayOfWeek}-split`}
                             className="ml-2 text-xs font-medium text-slate-600 cursor-pointer"
                           >
                             Añadir turno tarde
@@ -241,8 +209,6 @@ export const BusinessHoursForm = ({
                   </div>
 
                   <div className={cn("grid transition-all duration-300 gap-4", isActive ? "opacity-100" : "opacity-40 pointer-events-none")}>
-
-                    {/* Shift Row */}
                     <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
                       <div className="flex-1 bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
                         <Label className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2 block">
@@ -251,31 +217,26 @@ export const BusinessHoursForm = ({
                         <div className="flex items-center gap-2">
                           <div className="flex-1">
                             <Input
-                              id={`${dayInfo.key}-open1`}
+                              id={`day-${schedule.dayOfWeek}-open1`}
                               type="time"
-                              value={schedule.opening_morning_time || ""}
-                              onChange={(e) =>
-                                handleHourChange(index, "opening_morning_time", e.target.value)
-                              }
+                              value={schedule.morningStart || ""}
+                              onChange={(e) => handleHourChange(index, "morningStart", e.target.value)}
                               className="h-9"
                             />
                           </div>
                           <span className="text-slate-400 text-sm font-medium">a</span>
                           <div className="flex-1">
                             <Input
-                              id={`${dayInfo.key}-close1`}
+                              id={`day-${schedule.dayOfWeek}-close1`}
                               type="time"
-                              value={schedule.closing_morning_time || ""}
-                              onChange={(e) =>
-                                handleHourChange(index, "closing_morning_time", e.target.value)
-                              }
+                              value={schedule.morningEnd || ""}
+                              onChange={(e) => handleHourChange(index, "morningEnd", e.target.value)}
                               className="h-9"
                             />
                           </div>
                         </div>
                       </div>
 
-                      {/* Split Shift Row */}
                       {isSplit && (
                         <div className="flex-1 bg-white p-3 rounded-lg border border-slate-100 shadow-sm relative">
                           <Label className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2 block">
@@ -284,24 +245,20 @@ export const BusinessHoursForm = ({
                           <div className="flex items-center gap-2">
                             <div className="flex-1">
                               <Input
-                                id={`${dayInfo.key}-open2`}
+                                id={`day-${schedule.dayOfWeek}-open2`}
                                 type="time"
-                                value={schedule.opening_evening_time || ""}
-                                onChange={(e) =>
-                                  handleHourChange(index, "opening_evening_time", e.target.value)
-                                }
+                                value={schedule.afternoonStart || ""}
+                                onChange={(e) => handleHourChange(index, "afternoonStart", e.target.value)}
                                 className="h-9"
                               />
                             </div>
                             <span className="text-slate-400 text-sm font-medium">a</span>
                             <div className="flex-1">
                               <Input
-                                id={`${dayInfo.key}-close2`}
+                                id={`day-${schedule.dayOfWeek}-close2`}
                                 type="time"
-                                value={schedule.closing_evening_time || ""}
-                                onChange={(e) =>
-                                  handleHourChange(index, "closing_evening_time", e.target.value)
-                                }
+                                value={schedule.afternoonEnd || ""}
+                                onChange={(e) => handleHourChange(index, "afternoonEnd", e.target.value)}
                                 className="h-9"
                               />
                             </div>
@@ -311,7 +268,7 @@ export const BusinessHoursForm = ({
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -343,7 +300,7 @@ export const BusinessHoursForm = ({
               </Button>
             </div>
           )}
-        </form>
+        </div>
       </CardContent>
     </Card>
   );

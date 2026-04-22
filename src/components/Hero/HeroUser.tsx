@@ -24,7 +24,7 @@ interface ISearch {
   logo: string;
   address: {
     id: number;
-    street_number: number;
+    streetNumber: string;
     province: string;
     country: string;
     street: string;
@@ -84,9 +84,13 @@ export const HeroUser = ({ formRef }: Props) => {
   const handleOnSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
+    const hasName = searchBusiness.nameEstablishment.trim() !== "";
+    const hasLocation = searchBusiness.location.trim() !== "";
+    const hasCategory = searchBusiness.category.trim() !== "";
+
     const newErrors = {
-      location: searchBusiness.location.trim() === "",
-      category: searchBusiness.category.trim() === "",
+      location: !hasName && !hasLocation,
+      category: !hasName && !hasCategory,
     };
 
     setErrors(newErrors);
@@ -161,90 +165,107 @@ export const HeroUser = ({ formRef }: Props) => {
         </div>
 
         {/* Right - Search Card */}
-        <form className="w-full max-w-[440px] md:w-[440px] flex-shrink-0 mx-auto" ref={formRef}>
-          <Card className="border-0 shadow-[0_8px_40px_rgba(15,23,42,0.08)] overflow-hidden bg-white rounded-2xl">
-            <CardContent className="p-8 space-y-5">
-              <div>
-                <h2 className="text-[22px] font-bold text-slate-800">
+        <form className="w-full max-w-[480px] md:w-[480px] flex-shrink-0 mx-auto" ref={formRef}>
+          <Card className="border border-white/40 shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)] overflow-hidden bg-white/95 backdrop-blur-md rounded-3xl">
+            <CardContent className="p-8 space-y-6">
+              <div className="text-left">
+                <h2 className="text-[24px] font-extrabold text-slate-900 tracking-tight">
                   Encuentra tu próximo turno
                 </h2>
-                <p className="text-slate-400 text-sm mt-1">
+                <p className="text-slate-500 text-sm mt-1.5 font-medium">
                   Busca, reserva y gestiona en segundos.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <Input
-                  className="bg-slate-50 border-slate-200 focus:border-sky-500 rounded-xl h-12 px-4"
-                  type="text"
-                  id="establishment"
-                  value={searchBusiness.nameEstablishment}
-                  onChange={(event) => handleChange(event, "nameEstablishment")}
-                  placeholder="Nombre del establecimiento"
-                />
-
-                <div className="space-y-1">
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-slate-400 group-focus-within:text-sky-500 transition-colors" />
+                  </div>
                   <Input
-                    className={`bg-slate-50 rounded-xl h-12 px-4 ${errors.location ? "border-red-500" : "border-slate-200"
-                      } focus:border-sky-500`}
+                    className="bg-slate-50/50 border-slate-200 focus:bg-white focus:border-sky-500 rounded-2xl h-14 pl-11 pr-4 text-[15px] shadow-sm transition-all placeholder:text-slate-400"
                     type="text"
-                    id="location"
-                    value={searchBusiness.location}
-                    onChange={(event) => handleChange(event, "location")}
-                    placeholder="Selecciona tu localidad"
+                    id="establishment"
+                    value={searchBusiness.nameEstablishment}
+                    onChange={(event) => handleChange(event, "nameEstablishment")}
+                    placeholder="Nombre del establecimiento (ej. Spa Zen)"
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <MapPin className="h-5 w-5 text-slate-400 group-focus-within:text-sky-500 transition-colors" />
+                    </div>
+                    <Input
+                      className={`bg-slate-50/50 rounded-2xl h-14 pl-11 pr-4 text-[15px] shadow-sm transition-all placeholder:text-slate-400 ${errors.location ? "border-red-500 focus:border-red-500 bg-red-50/50" : "border-slate-200 focus:border-sky-500 focus:bg-white"
+                        }`}
+                      type="text"
+                      id="location"
+                      value={searchBusiness.location}
+                      onChange={(event) => handleChange(event, "location")}
+                      placeholder="Selecciona tu localidad"
+                    />
+                  </div>
                   {errors.location && (
-                    <p className="text-sm text-red-500">
-                      La localidad es obligatoria.
+                    <p className="text-[13px] text-red-500 font-medium px-1">
+                      La localidad es obligatoria para buscar cercanos.
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-1">
-                  <Select
-                    onValueChange={(value) =>
-                      setSearchBusiness((prev) => ({
-                        ...prev,
-                        category: value,
-                      }))
-                    }
-                  >
-                    <SelectTrigger
-                      className={`bg-slate-50 w-full rounded-xl h-12 ${errors.category ? "border-red-500" : "border-slate-200"
-                        } focus:border-sky-500`}
+                <div className="space-y-1.5">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                      <Scissors className="h-5 w-5 text-slate-400 group-focus-within:text-sky-500 transition-colors" />
+                    </div>
+                    <Select
+                      onValueChange={(value) =>
+                        setSearchBusiness((prev) => ({
+                          ...prev,
+                          category: value,
+                        }))
+                      }
                     >
-                      <SelectValue placeholder="Selecciona una categoría" />
-                    </SelectTrigger>
+                      <SelectTrigger
+                        className={`bg-slate-50/50 w-full rounded-2xl h-14 pl-11 pr-4 text-[15px] shadow-sm transition-all focus:bg-white ${errors.category ? "border-red-500 focus:border-red-500 bg-red-50/50" : "border-slate-200 focus:border-sky-500"
+                          }`}
+                      >
+                        <SelectValue placeholder="Categoría de servicio" />
+                      </SelectTrigger>
 
-                    <SelectContent>
-                      {Array.isArray(categories) && categories.length > 0 ? (
-                        categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.name}>
-                            {cat.name}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <div className="px-3 py-2 text-sm text-gray-500">
-                          No hay categorías disponibles
-                        </div>
-                      )}
-                    </SelectContent>
-                  </Select>
+                      <SelectContent className="rounded-xl border-slate-100 shadow-xl">
+                        {Array.isArray(categories) && categories.length > 0 ? (
+                          categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.name} className="py-3 cursor-pointer">
+                              {cat.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="px-3 py-4 text-sm text-slate-500 text-center">
+                            No hay categorías disponibles
+                          </div>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {errors.category && (
-                    <p className="text-sm text-red-500">
-                      La categoría es obligatoria.
+                    <p className="text-[13px] text-red-500 font-medium px-1">
+                      Elige una categoría de servicio para empezar.
                     </p>
                   )}
                 </div>
               </div>
 
-              <button
-                className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-4 rounded-xl text-base flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                onClick={handleOnSubmit}
-              >
-                Buscar turnos
-                <ArrowRight className="w-[18px] h-[18px]" />
-              </button>
+              <div className="pt-2">
+                <button
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold h-14 rounded-2xl text-[15px] flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer group"
+                  onClick={handleOnSubmit}
+                >
+                  Confirmar y Buscar
+                  <ArrowRight className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </CardContent>
           </Card>
         </form>

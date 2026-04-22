@@ -5,7 +5,8 @@ import {
   Settings,
   Users,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  CalendarSearch,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@context/AuthContext";
@@ -25,7 +26,7 @@ const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/personal", icon: Users, label: "Personal" },
   { to: "/services", icon: Briefcase, label: "Servicios" },
-  { to: "/grilla-turnos", icon: Calendar, label: "Turnos" },
+  { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
   { to: "/empresa", icon: Briefcase, label: "Empresa" },
   { to: "/estadisticas", icon: BarChart3, label: "Estadísticas" },
   { to: "/configuracion", icon: Settings, label: "Configuración" },
@@ -66,8 +67,8 @@ export default function AppSidebar() {
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton
                       className={`h-11 rounded-lg transition-all duration-200 ${isActive
-                          ? "bg-sky-50 text-sky-700 font-semibold shadow-sm"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-sky-50 text-sky-700 font-semibold shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                         }`}
                       asChild
                       tooltip={item.label}
@@ -86,13 +87,24 @@ export default function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t border-sky-50 pb-6">
-        <SidebarMenu>
+        <SidebarMenu className="gap-1">
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="h-11 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors w-full flex items-center gap-3 px-3"
+              className="h-11 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors w-full flex items-center gap-3 px-3"
+              asChild
+            >
+              <Link to="/">
+                <CalendarSearch className="w-5 h-5 text-slate-400" />
+                <span className="font-medium">Sacar un turno</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              className="h-11 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors w-full flex items-center gap-3 px-3"
               onClick={handleLogout}
             >
-              <LogOut className="w-5 h-5 text-red-500" />
+              <LogOut className="w-5 h-5 text-red-400" />
               <span className="font-medium">Cerrar Sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

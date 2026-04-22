@@ -29,20 +29,20 @@ export const BusinessForm = ({
   const { categories } = useHandleBusinessForm();
   const [errors, setErrors] = useState({
     name: false,
-    phone_number: false,
+    phoneNumber: false,
     categoryId: false,
   });
 
   const handleScroll = () => {
     const newErrors = {
       name: registerData.name.trim() === "",
-      phone_number: registerData.phone_number.trim() === "",
+      phoneNumber: registerData.phoneNumber.trim() === "",
       categoryId: registerData.categoryId.trim() === "",
     };
 
     setErrors(newErrors);
 
-    if (newErrors.categoryId || newErrors.name || newErrors.phone_number)
+    if (newErrors.categoryId || newErrors.name || newErrors.phoneNumber)
       return;
 
     onContinue();
@@ -69,9 +69,8 @@ export const BusinessForm = ({
                   setErrors({ ...errors, name: false });
                   setRegisterData({ ...registerData, name: e.target.value });
                 }}
-                className={`mt-1 border rounded-md ${
-                  errors.name ? "border-red-500" : "border-gray-200"
-                }`}
+                className={`mt-1 border rounded-md ${errors.name ? "border-red-500" : "border-gray-200"
+                  }`}
                 id="nombre"
                 placeholder="Ej: Peluquería Estilo"
               />
@@ -87,21 +86,20 @@ export const BusinessForm = ({
                   Número de contacto
                 </Label>
                 <Input
-                  value={registerData.phone_number}
+                  value={registerData.phoneNumber}
                   onChange={(e) => {
-                    setErrors({ ...errors, phone_number: false });
+                    setErrors({ ...errors, phoneNumber: false });
                     setRegisterData({
                       ...registerData,
-                      phone_number: e.target.value,
+                      phoneNumber: e.target.value,
                     });
                   }}
                   id="phone"
                   placeholder="Ej: 2634253243"
-                  className={`mt-1 border rounded-md ${
-                    errors.phone_number ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`mt-1 border rounded-md ${errors.phoneNumber ? "border-red-500" : "border-gray-200"
+                    }`}
                 />
-                {errors.phone_number && (
+                {errors.phoneNumber && (
                   <p className="text-sm text-red-500">
                     El numero de contacto es obligatorio.
                   </p>
@@ -113,6 +111,7 @@ export const BusinessForm = ({
                   Categoría
                 </Label>
                 <Select
+                  value={registerData.categoryId || undefined}
                   onValueChange={(value) => {
                     setErrors({ ...errors, categoryId: false });
                     setRegisterData({
@@ -122,9 +121,8 @@ export const BusinessForm = ({
                   }}
                 >
                   <SelectTrigger
-                    className={`mt-1 border rounded-md w-full ${
-                      errors.categoryId ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`mt-1 border rounded-md w-full ${errors.categoryId ? "border-red-500" : "border-gray-200"
+                      }`}
                   >
                     <SelectValue placeholder="Seleccionar categoría" />
                   </SelectTrigger>

@@ -10,7 +10,7 @@ import FechaHoraHeader from "@components/Header/FechaHoraHeader";
 import { Button } from "@ui/button";
 import { Textarea } from "@ui/textarea";
 import { createService, updateService } from "@api/getServices";
-import { getEmployeesByUserId } from "@api/getEmployees";
+import { getEmployeesByBusinessId } from "@api/getEmployees";
 import { IEmployeeResponse } from "@interfaces/IEmployee";
 import { EmployeeRol } from "@enum/EmployeeRol";
 
@@ -40,6 +40,14 @@ function cleanUpdatePayload(form: IService): Partial<IService> {
     cleaned.price = parsedPrice;
   }
 
+  if (form.category !== undefined && form.category.trim() !== "") {
+    cleaned.category = form.category;
+  }
+
+  if (form.isActive !== undefined) {
+    cleaned.isActive = form.isActive;
+  }
+
   return cleaned;
 }
 
@@ -49,6 +57,8 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
     duration: 0,
     description: "",
     price: 0,
+    category: "",
+    isActive: true,
   };
 
   const [form, setForm] = useState<IService>(empty);
@@ -69,13 +79,13 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
       }
     };
     fetchEmployees();
-  }, [userId]);
+  }, [businessId]);
 
   useEffect(() => {
     if (service) {
       setForm(service);
-      if (service.employee) {
-        setSelectedEmployees(service.employee.map((e) => e.id));
+      if (service.employeeIds) {
+        setSelectedEmployees(service.employeeIds.map(String));
       }
     }
   }, [service]);
@@ -101,11 +111,10 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
     try {
       if (service && service.id) {
         const cleanedData = cleanUpdatePayload(form);
-        if (Object.keys(cleanedData).length === 0) {
-          toast.warning("No hay cambios para actualizar.");
-          return;
-        }
-        await updateService(Number(service.id), cleanedData);
+        await updateService(Number(service.id), {
+          ...cleanedData,
+          employeeIds: selectedEmployees.map(Number),
+        });
         toast.success("Servicio actualizado correctamente");
         onServiceCreated();
         onClose();
@@ -153,7 +162,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label
                   htmlFor="duration"
@@ -192,7 +201,38 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Categoría
+                </label>
+                <input
+                  name="category"
+                  type="text"
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Ej: Cortes"
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className="flex items-center space-x-3 cursor-pointer py-2">
+                  <input
+                    type="checkbox"
+                    checked={form.isActive}
+                    onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+                    className="w-5 h-5 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Servicio Activo (Disponible para reservar)</span>
+                </label>
+              </div>
+
+              <div className="md:col-span-3">
                 <label
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -255,7 +295,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4 border-t sticky bottom-0 bg-white">
+        <div className="flex justify-end space-x-3 pt-4 border-t mt-4">
           <button
             type="button"
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"

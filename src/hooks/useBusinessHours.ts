@@ -3,11 +3,12 @@ import api from "@api/axiosInstance";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 
 export interface IBusinessHoursResponse {
-    dayOfWeek: string;
-    openingMorningTime: string;
-    closingMorningTime: string;
-    openingEveningTime: string | null;
-    closingEveningTime: string | null;
+    dayOfWeek: number;
+    isWorkingDay: boolean;
+    morningStart: string | null;
+    morningEnd: string | null;
+    afternoonStart: string | null;
+    afternoonEnd: string | null;
 }
 
 export const useBusinessHours = (businessId?: number | null) => {
@@ -22,7 +23,7 @@ export const useBusinessHours = (businessId?: number | null) => {
         setError(null);
         try {
             const response = await api.get(
-                `${import.meta.env.VITE_API_URL}/business/${businessId}/hours`
+                `/business/${businessId}/hours`
             );
             const data: IBusinessHoursResponse[] = response.data;
             setBusinessHours(data);
@@ -42,17 +43,18 @@ export const useBusinessHours = (businessId?: number | null) => {
         setError(null);
         try {
             const payload = hours
-                .filter((h) => h.active)
+                .filter((h) => h.isWorkingDay)
                 .map((h) => ({
-                    dayOfWeek: h.day_of_week.toUpperCase(),
-                    openingMorningTime: h.opening_morning_time,
-                    closingMorningTime: h.closing_morning_time,
-                    openingEveningTime: h.opening_evening_time || null,
-                    closingEveningTime: h.closing_evening_time || null,
+                    dayOfWeek: h.dayOfWeek,
+                    isWorkingDay: h.isWorkingDay,
+                    morningStart: h.morningStart,
+                    morningEnd: h.morningEnd,
+                    afternoonStart: h.afternoonStart || null,
+                    afternoonEnd: h.afternoonEnd || null,
                 }));
 
             const response = await api.post(
-                `${import.meta.env.VITE_API_URL}/business/${businessId}/hours`,
+                `/business/${businessId}/hours`,
                 payload
             );
             setBusinessHours(response.data);

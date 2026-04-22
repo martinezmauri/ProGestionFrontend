@@ -22,7 +22,7 @@ export interface IGrid {
   }[];
   address: {
     id: number;
-    street_number: number;
+    streetNumber: string;
     province: string;
     country: string;
     street: string;
@@ -61,7 +61,7 @@ const useLoadDataGrid = () => {
       ],
       address: {
         id: 1,
-        street_number: 22,
+        streetNumber: "22",
         province: "Mendoza",
         country: "Argentina",
         street: "San Juan 2000",

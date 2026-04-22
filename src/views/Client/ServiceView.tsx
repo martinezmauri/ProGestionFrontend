@@ -16,10 +16,9 @@ export const ServiceView = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
   const [selectedService, setSelectedService] = useState<IService | null>(null);
-  const { session } = useAuth();
+  const { session, userProfile } = useAuth();
   const isAuthenticated = !!session;
-  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
-  const businessId: string | null = null;
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
 
   const loadServices = async () => {
     if (!businessId) return;
@@ -34,6 +33,10 @@ export const ServiceView = () => {
       loadServices();
     }
   }, [isAuthenticated]);
+
+  if (!businessId) {
+    return <div>Cargando datos del negocio...</div>;
+  }
 
   return (
     <div className="flex flex-col flex-1 w-full animate-in fade-in duration-500">

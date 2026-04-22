@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { IService } from "../../interfaces/IService";
+import { IService, IServiceCreate } from "../../interfaces/IService";
 import { Dashboard } from "../Sidebar/Dashboard";
 import { useAuth } from "@context/AuthContext";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ import { createService, updateService } from "@api/getServices";
 import { getEmployeesByUserId } from "@api/getEmployees";
 import { IEmployeeResponse } from "@interfaces/IEmployee";
 import { EmployeeRol } from "@enum/EmployeeRol";
-import { MOCK_EMPLOYEES } from "../../mocks/mockData";
 
 interface Props {
   onServiceCreated: () => void;
@@ -21,7 +20,7 @@ interface Props {
   service?: IService | null;
 }
 
-function safeString(val: any): string {
+function safeString(val: string | number | null | undefined): string {
   return val == null ? "" : String(val);
 }
 
@@ -56,25 +55,17 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
   const [employees, setEmployees] = useState<IEmployeeResponse[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const { userProfile } = useAuth();
-  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
-  const businessId: string | null = null;
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
   const userId = userProfile?.id ?? null;
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      if (userId || import.meta.env.DEV) {
-        try {
-          const data = await getEmployeesByUserId(Number(userId || 0));
-          if (data && data.length > 0) {
-            setEmployees(data);
-          } else if (import.meta.env.DEV) {
-            setEmployees(MOCK_EMPLOYEES);
-          } else {
-            setEmployees([]);
-          }
-        } catch (error) {
-          if (import.meta.env.DEV) setEmployees(MOCK_EMPLOYEES);
-        }
+      if (!userId) return;
+      try {
+        const data = await getEmployeesByUserId(userId);
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setEmployees([]);
       }
     };
     fetchEmployees();
@@ -102,10 +93,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
       });
     }
 
-    const effectiveBusinessId =
-      businessId || (import.meta.env.DEV ? "dev-biz" : null);
-
-    if (!effectiveBusinessId) {
+    if (!businessId) {
       toast.error("No se pudo identificar el negocio del usuario.");
       return;
     }
@@ -122,11 +110,12 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
         onServiceCreated();
         onClose();
       } else {
-        await createService({
+        const payload: IServiceCreate = {
           ...form,
-          businessId: String(effectiveBusinessId),
+          businessId,
           employeeIds: selectedEmployees.map(Number),
-        } as any);
+        };
+        await createService(payload);
         toast.success("Servicio creado correctamente");
         onServiceCreated();
         onClose();

@@ -29,7 +29,6 @@ export const RegistersBusiness = () => {
     city: "",
   });
   const { userProfile } = useAuth();
-  // TODO(SMS-28): userId maps to userProfile?.id — stored as number, cast to string for DTO
   const userId = userProfile?.id != null ? String(userProfile.id) : null;
   const { registerBusiness, loading, error } = useRegistrationBusiness();
 

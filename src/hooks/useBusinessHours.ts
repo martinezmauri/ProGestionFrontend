@@ -10,7 +10,7 @@ export interface IBusinessHoursResponse {
     closingEveningTime: string | null;
 }
 
-export const useBusinessHours = (businessId?: string | null) => {
+export const useBusinessHours = (businessId?: number | null) => {
     const [businessHours, setBusinessHours] = useState<IBusinessHoursResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

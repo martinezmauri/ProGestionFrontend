@@ -13,7 +13,6 @@ import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import { getMySubscription, ISubscription } from "@api/getSubscription";
 import { EmployeeRol } from "@enum/EmployeeRol";
-import { MOCK_EMPLOYEES, MOCK_SERVICES } from "../../mocks/mockData";
 import AppSidebar from "@components/Sidebar/AppSidebar";
 
 const TIER_LIMITS = {
@@ -31,49 +30,30 @@ export const Personal = () => {
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
     null,
   );
-  const { session } = useAuth();
+  const { session, userProfile } = useAuth();
   const isAuthenticated = !!session;
-  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
-  const businessId: string | null = null;
+  const businessId: number | null = userProfile?.businessId ?? null;
 
   const loadEmployees = async () => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId) return;
+    if (!businessId) return;
     setLoading(true);
     try {
-      const data = await getEmployeesByBusinessId(Number(bId));
-      // Check if data is a valid array and not an HTML string or null
-      if (Array.isArray(data) && data.length > 0) {
-        setEmpleados(data);
-      } else if (import.meta.env.DEV) {
-        setEmpleados(MOCK_EMPLOYEES);
-      } else {
-        setEmpleados([]);
-      }
+      const data = await getEmployeesByBusinessId(businessId);
+      setEmpleados(Array.isArray(data) ? data : []);
     } catch (error) {
-      if (import.meta.env.DEV) setEmpleados(MOCK_EMPLOYEES);
-      else setEmpleados([]);
+      setEmpleados([]);
     }
     setLoading(false);
   };
 
   const loadServices = async () => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId) return;
+    if (!businessId) return;
     setLoading(true);
     try {
-      const data = await getServiceByBusinessId(Number(bId));
-      // Check if data is a valid array and not an HTML string or null
-      if (Array.isArray(data) && data.length > 0) {
-        setServices(data);
-      } else if (import.meta.env.DEV) {
-        setServices(MOCK_SERVICES);
-      } else {
-        setServices([]);
-      }
+      const data = await getServiceByBusinessId(businessId);
+      setServices(Array.isArray(data) ? data : []);
     } catch (error) {
-      if (import.meta.env.DEV) setServices(MOCK_SERVICES);
-      else setServices([]);
+      setServices([]);
     }
     setLoading(false);
   };
@@ -109,7 +89,7 @@ export const Personal = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated || import.meta.env.DEV) {
+    if (isAuthenticated) {
       loadEmployees();
       loadServices();
       loadSubscription();

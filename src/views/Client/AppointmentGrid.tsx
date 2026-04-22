@@ -18,7 +18,7 @@ import {
   User,
   CalendarDays,
 } from "lucide-react";
-import { MOCK_SERVICES, MOCK_GRID_DATA } from "../../mocks/mockData";
+import { MOCK_GRID_DATA } from "../../mocks/mockData";
 import {
   TimeColumn,
   ResourceHeader,
@@ -44,9 +44,8 @@ import { FooterSimple } from "@components/Footer/FooterSimple";
 export const AppointmentGrid = () => {
   const { session, userProfile } = useAuth();
   const isAuthenticated = !!session;
-  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
-  const businessId: string | null = null;
-  const authUserId = userProfile?.id ?? null;
+  const businessId: number | null = userProfile?.businessId ?? null;
+  const authUserId: number | null = userProfile?.id ?? null;
   const [services, setServices] = useState<IService[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
@@ -87,30 +86,16 @@ export const AppointmentGrid = () => {
 
   useEffect(() => {
     const fetchServices = async () => {
-      const bId = businessId || (import.meta.env.DEV ? "1" : null);
-      if (bId && isAuthenticated && (hasHours || import.meta.env.DEV)) {
-        try {
-          const data = await getServiceByBusinessId(Number(bId));
-          const safeData = Array.isArray(data) ? data : [];
-
-          let servicesToUse = safeData;
-          if (safeData.length === 0 && import.meta.env.DEV) {
-            servicesToUse = MOCK_SERVICES;
-          }
-
-          setServices(servicesToUse);
-
-          if (servicesToUse.length > 0 && !selectedServiceId) {
-            setSelectedServiceId(Number(servicesToUse[0].id));
-          }
-        } catch (err) {
-          console.error("Error fetching services:", err);
-          if (import.meta.env.DEV) {
-            setServices(MOCK_SERVICES);
-            if (!selectedServiceId)
-              setSelectedServiceId(Number(MOCK_SERVICES[0].id));
-          }
+      if (!businessId || !isAuthenticated || !hasHours) return;
+      try {
+        const data = await getServiceByBusinessId(businessId);
+        const safeData = Array.isArray(data) ? data : [];
+        setServices(safeData);
+        if (safeData.length > 0 && !selectedServiceId) {
+          setSelectedServiceId(Number(safeData[0].id));
         }
+      } catch (err) {
+        console.error("Error fetching services:", err);
       }
     };
     fetchServices();
@@ -131,10 +116,7 @@ export const AppointmentGrid = () => {
   const handleGoToToday = () => setSelectedDate(new Date());
 
   const handleCellClick = async (employeeId: number, startTime: string) => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId || !isAuthenticated || !selectedServiceId) {
-      if (import.meta.env.DEV)
-        toast.info("Modo desarrollo: Clic en celda " + startTime);
+    if (!businessId || !isAuthenticated || !selectedServiceId || !authUserId) {
       return;
     }
 
@@ -149,14 +131,13 @@ export const AppointmentGrid = () => {
     );
 
     try {
-      const userId = authUserId || (import.meta.env.DEV ? "1" : "");
       await createAppointment({
         date: appointmentDate.toISOString(),
         status: "PENDING",
-        businessId: Number(bId),
+        businessId,
         employeeId,
         serviceId: selectedServiceId,
-        userId: Number(userId),
+        userId: authUserId,
       });
       toast.success("Turno creado exitosamente");
       refreshGrid();

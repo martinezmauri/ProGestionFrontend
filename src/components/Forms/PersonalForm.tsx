@@ -18,7 +18,7 @@ interface Props {
 }
 
 // Ayuda para convertir null/undefined a ""
-function safeString(val: any): string {
+function safeString(val: string | number | null | undefined): string {
   return val == null ? "" : String(val);
 }
 
@@ -70,8 +70,7 @@ export const PersonalForm = ({
   const [form, setForm] = useState<IEmployee>(empty);
   const roles = Object.values(EmployeeRol);
   const { userProfile } = useAuth();
-  // TODO(SMS-28): businessId not yet in userProfile — placeholder null until /auth/sync returns it
-  const businessId: string | null = null;
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
   const navigate = useNavigate();
 
   useEffect(() => {

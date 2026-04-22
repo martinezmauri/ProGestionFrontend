@@ -1,6 +1,6 @@
 import "./App.css";
 import { ClientLanding } from "@views/Client/Landing";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { UserLanding } from "@views/User/UserLanding";
 import { Plans } from "@views/Client/Plans";
 import { About } from "@views/Client/About";
@@ -26,8 +26,7 @@ import { GetBusinessPlanView } from "@views/User/GetBusinessPlanView";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         <Route path="/para-negocios" element={<ClientLanding />} />
         <Route path="/" element={<UserLanding />} />
         <Route path="/plans" element={<Plans />} />
@@ -62,7 +61,6 @@ function App() {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
   );
 }
 

@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
 
 export const BusinessSettings = () => {
-    const { businessId, isAuthenticated } = useAuth();
+    const { session, userProfile } = useAuth();
+    const isAuthenticated = !!session;
+    const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -102,6 +104,10 @@ export const BusinessSettings = () => {
             setSaving(false);
         }
     };
+
+    if (!businessId) {
+        return <div>Cargando datos del negocio...</div>;
+    }
 
     if (loading) {
         return (

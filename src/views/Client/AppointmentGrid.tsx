@@ -6,25 +6,24 @@ import {
   RefreshCw,
   Calendar,
 } from "lucide-react";
-import { format, startOfWeek, endOfWeek } from "date-fns";
-import { es } from "date-fns/locale";
-import { Button } from "@ui/button";
-import { toast } from "sonner";
-import { cn } from "@lib/utils";
-
-import { useAuth } from "@context/AuthContext";
-import { useWeeklyGrid } from "@hooks/useWeeklyGrid";
-import { useBusinessHours } from "@hooks/useBusinessHours";
-
-import { WeeklyGrid } from "./components/WeeklyGrid";
-import { PendingPanel } from "./components/PendingPanel";
-import { AppointmentModal, type ModalMode } from "./components/AppointmentModal";
-
-import { getServiceByBusinessId } from "@api/getServices";
-import type { IService } from "@interfaces/IService";
-import type { IAppointment } from "@interfaces/IAppointment";
-import { MOCK_SERVICES, MOCK_BUSINESS_HOURS_CONFIG } from "../../mocks/mockData";
-
+import { MOCK_GRID_DATA } from "../../mocks/mockData";
+import {
+  TimeColumn,
+  ResourceHeader,
+  AppointmentBlock,
+  GridCell,
+  CurrentTimeIndicator,
+} from "./components/GridComponents";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
+import { Input } from "@ui/input";
+import { Label } from "@ui/label";
+import { Card, CardContent, CardHeader } from "@ui/card";
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
 import { AppHeader } from "@components/Header/AppHeader";
 import { FooterSimple } from "@components/Footer/FooterSimple";
@@ -33,7 +32,24 @@ import { IWorkSchedule } from "@interfaces/IWorkSchedule";
 import { CalendarDays } from "lucide-react";
 
 export const AppointmentGrid = () => {
-  const { businessId, isAuthenticated, userId: authUserId } = useAuth();
+  const { session, userProfile } = useAuth();
+  const isAuthenticated = !!session;
+  const businessId: number | null = userProfile?.businessId ?? null;
+  const authUserId: number | null = userProfile?.id ?? null;
+  const [services, setServices] = useState<IService[]>([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
+
+  const {
+    gridData: hookGridData,
+    loading,
+    error,
+    selectedDate,
+    setSelectedDate,
+    selectedServiceId,
+    setSelectedServiceId,
+    refreshGrid,
+  } = useAppointmentGrid();
 
   // Business hours check (first-time setup)
   const {
@@ -58,14 +74,16 @@ export const AppointmentGrid = () => {
   const [services, setServices] = useState<IService[]>([]);
   useEffect(() => {
     const fetchServices = async () => {
-      const bId = businessId || (import.meta.env.DEV ? "1" : null);
-      if (!bId) return;
+      if (!businessId || !isAuthenticated || !hasHours) return;
       try {
-        const data = await getServiceByBusinessId(String(bId));
-        const safe = Array.isArray(data) ? data : [];
-        setServices(safe.length > 0 ? safe : import.meta.env.DEV ? MOCK_SERVICES : []);
-      } catch {
-        if (import.meta.env.DEV) setServices(MOCK_SERVICES);
+        const data = await getServiceByBusinessId(businessId);
+        const safeData = Array.isArray(data) ? data : [];
+        setServices(safeData);
+        if (safeData.length > 0 && !selectedServiceId) {
+          setSelectedServiceId(Number(safeData[0].id));
+        }
+      } catch (err) {
+        console.error("Error fetching services:", err);
       }
     };
     if (isAuthenticated && (hasHours || import.meta.env.DEV)) {
@@ -134,38 +152,9 @@ export const AppointmentGrid = () => {
     setModalOpen(true);
   };
 
-  const handleNewTurno = () => {
-    setModalMode("create");
-    setModalInitial({
-      date: format(new Date(), "yyyy-MM-dd"),
-    });
-    setModalOpen(true);
-  };
-
-  const handleSave = async (data: {
-    appointmentDate: string;
-    startTime: string;
-    employeeId: number;
-    serviceId: number;
-    clientName?: string;
-    clientEmail?: string;
-    clientPhone?: string;
-  }) => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    const uId = authUserId || (import.meta.env.DEV ? "1" : null);
-    if (!bId) {
-      toast.error("No se pudo identificar el negocio.");
-      return false;
-    }
-    const success = await grid.handleCreate({
-      ...data,
-      businessId: Number(bId),
-      userId: uId ? Number(uId) : undefined, // Opcional para admin
-    } as any);
-    if (success) {
-      toast.success("Turno creado exitosamente");
-    } else {
-      toast.error("Error al crear el turno");
+  const handleCellClick = async (employeeId: number, startTime: string) => {
+    if (!businessId || !isAuthenticated || !selectedServiceId || !authUserId) {
+      return;
     }
     return success;
   };
@@ -198,19 +187,18 @@ export const AppointmentGrid = () => {
 
   const handleApprove = async (id: number) => {
     try {
-      await grid.handleApprove(id);
-      toast.success("Turno aprobado ✓");
-    } catch {
-      toast.error("Error al aprobar el turno");
-    }
-  };
-
-  const handleReject = async (id: number) => {
-    try {
-      await grid.handleReject(id);
-      toast.success("Turno rechazado");
-    } catch {
-      toast.error("Error al rechazar el turno");
+      await createAppointment({
+        date: appointmentDate.toISOString(),
+        status: "PENDING",
+        businessId,
+        employeeId,
+        serviceId: selectedServiceId,
+        userId: authUserId,
+      });
+      toast.success("Turno creado exitosamente");
+      refreshGrid();
+    } catch (err) {
+      toast.error("Error al crear el turno");
     }
   };
 

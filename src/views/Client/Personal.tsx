@@ -31,18 +31,16 @@ export const Personal = () => {
   const [selectedPersonal, setSelectedPersonal] = useState<IEmployee | null>(
     null,
   );
-  const { businessId, isAuthenticated } = useAuth();
+  const { session, userProfile } = useAuth();
+  const isAuthenticated = !!session;
+  const businessId: number | null = userProfile?.businessId ?? null;
 
   const loadEmployees = async () => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId) return;
+    if (!businessId) return;
+    setLoading(true);
     try {
-      const data = await getEmployeesByBusinessId(bId);
-      if (Array.isArray(data) && data.length > 0) {
-        setEmpleados(data);
-      } else {
-        setEmpleados([]);
-      }
+      const data = await getEmployeesByBusinessId(businessId);
+      setEmpleados(Array.isArray(data) ? data : []);
     } catch (error) {
       setEmpleados([]);
     }
@@ -50,15 +48,11 @@ export const Personal = () => {
   };
 
   const loadServices = async () => {
-    const bId = businessId || (import.meta.env.DEV ? "1" : null);
-    if (!bId) return;
+    if (!businessId) return;
+    setLoading(true);
     try {
-      const data = await getServiceByBusinessId(bId);
-      if (Array.isArray(data) && data.length > 0) {
-        setServices(data);
-      } else {
-        setServices([]);
-      }
+      const data = await getServiceByBusinessId(businessId);
+      setServices(Array.isArray(data) ? data : []);
     } catch (error) {
       setServices([]);
     }
@@ -95,7 +89,7 @@ export const Personal = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated || import.meta.env.DEV) {
+    if (isAuthenticated) {
       loadEmployees();
       loadServices();
       loadSubscription();

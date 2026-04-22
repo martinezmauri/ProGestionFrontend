@@ -10,6 +10,10 @@ export interface IService {
   businessId?: string;
 }
 
+export interface IServiceCreate extends IService {
+  employeeIds?: number[];
+}
+
 export interface IServiceUpdate {
   name?: string;
   duration?: number;

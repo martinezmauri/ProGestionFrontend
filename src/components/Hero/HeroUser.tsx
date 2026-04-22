@@ -48,7 +48,8 @@ const steps = [
 ];
 
 export const HeroUser = ({ formRef }: Props) => {
-  const { isAuthenticated } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
   const [searchBusiness, setSearchBusiness] = useState({
     nameEstablishment: "",
     location: "",
@@ -98,7 +99,7 @@ export const HeroUser = ({ formRef }: Props) => {
 
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/business/search`,
+        `${import.meta.env.VITE_API_URL}/api/v1/business/search`,
         {
           params: {
             name: searchBusiness.nameEstablishment,

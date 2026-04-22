@@ -12,7 +12,9 @@ import { updateUser, UpdateUserPayload } from "@api/updateUser";
 import api from "@api/axiosInstance";
 
 export const UserSettings = () => {
-    const { userInfo, userId } = useAuth();
+    const { userProfile } = useAuth();
+    const userInfo = userProfile;
+    const userId = userProfile?.id ?? null;
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(true);
 

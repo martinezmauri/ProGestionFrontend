@@ -17,8 +17,9 @@ export const ServiceView = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
   const [selectedService, setSelectedService] = useState<IService | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const { businessId, isAuthenticated } = useAuth();
+  const { session, userProfile } = useAuth();
+  const isAuthenticated = !!session;
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
 
   const loadServices = async () => {
     if (!businessId) return;
@@ -54,14 +55,9 @@ export const ServiceView = () => {
     }
   }, [isAuthenticated]);
 
-  const filteredServices = services.filter((s) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      s.name.toLowerCase().includes(term) ||
-      (s.category && s.category.toLowerCase().includes(term))
-    );
-  });
+  if (!businessId) {
+    return <div>Cargando datos del negocio...</div>;
+  }
 
   return (
     <div className="flex flex-col flex-1 w-full animate-in fade-in duration-500">

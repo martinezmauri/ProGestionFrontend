@@ -15,19 +15,16 @@ export const useRegistrationBusiness = () => {
         description: newBusinessData.description,
         phoneNumber: newBusinessData.phoneNumber,
         logo: newBusinessData.logo,
-        category: { id: newBusinessData.categoryId },
+        category: { id: Number(newBusinessData.categoryId) },
         address: {
           street: newBusinessData.address.street,
-          streetNumber: newBusinessData.address.streetNumber,
+          streetNumber: String(newBusinessData.address.street_number),
           city: newBusinessData.address.city,
           province: newBusinessData.address.province,
           country: newBusinessData.address.country
         }
       };
-      const response = await api.post(
-        `/business/save`,
-        payload
-      );
+      const response = await api.post("/api/v1/business/save", payload);
       console.log(response);
 
       return response;

@@ -18,7 +18,7 @@ interface Props {
 }
 
 // Ayuda para convertir null/undefined a ""
-function safeString(val: any): string {
+function safeString(val: string | number | null | undefined): string {
   return val == null ? "" : String(val);
 }
 
@@ -69,7 +69,8 @@ export const PersonalForm = ({
 
   const [form, setForm] = useState<IEmployee>(empty);
   const roles = Object.values(EmployeeRol);
-  const { businessId } = useAuth();
+  const { userProfile } = useAuth();
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
   const navigate = useNavigate();
 
   useEffect(() => {

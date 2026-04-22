@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { IService } from "../../interfaces/IService";
+import { IService, IServiceCreate } from "../../interfaces/IService";
 import { Dashboard } from "../Sidebar/Dashboard";
 import { useAuth } from "@context/AuthContext";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ interface Props {
   service?: IService | null;
 }
 
-function safeString(val: any): string {
+function safeString(val: string | number | null | undefined): string {
   return val == null ? "" : String(val);
 }
 
@@ -64,23 +64,18 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
   const [form, setForm] = useState<IService>(empty);
   const [employees, setEmployees] = useState<IEmployeeResponse[]>([]);
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
-  const { businessId, userId } = useAuth();
+  const { userProfile } = useAuth();
+  const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;
+  const userId = userProfile?.id ?? null;
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      const effectiveBusinessId = businessId || (import.meta.env.DEV ? "dev-biz" : null);
-      if (effectiveBusinessId) {
-        try {
-          const data = await getEmployeesByBusinessId(String(effectiveBusinessId));
-          if (data && data.length > 0) {
-            setEmployees(data);
-          } else {
-            setEmployees([]);
-          }
-        } catch (error) {
-          setEmployees([]);
-          console.error("Error fetching employees:", error);
-        }
+      if (!userId) return;
+      try {
+        const data = await getEmployeesByUserId(userId);
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (error) {
+        setEmployees([]);
       }
     };
     fetchEmployees();
@@ -108,10 +103,7 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
       });
     }
 
-    const effectiveBusinessId =
-      businessId || (import.meta.env.DEV ? "dev-biz" : null);
-
-    if (!effectiveBusinessId) {
+    if (!businessId) {
       toast.error("No se pudo identificar el negocio del usuario.");
       return;
     }
@@ -127,11 +119,12 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
         onServiceCreated();
         onClose();
       } else {
-        await createService({
+        const payload: IServiceCreate = {
           ...form,
-          businessId: String(effectiveBusinessId),
+          businessId,
           employeeIds: selectedEmployees.map(Number),
-        } as any);
+        };
+        await createService(payload);
         toast.success("Servicio creado correctamente");
         onServiceCreated();
         onClose();

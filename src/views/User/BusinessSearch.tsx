@@ -42,7 +42,7 @@ export const BusinessSearch = () => {
     const fetchData = async () => {
       try {
         const response = await api.get(
-          `${import.meta.env.VITE_API_URL}/business/search`,
+          `/api/v1/business/search`,
           {
             params: {
               name: searchBusiness.nameEstablishment,

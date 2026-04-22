@@ -1,5 +1,5 @@
 import api from "./axiosInstance";
-import { IService, IServiceUpdate } from "../interfaces/IService";
+import { IService, IServiceCreate, IServiceUpdate } from "../interfaces/IService";
 
 export const getService = async (): Promise<IService[]> => {
   try {
@@ -50,7 +50,7 @@ export const getServiceByBusinessId = async (
   }
 };
 
-export const createService = async (service: IService) => {
+export const createService = async (service: IServiceCreate) => {
   try {
     const response = await api.post(
       `/service/save`,

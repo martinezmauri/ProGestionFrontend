@@ -5,9 +5,9 @@ import StepIndicator from "@components/StepIndicator/StepIndicator";
 import { useAuth } from "@context/AuthContext";
 
 export const OnboardingLayout = () => {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
+  const { session } = useAuth();
+
+  if (!session) {
     return <Navigate to="/" replace />;
   }
 

@@ -35,10 +35,10 @@ const navItems = [
 export default function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
 
   const handleLogout = () => {
-    logout();
+    signOut();
     navigate("/");
   };
 

@@ -9,9 +9,13 @@ export interface BusinessHoliday {
     endTime?: string;
 }
 
-export const getHolidays = async (businessId: number) => {
-    const response = await axiosInstance.get(`/business/${businessId}/config/holidays`);
-    return response.data as BusinessHoliday[];
+export const getHolidays = async (businessId: number): Promise<BusinessHoliday[]> => {
+    try {
+        const response = await axiosInstance.get(`/business/${businessId}/config/holidays`);
+        return response.data as BusinessHoliday[];
+    } catch {
+        return [];
+    }
 };
 
 export const addHoliday = async (businessId: number, holiday: BusinessHoliday) => {
@@ -24,11 +28,19 @@ export const deleteHoliday = async (businessId: number, holidayId: number) => {
 };
 
 export const updateSlotDuration = async (businessId: number, slotDuration: number) => {
-    const response = await axiosInstance.patch(`/business/${businessId}/config/slot-duration`, { slotDuration });
-    return response.data;
+    try {
+        const response = await axiosInstance.patch(`/business/${businessId}/config/slot-duration`, { slotDuration });
+        return response.data;
+    } catch {
+        return null;
+    }
 };
 
 export const checkAvailabilitySync = async (businessId: number) => {
-    const response = await axiosInstance.get(`/business/${businessId}/config/availability-check`);
-    return response.data as { status: string; message: string };
+    try {
+        const response = await axiosInstance.get(`/business/${businessId}/config/availability-check`);
+        return response.data as { status: string; message: string };
+    } catch {
+        return null;
+    }
 };

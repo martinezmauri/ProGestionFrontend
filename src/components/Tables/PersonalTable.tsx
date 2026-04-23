@@ -18,7 +18,60 @@ import {
 } from "@ui/table";
 import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+const DAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+const AVATAR_COLORS = [
+  "bg-orange-400", "bg-sky-500", "bg-emerald-500",
+  "bg-violet-500", "bg-rose-400", "bg-amber-500", "bg-teal-500",
+];
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.substring(0, 2).toUpperCase();
+}
+
+function getAvatarColor(name: string): string {
+  const idx = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[idx];
+}
+
+function formatTime(t: string | null): string {
+  if (!t) return "";
+  return t.substring(0, 5);
+}
+
+function isNowInRange(start: string | null, end: string | null): boolean {
+  if (!start || !end) return false;
+  const now = new Date();
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  return nowMins >= sh * 60 + sm && nowMins < eh * 60 + em;
+}
+
+function getTodayInfo(hours: IWorkSchedule[]) {
+  const today = new Date().getDay();
+  const schedule = hours.find((h) => h.dayOfWeek === today) ?? null;
+  if (!schedule || !schedule.isWorkingDay) return { status: "libre" as const, label: DAYS[today], blocks: null };
+
+  const inMorning = isNowInRange(schedule.morningStart, schedule.morningEnd);
+  const inAfternoon = isNowInRange(schedule.afternoonStart, schedule.afternoonEnd);
+  const status = inMorning || inAfternoon ? "disponible" as const : "fuera" as const;
+
+  const blocks = [
+    schedule.morningStart && schedule.morningEnd
+      ? `${formatTime(schedule.morningStart)} - ${formatTime(schedule.morningEnd)}`
+      : null,
+    schedule.afternoonStart && schedule.afternoonEnd
+      ? `${formatTime(schedule.afternoonStart)} - ${formatTime(schedule.afternoonEnd)}`
+      : null,
+  ].filter(Boolean).join(" · ");
+
+  return { status, label: DAYS[today], blocks };
+}
+
 interface Props {
   employees: IEmployeeResponse[];
   loading?: boolean;
@@ -59,9 +112,12 @@ export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
     <Table className="w-full text-sm border border-border rounded-md overflow-hidden ">
       <TableHeader>
         <TableRow className="bg-muted/50 text-muted-foreground">
-          <TableHead>Empleado</TableHead>
+          <TableHead className="w-12"></TableHead>
+          <TableHead>Nombre</TableHead>
           <TableHead>Rol</TableHead>
           <TableHead>Servicios</TableHead>
+          <TableHead>Horario hoy</TableHead>
+          <TableHead>Estado</TableHead>
           <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
@@ -73,21 +129,49 @@ export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
               key={t.id || index}
               className="odd:bg-muted/40 hover:bg-muted transition-colors"
             >
-              <TableCell className="font-medium flex items-center gap-2">
-                <img
-                  src={t?.profile_picture || "/default-avatar.png"}
-                  alt="avatar"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-
-                {t.name}
+              <TableCell className="w-12 pr-0">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(t.name)}`}>
+                  {getInitials(t.name)}
+                </div>
               </TableCell>
+              <TableCell className="font-medium">{t.name}</TableCell>
               <TableCell>{t.role ?? "No tiene rol"}</TableCell>
               <TableCell>
                 {t.services && t.services.length > 0
                   ? t.services.map((s) => s.name).join(", ")
                   : "Sin servicios asignados"}
               </TableCell>
+              {(() => {
+                const { status, label, blocks } = getTodayInfo(t.employeeHours ?? []);
+                return (
+                  <>
+                    <TableCell className="text-sm text-slate-600">
+                      {status === "libre" ? (
+                        <span className="text-slate-400 italic">Día libre</span>
+                      ) : (
+                        <span>{blocks}</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {status === "disponible" && (
+                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+                          Disponible
+                        </Badge>
+                      )}
+                      {status === "fuera" && (
+                        <Badge className="bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100">
+                          Fuera de horario
+                        </Badge>
+                      )}
+                      {status === "libre" && (
+                        <Badge className="bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-100">
+                          Día libre
+                        </Badge>
+                      )}
+                    </TableCell>
+                  </>
+                );
+              })()}
               <TableCell>
                 <div className="flex gap-2">
                   {onEdit && (
@@ -112,7 +196,7 @@ export const PersonalTable = ({ employees = [], loading, onEdit }: Props) => {
 
       <TableFooter>
         <TableRow>
-          <TableCell colSpan={4}>
+          <TableCell colSpan={7}>
             <div className="flex items-center justify-between w-full">
               <span className="text-sm text-slate-500">
                 Mostrando {Math.min(startIndex + 1, safeEmployees.length)} -{" "}

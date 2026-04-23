@@ -19,7 +19,8 @@
       "@lib/*": ["./src/lib/*"],
       "@ui/*": ["./src/ui/*"],
       "@views/*": ["./src/views/*"],
-      "@context/*": ["./src/context/*"]
+      "@context/*": ["./src/context/*"],
+      "@utils/*": ["./src/utils/*"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

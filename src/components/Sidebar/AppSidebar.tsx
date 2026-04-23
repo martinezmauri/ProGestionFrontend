@@ -7,6 +7,7 @@ import {
   LogOut,
   LayoutDashboard,
   CalendarSearch,
+  Clock,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@context/AuthContext";
@@ -27,6 +28,7 @@ const navItems = [
   { to: "/personal", icon: Users, label: "Personal" },
   { to: "/services", icon: Briefcase, label: "Servicios" },
   { to: "/dashboard/agenda", icon: Calendar, label: "Agenda" },
+  { to: "/empresa/configuracion-horarios", icon: Clock, label: "Horarios" },
   { to: "/empresa", icon: Briefcase, label: "Empresa" },
   { to: "/estadisticas", icon: BarChart3, label: "Estadísticas" },
   { to: "/configuracion", icon: Settings, label: "Configuración" },

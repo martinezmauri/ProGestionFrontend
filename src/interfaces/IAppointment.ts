@@ -1,6 +1,6 @@
 export interface IAppointment {
   id: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  status: 'PENDING' | 'PENDING_CONFIRMATION' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
   appointmentDate: string; // YYYY-MM-DD
   startTime: string;       // HH:mm
   endTime: string;         // HH:mm
@@ -10,10 +10,12 @@ export interface IAppointment {
   serviceId: number;
   serviceName?: string;
   userId?: number;
+  userName?: string;
   customerName?: string;
   clientName?: string;
   clientEmail?: string;
   clientPhone?: string;
+  notes?: string;
 }
 
 export interface IBusinessDayConfig {

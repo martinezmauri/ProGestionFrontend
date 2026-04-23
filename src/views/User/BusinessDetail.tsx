@@ -28,7 +28,8 @@ import { FooterSimple } from "@components/Footer/FooterSimple";
 const BusinessDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, setBusinessId } = useAuth();
+  const { session } = useAuth();
+  const isAuthenticated = !!session;
 
   const [business, setBusiness] = useState<PropsBusiness>();
   const [showLogin, setShowLogin] = useState(false);

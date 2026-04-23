@@ -21,6 +21,7 @@ import { AppointmentGrid } from "@views/Client/AppointmentGrid";
 import { BusinessSettings } from "@views/Client/BusinessSettings";
 import { UserSettings } from "@views/Client/UserSettings";
 import { Statistics } from "@views/Client/Statistics";
+import { ScheduleConfigView } from "@views/Client/ScheduleConfigView";
 import BusinessRoute from "@components/BusinessRoute";
 import { GetBusinessPlanView } from "@views/User/GetBusinessPlanView";
 
@@ -54,6 +55,7 @@ function App() {
               <Route path="/services" element={<ServiceView />} />
               <Route path="/dashboard/agenda" element={<AppointmentGrid />} />
               <Route path="/empresa" element={<BusinessSettings />} />
+              <Route path="/empresa/configuracion-horarios" element={<ScheduleConfigView />} />
               <Route path="/configuracion" element={<UserSettings />} />
               <Route path="/estadisticas" element={<Statistics />} />
             </Route>

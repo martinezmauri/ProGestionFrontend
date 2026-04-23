@@ -13,6 +13,7 @@ interface Employee {
   name: string;
   role: string;
   services: Service[];
+  workSchedules?: import("../interfaces/IWorkSchedule").IWorkSchedule[];
 }
 interface BusinessHours {
   id: string;
@@ -38,6 +39,7 @@ export interface PropsBusiness {
   category: ICategory;
   employees: Employee[];
   businessHours: BusinessHours[];
+  slotDuration?: number;
 }
 
 const getBusiness = async (): Promise<PropsBusiness[]> => {

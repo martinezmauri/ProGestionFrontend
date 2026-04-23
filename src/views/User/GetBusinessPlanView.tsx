@@ -71,33 +71,20 @@ const plans = [
 
 export const GetBusinessPlanView = () => {
   const navigate = useNavigate();
-  const { userId, login, token } = useAuth();
+  const { session } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSelectPlan = async (tier: string) => {
     setLoading(tier);
     try {
-      const authToken =
-        token ??
-        (localStorage.getItem("auth_data")
-          ? JSON.parse(localStorage.getItem("auth_data")!).token
-          : null);
-
       // Intentar registrar el plan en el backend si está disponible
       try {
-        const response = await axios.post(
+        const token = session?.access_token;
+        await axios.post(
           `${import.meta.env.VITE_API_URL}/subscriptions/select`,
           { tier },
-          { headers: { Authorization: `Bearer ${authToken}` } }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        if (response.data?.refreshedToken) {
-          const refreshedToken = response.data.refreshedToken;
-          localStorage.setItem(
-            "auth_data",
-            JSON.stringify({ id: userId, token: refreshedToken })
-          );
-          if (userId) login(userId, refreshedToken);
-        }
       } catch {
         // El pago no está implementado aún — continuar igualmente
         console.info("Subscriptions endpoint not yet active, continuing to onboarding.");

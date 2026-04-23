@@ -10,7 +10,7 @@ export const NavbarUser = () => {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
   const [isOpenRegister, setIsOpenRegister] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { session } = useAuth();
+  const { session, userProfile } = useAuth();
   const isAuthenticated = !!session;
 
   const handleOpenLogin = () => {
@@ -45,7 +45,7 @@ export const NavbarUser = () => {
         </Link>
 
         {/* Mi Negocio — solo si tiene negocio */}
-        {isAuthenticated && businessId && (
+        {isAuthenticated && userProfile?.businessId && (
           <Link
             to="/dashboard"
             className="hidden md:flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-semibold text-[14px] transition-colors"
@@ -80,7 +80,7 @@ export const NavbarUser = () => {
       {/* Mobile dropdown — extra links when hamburger is open */}
       {isMobileMenuOpen && (
         <div className="absolute top-[100%] left-0 w-full bg-white border-b border-gray-100 shadow-lg flex flex-col p-4 gap-3 md:hidden">
-          {isAuthenticated && businessId && (
+          {isAuthenticated && userProfile?.businessId && (
             <Link
               to="/dashboard"
               className="flex items-center justify-center gap-2 border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold px-5 py-3 rounded-xl transition-colors text-[15px] w-full"

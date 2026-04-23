@@ -10,7 +10,7 @@ export const getEmployeesByBusinessId = async (
 ): Promise<IEmployeeResponse[] | null> => {
   try {
     const response = await api.get(
-      `/employee/findAll?businessId=${id}`
+      `/employee/public/findAll?businessId=${id}`
     );
     console.log(response.data);
 

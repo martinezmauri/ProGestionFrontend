@@ -39,7 +39,7 @@ export const Personal = () => {
     if (!businessId) return;
     setLoading(true);
     try {
-      const data = await getEmployeesByBusinessId(businessId);
+      const data = await getEmployeesByBusinessId(String(businessId));
       setEmpleados(Array.isArray(data) ? data : []);
     } catch (error) {
       setEmpleados([]);
@@ -51,7 +51,7 @@ export const Personal = () => {
     if (!businessId) return;
     setLoading(true);
     try {
-      const data = await getServiceByBusinessId(businessId);
+      const data = await getServiceByBusinessId(String(businessId));
       setServices(Array.isArray(data) ? data : []);
     } catch (error) {
       setServices([]);

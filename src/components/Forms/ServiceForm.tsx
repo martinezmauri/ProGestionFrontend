@@ -70,9 +70,9 @@ export const ServiceForm = ({ onServiceCreated, onClose, service }: Props) => {
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      if (!userId) return;
+      if (!businessId) return;
       try {
-        const data = await getEmployeesByUserId(userId);
+        const data = await getEmployeesByBusinessId(businessId);
         setEmployees(Array.isArray(data) ? data : []);
       } catch (error) {
         setEmployees([]);

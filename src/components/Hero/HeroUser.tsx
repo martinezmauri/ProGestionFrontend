@@ -37,7 +37,7 @@ interface ISearch {
 }
 
 interface Props {
-  formRef: React.RefObject<HTMLFormElement>;
+  formRef: React.Ref<HTMLFormElement>;
 }
 
 const steps = [

@@ -7,12 +7,11 @@ import { useAuth } from "@context/AuthContext";
  * Si no lo tiene, lo redirige al onboarding o a la landing.
  */
 const BusinessRoute = () => {
-    const { businessId, isLoading } = useAuth();
+    const { userProfile, loading } = useAuth();
 
-    if (isLoading) return null;
+    if (loading) return null;
 
-    if (!businessId) {
-        // Si no tiene negocio, lo mandamos a la landing page pública
+    if (!userProfile?.businessId) {
         return <Navigate to="/" replace />;
     }
 

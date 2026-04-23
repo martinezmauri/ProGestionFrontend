@@ -5,8 +5,8 @@ import {
   Plus,
   RefreshCw,
   Calendar,
+  CalendarDays,
 } from "lucide-react";
-import { MOCK_GRID_DATA } from "../../mocks/mockData";
 import {
   TimeColumn,
   ResourceHeader,
@@ -14,6 +14,9 @@ import {
   GridCell,
   CurrentTimeIndicator,
 } from "./components/GridComponents";
+import { PendingPanel } from "./components/PendingPanel";
+import { AppointmentModal, ModalMode } from "./components/AppointmentModal";
+import { WeeklyGrid } from "./components/WeeklyGrid";
 import {
   Select,
   SelectContent,
@@ -21,15 +24,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
+import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { Label } from "@ui/label";
 import { Card, CardContent, CardHeader } from "@ui/card";
 import { BusinessHoursForm } from "@components/Forms/BusinessHoursForm";
 import { AppHeader } from "@components/Header/AppHeader";
 import { FooterSimple } from "@components/Footer/FooterSimple";
-import { Card, CardHeader } from "@ui/card";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
-import { CalendarDays } from "lucide-react";
+import { IAppointment } from "@interfaces/IAppointment";
+import { IService } from "@interfaces/IService";
+import { useAuth } from "@context/AuthContext";
+import { useBusinessHours } from "@hooks/useBusinessHours";
+import { useWeeklyGrid } from "@hooks/useWeeklyGrid";
+import { useAppointmentGrid } from "@hooks/useAppointmentGrid";
+import { getServiceByBusinessId } from "@api/getServices";
+import { MOCK_BUSINESS_HOURS_CONFIG } from "../../mocks/mockData";
+import { toast } from "sonner";
+import { format, endOfWeek } from "date-fns";
+import { es } from "date-fns/locale";
+import { cn } from "@lib/utils";
 
 export const AppointmentGrid = () => {
   const { session, userProfile } = useAuth();
@@ -37,7 +51,6 @@ export const AppointmentGrid = () => {
   const businessId: number | null = userProfile?.businessId ?? null;
   const authUserId: number | null = userProfile?.id ?? null;
   const [services, setServices] = useState<IService[]>([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
 
   const {
@@ -59,8 +72,6 @@ export const AppointmentGrid = () => {
     saveBusinessHours,
   } = useBusinessHours(businessId);
 
-  const [setupHours, setSetupHours] = useState<IWorkSchedule[]>([]);
-
   useEffect(() => {
     if (businessId && isAuthenticated) {
       fetchBusinessHours();
@@ -68,15 +79,14 @@ export const AppointmentGrid = () => {
   }, [businessId, isAuthenticated]);
 
   // Weekly grid hook
-  const grid = useWeeklyGrid(businessId);
+  const grid = useWeeklyGrid(businessId != null ? String(businessId) : null);
 
   // Services
-  const [services, setServices] = useState<IService[]>([]);
   useEffect(() => {
     const fetchServices = async () => {
       if (!businessId || !isAuthenticated || !hasHours) return;
       try {
-        const data = await getServiceByBusinessId(businessId);
+        const data = await getServiceByBusinessId(String(businessId));
         const safeData = Array.isArray(data) ? data : [];
         setServices(safeData);
         if (safeData.length > 0 && !selectedServiceId) {
@@ -152,11 +162,8 @@ export const AppointmentGrid = () => {
     setModalOpen(true);
   };
 
-  const handleCellClick = async (employeeId: number, startTime: string) => {
-    if (!businessId || !isAuthenticated || !selectedServiceId || !authUserId) {
-      return;
-    }
-    return success;
+  const handleCellClick = async (_employeeId: number, _startTime: string) => {
+    if (!businessId || !isAuthenticated || !authUserId) return;
   };
 
   const handleUpdate = async (
@@ -186,20 +193,43 @@ export const AppointmentGrid = () => {
   };
 
   const handleApprove = async (id: number) => {
+    await grid.handleApprove(id);
+    toast.success("Turno aprobado");
+  };
+
+  const handleReject = async (id: number) => {
+    await grid.handleReject(id);
+    toast.success("Turno rechazado");
+  };
+
+  const handleSave = async (data: {
+    appointmentDate: string;
+    startTime: string;
+    employeeId: number;
+    serviceId: number;
+    clientName?: string;
+    clientEmail?: string;
+    clientPhone?: string;
+  }): Promise<boolean> => {
     try {
-      await createAppointment({
-        date: appointmentDate.toISOString(),
-        status: "PENDING",
-        businessId,
-        employeeId,
-        serviceId: selectedServiceId,
-        userId: authUserId,
+      const success = await grid.handleCreate({
+        ...data,
+        businessId: businessId!,
+        userId: authUserId ?? undefined,
       });
-      toast.success("Turno creado exitosamente");
-      refreshGrid();
-    } catch (err) {
+      if (success) toast.success("Turno creado exitosamente");
+      else toast.error("Error al crear el turno");
+      return !!success;
+    } catch {
       toast.error("Error al crear el turno");
+      return false;
     }
+  };
+
+  const handleNewTurno = () => {
+    setModalMode("create");
+    setModalInitial({});
+    setModalOpen(true);
   };
 
   const handleSaveHours = async () => {

@@ -14,9 +14,14 @@ import { ServiceModal } from "@components/Modals/ServiceModal";
 
 export const ServiceView = () => {
   const [services, setServices] = useState<IService[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState(false);
   const [selectedService, setSelectedService] = useState<IService | null>(null);
+
+  const filteredServices = services.filter((s) =>
+    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const { session, userProfile } = useAuth();
   const isAuthenticated = !!session;
   const businessId: string | null = userProfile?.businessId != null ? String(userProfile.businessId) : null;

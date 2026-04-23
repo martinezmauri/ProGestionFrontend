@@ -11,6 +11,7 @@ import { generateInitialWeeklySchedule } from "../../utils/scheduleDefaults";
 
 interface Props {
   businessHours: IWorkSchedule[];
+  businessLimits: IWorkSchedule[];
   setBusinessHours: React.Dispatch<React.SetStateAction<IWorkSchedule[]>>;
   handleFinalSubmit?: () => void;
   title?: string;
@@ -27,33 +28,35 @@ const daysLabels: Record<number, string> = {
   7: "Domingo"
 };
 
-export const BusinessHoursForm = ({
+export const EmployeeWorkScheduleForm = ({
   businessHours,
+  businessLimits,
   handleFinalSubmit,
   setBusinessHours,
-  title = "Horario de Atención",
+  title = "Horario del Profesional",
   showSubmitButton = true,
 }: Props) => {
   const [splitHours, setSplitHours] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    if (businessHours && businessHours.length > 0) {
-      const recoveredSplit: Record<number, boolean> = {};
-      businessHours.forEach((bh) => {
-        // Detectar si el horario es partido (tiene inicio o fin de tarde)
-        const isSplit = !!(bh.afternoonStart || bh.afternoonEnd);
-        recoveredSplit[bh.dayOfWeek] = isSplit;
-      });
-      setSplitHours(recoveredSplit);
-    } else if (businessHours && businessHours.length === 0) {
-      // Si recibimos un array vacío, inicializamos con los defaults del frontend
+    if (businessHours.length === 0) {
       const initial = generateInitialWeeklySchedule();
       setBusinessHours(initial);
       const initialSplitState: Record<number, boolean> = {};
       initial.forEach((d) => (initialSplitState[d.dayOfWeek] = false));
       setSplitHours(initialSplitState);
+    } else {
+      const recoveredSplit: Record<number, boolean> = {};
+      businessHours.forEach((bh) => {
+        if (bh.afternoonStart || bh.afternoonEnd) {
+          recoveredSplit[bh.dayOfWeek] = true;
+        } else {
+          recoveredSplit[bh.dayOfWeek] = false;
+        }
+      });
+      setSplitHours(recoveredSplit);
     }
-  }, [businessHours]); // Escuchar cambios en los horarios recibidos por props
+  }, []);
 
   const handleHourChange = (
     index: number,
@@ -67,17 +70,9 @@ export const BusinessHoursForm = ({
 
   const handleDayActiveChange = (index: number, checked: boolean) => {
     setBusinessHours((prev) => {
-      const updated = prev.map((item, i) => {
-        if (i === index) {
-          const newItem = { ...item, isWorkingDay: checked };
-          // Si se activa el día y no tiene horarios definidos, poner defaults básicos
-          // para evitar errores de validación en el backend
-          if (checked && !newItem.morningStart) newItem.morningStart = "09:00";
-          if (checked && !newItem.morningEnd) newItem.morningEnd = "13:00";
-          return newItem;
-        }
-        return item;
-      });
+      const updated = prev.map((item, i) =>
+        i === index ? { ...item, isWorkingDay: checked } : item
+      );
       return updated;
     });
   };
@@ -140,7 +135,7 @@ export const BusinessHoursForm = ({
           {title}
         </CardTitle>
         <p className="text-sm text-slate-500 mt-1">
-          Configura los días y horarios en los que tu negocio está abierto al público.
+          Configura los horarios en los que este profesional atenderá (sujeto a disponibilidad del local).
         </p>
       </CardHeader>
 
@@ -151,28 +146,34 @@ export const BusinessHoursForm = ({
               const isActive = schedule.isWorkingDay || false;
               const isSplit = splitHours[schedule.dayOfWeek] || false;
               const dayName = daysLabels[schedule.dayOfWeek];
+              
+              // Find business limit for this day
+              const limit = businessLimits.find(l => l.dayOfWeek === schedule.dayOfWeek);
+              const isBusinessOpen = limit && limit.isWorkingDay;
 
               return (
                 <div
                   key={schedule.dayOfWeek}
                   className={cn(
                     "border rounded-xl p-4 transition-all duration-200",
-                    isActive ? "border-orange-200 bg-orange-50/10 shadow-sm" : "border-slate-100 bg-slate-50/50 opacity-70"
+                    isActive && isBusinessOpen ? "border-orange-200 bg-orange-50/10 shadow-sm" : "border-slate-100 bg-slate-50/50",
+                    !isBusinessOpen && "opacity-50 grayscale"
                   )}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                       <Checkbox
                         id={`day-${schedule.dayOfWeek}-active`}
-                        checked={isActive}
+                        checked={isActive && isBusinessOpen}
+                        disabled={!isBusinessOpen}
                         onCheckedChange={(checked) => handleDayActiveChange(index, !!checked)}
-                        className={cn(isActive && "data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500")}
+                        className={cn((isActive && isBusinessOpen) && "data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500")}
                       />
                       <Label
                         htmlFor={`day-${schedule.dayOfWeek}-active`}
-                        className={cn("text-base font-semibold cursor-pointer", isActive ? "text-slate-800" : "text-slate-400")}
+                        className={cn("text-base font-semibold cursor-pointer", (isActive && isBusinessOpen) ? "text-slate-800" : "text-slate-400")}
                       >
-                        {dayName}
+                        {dayName} {!isBusinessOpen && <span className="text-xs text-red-500 ml-2">(Local Cerrado)</span>}
                       </Label>
                     </div>
 
@@ -234,6 +235,9 @@ export const BusinessHoursForm = ({
                             <Input
                               id={`day-${schedule.dayOfWeek}-open1`}
                               type="time"
+                              disabled={!isBusinessOpen}
+                              min={limit?.morningStart || undefined}
+                              max={limit?.morningEnd || undefined}
                               value={schedule.morningStart || ""}
                               onChange={(e) => handleHourChange(index, "morningStart", e.target.value)}
                               className="h-9"
@@ -244,6 +248,9 @@ export const BusinessHoursForm = ({
                             <Input
                               id={`day-${schedule.dayOfWeek}-close1`}
                               type="time"
+                              disabled={!isBusinessOpen}
+                              min={limit?.morningStart || undefined}
+                              max={limit?.morningEnd || undefined}
                               value={schedule.morningEnd || ""}
                               onChange={(e) => handleHourChange(index, "morningEnd", e.target.value)}
                               className="h-9"
@@ -262,6 +269,9 @@ export const BusinessHoursForm = ({
                               <Input
                                 id={`day-${schedule.dayOfWeek}-open2`}
                                 type="time"
+                                disabled={!isBusinessOpen}
+                                min={limit?.afternoonStart || limit?.morningStart || undefined}
+                                max={limit?.afternoonEnd || limit?.morningEnd || undefined}
                                 value={schedule.afternoonStart || ""}
                                 onChange={(e) => handleHourChange(index, "afternoonStart", e.target.value)}
                                 className="h-9"
@@ -272,6 +282,9 @@ export const BusinessHoursForm = ({
                               <Input
                                 id={`day-${schedule.dayOfWeek}-close2`}
                                 type="time"
+                                disabled={!isBusinessOpen}
+                                min={limit?.afternoonStart || limit?.morningStart || undefined}
+                                max={limit?.afternoonEnd || limit?.morningEnd || undefined}
                                 value={schedule.afternoonEnd || ""}
                                 onChange={(e) => handleHourChange(index, "afternoonEnd", e.target.value)}
                                 className="h-9"

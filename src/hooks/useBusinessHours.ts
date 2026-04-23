@@ -1,18 +1,10 @@
 import { useState, useCallback } from "react";
 import api from "@api/axiosInstance";
 import { IWorkSchedule } from "@interfaces/IWorkSchedule";
+import { mapBackendSchedule } from "@utils/scheduleMapper";
 
-export interface IBusinessHoursResponse {
-    dayOfWeek: number;
-    isWorkingDay: boolean;
-    morningStart: string | null;
-    morningEnd: string | null;
-    afternoonStart: string | null;
-    afternoonEnd: string | null;
-}
-
-export const useBusinessHours = (businessId?: number | null) => {
-    const [businessHours, setBusinessHours] = useState<IBusinessHoursResponse[]>([]);
+export const useBusinessHours = (businessId?: string | number | null) => {
+    const [businessHours, setBusinessHours] = useState<IWorkSchedule[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [hasHours, setHasHours] = useState<boolean | null>(null); // null = not checked yet
@@ -23,9 +15,9 @@ export const useBusinessHours = (businessId?: number | null) => {
         setError(null);
         try {
             const response = await api.get(
-                `/business/${businessId}/hours`
+                `/business/${businessId}/hours/public`
             );
-            const data: IBusinessHoursResponse[] = response.data;
+            const data: IWorkSchedule[] = mapBackendSchedule(response.data);
             setBusinessHours(data);
             setHasHours(data.length > 0);
         } catch (err) {

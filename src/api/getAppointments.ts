@@ -1,5 +1,4 @@
 import api from "./axiosInstance";
-import { format } from "date-fns";
 
 export interface IAppointmentCreate {
   appointmentDate: string; // ISO date format like YYYY-MM-DD
@@ -11,18 +10,66 @@ export interface IAppointmentCreate {
   clientName?: string;
   clientEmail?: string;
   clientPhone?: string;
+  notes?: string;
 }
 
 export const createAppointment = async (payload: IAppointmentCreate) => {
     try {
-        const response = await api.post(
-            `/appointment/request`, 
-            payload
-        );
+        const response = await api.post(`/appointment/request`, payload);
         return response.data;
     } catch (error) {
         console.error(error);
         return null;
+    }
+};
+
+export const createManualAppointment = async (payload: IAppointmentCreate) => {
+    try {
+        const response = await api.post(`/appointment/request`, payload);
+        return response.data;
+    } catch (error) {
+        console.error("Error creating manual appointment:", error);
+        return null;
+    }
+};
+
+export const getAppointmentsByDateRange = async (businessId: number, startDate: string, endDate: string) => {
+    try {
+        const response = await api.get(`/appointment/findByDateRange`, {
+            params: { businessId, startDate, endDate }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching appointments by range:", error);
+        return [];
+    }
+};
+
+export const getAppointments = async (params: {
+    status?: string,
+    startDate?: string,
+    endDate?: string,
+    page?: number,
+    size?: number
+}) => {
+    try {
+        const response = await api.get(`/appointment/findAll`, { params });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+export const getOccupiedSlots = async (employeeId: number, date: string): Promise<string[]> => {
+    try {
+        const response = await api.get(`/appointment/public/occupied`, {
+            params: { employeeId, date }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching occupied slots:", error);
+        return [];
     }
 };
 
@@ -63,21 +110,5 @@ export const updateAppointment = async (id: number, payload: Partial<IAppointmen
     } catch (error) {
         console.error(error);
         throw error;
-    }
-};
-
-export const getAppointments = async (params: { 
-    status?: string, 
-    startDate?: string, 
-    endDate?: string,
-    page?: number,
-    size?: number
-}) => {
-    try {
-        const response = await api.get(`/appointment/findAll`, { params });
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        return null;
     }
 };

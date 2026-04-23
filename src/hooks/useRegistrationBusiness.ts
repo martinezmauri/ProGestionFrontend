@@ -24,7 +24,7 @@ export const useRegistrationBusiness = () => {
           country: newBusinessData.address.country
         }
       };
-      const response = await api.post("/api/v1/business/save", payload);
+      const response = await api.post("/business/save", payload);
       console.log(response);
 
       return response;

@@ -68,7 +68,7 @@ export const SelectPlan = () => {
   const handleSelectPlan = async (tier: string) => {
     try {
       setLoading(tier);
-      await api.post("/api/v1/subscriptions/select", { tier });
+      await api.post("/subscriptions/select", { tier });
       toast.success("¡Plan seleccionado!");
       navigate("/onboarding/business");
     } catch (error) {

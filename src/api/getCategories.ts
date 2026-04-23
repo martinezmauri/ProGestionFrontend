@@ -4,7 +4,7 @@ import api from "./axiosInstance";
 const getCategories = async (): Promise<ICategory[]> => {
   try {
     const response = await api.get(
-      `/api/v1/category/findAll`
+      `/category/findAll`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener las categorías.");

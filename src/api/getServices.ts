@@ -38,7 +38,7 @@ export const getServiceByBusinessId = async (
 ): Promise<IService[]> => {
   try {
     const response = await api.get(
-      `/service/public/findAll?businessId=${businessId}`
+      `/service/findAll?businessId=${businessId}`
     );
     if (response.status !== 200) {
       throw new Error("Error al obtener los servicios.");

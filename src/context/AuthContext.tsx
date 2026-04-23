@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const syncProfile = async (shouldNavigate = false) => {
     try {
-      const { data } = await api.post<UserProfile>('/api/v1/auth/sync')
+      const { data } = await api.post<UserProfile>('/auth/sync')
       setUserProfile(data)
       if (shouldNavigate) {
         navigate(resolvePostLoginRoute(data))

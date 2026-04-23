@@ -15,7 +15,7 @@ export const useBusinessHours = (businessId?: string | number | null) => {
         setError(null);
         try {
             const response = await api.get(
-                `/business/${businessId}/hours/public`
+                `/business/${businessId}/hours`
             );
             const data: IWorkSchedule[] = mapBackendSchedule(response.data);
             setBusinessHours(data);

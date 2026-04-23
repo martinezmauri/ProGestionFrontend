@@ -11,7 +11,7 @@ const useLoadCategories = () => {
 
     try {
       const response = await api.get(
-        `/api/v1/category/findAll`
+        `/category/findAll`
       );
       setCategories(response.data.content || response.data || []);
     } catch (error) {

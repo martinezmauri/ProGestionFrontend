@@ -78,7 +78,7 @@ const FeaturedEstablishments = () => {
         const loadBusinesses = async () => {
             setIsLoading(true);
             try {
-                const response = await api.get(`/api/v1/business/search`);
+                const response = await api.get(`/business/search`);
                 if (Array.isArray(response.data)) {
                     setBusinesses(response.data.slice(0, 3));
                 }

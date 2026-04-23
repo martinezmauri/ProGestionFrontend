@@ -42,7 +42,7 @@ export const BusinessSearch = () => {
     const fetchData = async () => {
       try {
         const response = await api.get(
-          `/api/v1/business/search`,
+          `/business/search`,
           {
             params: {
               name: searchBusiness.nameEstablishment,

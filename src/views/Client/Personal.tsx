@@ -13,7 +13,6 @@ import { Button } from "@ui/button";
 import { FooterSimple } from "@components/Footer/FooterSimple";
 import { getMySubscription, ISubscription } from "@api/getSubscription";
 import { EmployeeRol } from "@enum/EmployeeRol";
-import AppSidebar from "@components/Sidebar/AppSidebar";
 
 const TIER_LIMITS = {
   BASIC: 1,
@@ -109,14 +108,12 @@ export const Personal = () => {
   });
 
   return (
-    <div className="flex min-h-screen w-full bg-[#FFFFFF]">
-      <AppSidebar />
-      <div className="flex flex-col flex-1 animate-in fade-in duration-500">
-        <div className="flex-1 p-6 md:p-10 space-y-4 max-w-7xl mx-auto w-full">
-          <AppHeader title="Personal" />
-          <p className="text-slate-500 text-base">
-            Gestiona tu equipo de trabajo.
-          </p>
+    <div className="flex flex-col min-h-full animate-in fade-in duration-500">
+      <div className="flex-1 p-6 md:p-10 space-y-4 max-w-7xl mx-auto w-full">
+        <AppHeader title="Personal" />
+        <p className="text-slate-500 text-base">
+          Gestiona tu equipo de trabajo.
+        </p>
           <Card className="w-full border border-gray-100 shadow-sm mt-6 rounded-2xl overflow-hidden">
             <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-100 px-6 py-6">
               <span className="text-xl font-bold text-slate-800">
@@ -176,19 +173,18 @@ export const Personal = () => {
           </Card>
         </div>
 
-        <FooterSimple />
+      <FooterSimple />
 
-        <PersonalModal
-          services={services}
-          open={openModal}
-          onClose={() => {
-            setOpenModal(false);
-            setSelectedPersonal(null);
-          }}
-          onPersonalCreated={loadEmployees}
-          employee={selectedPersonal}
-        />
-      </div>
+      <PersonalModal
+        services={services}
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);
+          setSelectedPersonal(null);
+        }}
+        onPersonalCreated={loadEmployees}
+        employee={selectedPersonal}
+      />
     </div>
   );
 };
